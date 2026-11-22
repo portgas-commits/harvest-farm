@@ -282,7 +282,7 @@
 <script>
 "use strict";
 /* ================= KONFIG ================= */
-var API_BASE = (window.HARVESTFARM_API_URL || new URLSearchParams(location.search).get('api') || location.origin).replace(/\/$/, '');
+var API_BASE = (window.HARVESTFARM_API_URL || new URLSearchParams(location.search).get('api') || 'https://harvest-farm-production.up.railway.app').replace(/\/$/, '');
 var ADSGRAM_BLOCK_ID = '61298'; // <-- isi Block ID AdGram di sini
 var CROPS = {
   cabai:    {name:'Cabai',    emoji:'🌶️', grow:120},
