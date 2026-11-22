@@ -1,6 +1,12 @@
 """
-Harvest Farm — Kebun Kripto (v1)
+Harvest Farm — Kebun Kripto (v2)
 Game pertanian Telegram Mini App berbasis FaucetPay (DOGE).
+
+v2 = evolusi v1 (bukan rebuild): stack tetap Python + SQLite + HTML/JS,
+semua endpoint v1 kompatibel mundur. Baru di v2: Level 1-100, skill tree
+4 cabang, bangunan produksi, memancing & menambang, benih langka/mutasi,
+musim + turnamen mingguan, guild, Permata Panen (premium currency),
+achievement v2. WD tetap Koin -> DOGE via FaucetPay (aturan v1).
 
 Pola mengikuti ~/workspace/telegram-miner-game/bot.py:
 - Bot Telegram (python-telegram-bot 21.*) — /start buka Mini App.
@@ -101,7 +107,13 @@ CROPS = {
     "labu":     ("Labu",     "🎃", 1500,  60 * 60,  8,  100, 350),
     "stroberi": ("Stroberi", "🍓", 3000,  120 * 60, 10, 180, 600),
     "kopi":     ("Kopi",     "☕", 6000,  240 * 60, 12, 300, 1000),
+    # v2: Melon Emas — benih TIDAK dijual di toko (harga 0 = tidak dijual),
+    # hanya dari mutasi panen (4%). Min Level 20.
+    "melon":    ("Melon Emas", "🍈", 0, 120 * 60, 6, 250, 1500),
 }
+# Level minimum untuk menanam tiap tanaman (v2)
+CROP_UNLOCK = {"cabai": 1, "jagung": 1, "tomat": 2, "wortel": 3, "padi": 5,
+               "labu": 8, "stroberi": 12, "kopi": 15, "melon": 20}
 # Harga jual dasar produk hewan (per buah)
 ANIMAL_PRODUCTS = {
     "telur": ("Telur", "🥚", 80),
@@ -112,7 +124,65 @@ ANIMALS = {
     "ayam":   ("Ayam",   "🐔", 500,  "telur", 30 * 60,  1),
     "kambing": ("Kambing", "🐐", 2000, "susu", 60 * 60,  1),
     "sapi":   ("Sapi",   "🐄", 5000, "susu",  120 * 60, 1),
+    "domba":  ("Domba",  "🐑", 3500, "wol",   90 * 60,  1),  # v2
 }
+# Level minimum untuk membeli tiap hewan (v2)
+ANIMAL_UNLOCK = {"ayam": 1, "kambing": 4, "sapi": 7, "domba": 9}
+# Produk olahan / hasil pancing & tambang: id -> (nama, emoji, harga jual dasar)
+# (v2) — wol juga produk hewan Domba, jadi dicari di sini juga.
+PRODUCTS = {
+    "roti":       ("Roti",       "🍞", 500),
+    "keju":       ("Keju",       "🧀", 900),
+    "saus":       ("Saus Tomat", "🥫", 300),
+    "wol":        ("Wol",        "🧶", 200),
+    "ikan":       ("Ikan",       "🐟", 150),
+    "ikan_emas":  ("Ikan Emas",  "✨", 800),
+    "batu":       ("Batu",       "🪨", 100),
+    "bijih_emas": ("Bijih Emas", "⛏️", 600),
+}
+# Bangunan produksi (v2): kind -> dict
+# recipe = bahan dari inventaris -> output; time detik; upgrade menaikkan
+# kapasitas job bersamaan (Lv 1 = 1 job, Lv 2 = 2, Lv 3 = 3).
+BUILDINGS = {
+    "roti": {"name": "Toko Roti", "emoji": "🏭", "price": 3000,
+             "min_level": 6, "recipe": {"padi": 5}, "output": "roti",
+             "output_qty": 2, "time": 30 * 60},
+    "keju": {"name": "Pabrik Susu", "emoji": "🏭", "price": 8000,
+             "min_level": 10, "recipe": {"susu": 3}, "output": "keju",
+             "output_qty": 1, "time": 60 * 60},
+    "saus": {"name": "Dapur Saus", "emoji": "🏭", "price": 5000,
+             "min_level": 14, "recipe": {"tomat": 4}, "output": "saus",
+             "output_qty": 2, "time": 20 * 60},
+}
+BUILDING_MAX_LEVEL = 3
+
+# --- v2: Permata Panen, skill, musim, guild, mancing/tambang ---
+GEM_TO_COINS = 500            # kurs tetap: 1 Permata = 500 Koin
+GEM_CONVERT_MAX_DAY = 50      # maks konversi Permata/hari/pemain
+MAX_LEVEL = 100
+SKILL_MAX = 5                 # maks level per cabang skill
+SKILL_BRANCHES = {
+    "bertani":  ("Bertani",  "🌾"),
+    "produksi": ("Produksi", "🏭"),
+    "dagang":   ("Dagang",   "🤝"),
+    "jelajah":  ("Jelajah",  "🧭"),
+}
+FISH_COOLDOWN_SECS = 30 * 60
+MINE_COOLDOWN_SECS = 30 * 60
+MUTATION_CHANCE = 0.04        # panen -> +1 benih Melon Emas
+LEGENDARY_CHANCE = 0.005      # panen -> +1 Permata Panen
+GUILD_CREATE_COST = 1000
+GUILD_MAX_MEMBERS = 20
+GUILD_GOAL_POINTS = 500       # total poin musim anggota per minggu
+GUILD_REWARD_GEMS = 10
+TOURNAMENT_MIN_POINTS = 50
+SEASON_SECONDS = 7 * 86400
+SEASONS = [
+    ("semi",   "Musim Semi",   "🌸", "+10% XP semua aksi."),
+    ("panas",  "Musim Panas",  "☀️", "Cooldown mancing & menambang -25%."),
+    ("panen",  "Musim Panen",  "🍂", "+10% hasil panen."),
+    ("dingin", "Musim Dingin", "❄️", "+10% harga jual NPC."),
+]
 
 WEATHERS = {
     "cerah": ("Cerah", "☀️", 1.00, "Tumbuh normal."),
@@ -138,6 +208,9 @@ MISSIONS_POOL = [
     ("siram", "Siram tanaman 10 kali", 10, 250),
     ("p2p", "Pasang 1 jualan di Pasar Pemain", 1, 400),
     ("hewan", "Kumpulkan hasil hewan 3 kali", 3, 400),
+    ("ikan", "Mancing 2 kali", 2, 300),          # v2
+    ("tambang", "Menambang 2 kali", 2, 300),      # v2
+    ("produksi", "Selesaikan 1 produksi", 1, 500),  # v2
 ]
 
 ACHIEVEMENTS = [
@@ -145,6 +218,26 @@ ACHIEVEMENTS = [
     (5, "🚜 Petani Andal", "Capai Level 5"),
     (10, "👑 Juragan Kebun", "Capai Level 10"),
     (20, "🌾 Legenda Panen", "Capai Level 20"),
+]
+
+# Achievement v2: (id, judul, deskripsi, jenis_syarat, target,
+#                  hadiah_koin, hadiah_permata)
+# jenis_syarat: level | harvest | sold | produce | fish | mine | guild | melon
+ACHIEVEMENTS_V2 = [
+    (1,  "🌱 Petani Pemula",    "Capai Level 1",          "level",   1,     100,  0),
+    (2,  "🚜 Petani Andal",     "Capai Level 5",          "level",   5,     500,  2),
+    (3,  "👑 Juragan Kebun",    "Capai Level 10",         "level",   10,    1000, 5),
+    (4,  "🌾 Legenda Panen",    "Capai Level 20",         "level",   20,    2000, 10),
+    (5,  "🏆 Master Tani",      "Capai Level 50",         "level",   50,    5000, 20),
+    (6,  "👑 Legenda Harvest",  "Capai Level 100",        "level",   100,   10000, 50),
+    (7,  "🧺 Panen 100×",       "Total panen 100 kali",   "harvest", 100,   500,  2),
+    (8,  "🧺 Panen 1.000×",     "Total panen 1.000 kali", "harvest", 1000,  2000, 10),
+    (9,  "💰 Jualan 10.000",    "Total terjual 10.000",   "sold",    10000, 1000, 5),
+    (10, "🏭 Produksi Pertama", "Selesaikan 1 produksi",  "produce", 1,     500,  3),
+    (11, "🎣 Pemancing Handal", "Mancing 25 kali",        "fish",    25,    500,  3),
+    (12, "⛏️ Penambang Ulung",  "Menambang 25 kali",      "mine",    25,    500,  3),
+    (13, "🤝 Anggota Guild",    "Gabung sebuah guild",    "guild",   1,     300,  2),
+    (14, "🍈 Melon Emas",       "Panen Melon Emas",       "melon",   1,     1000, 5),
 ]
 
 FP_EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
@@ -193,6 +286,8 @@ def market_price(item: str, ts: int | None = None) -> dict:
         base = CROPS[item][6]
     elif item in ANIMAL_PRODUCTS:
         base = ANIMAL_PRODUCTS[item][2]
+    elif item in PRODUCTS:
+        base = PRODUCTS[item][2]
     else:
         return {"price": 0, "base": 0, "trend": "stabil", "change_pct": 0}
     # Hash stabil dari (bucket, item) -> -30%..+30%
@@ -203,16 +298,53 @@ def market_price(item: str, ts: int | None = None) -> dict:
     if ev and ev["id"] == "pasar_ramai":
         price = round(price * 1.15)
         change += 15
+    # v2: Musim Dingin -> harga jual NPC +10%
+    if season_now(ts)["kind"] == "dingin":
+        price = round(price * 1.10)
+        change += 10
     trend = "naik" if change >= 5 else ("turun" if change <= -5 else "stabil")
     return {"price": price, "base": base, "trend": trend, "change_pct": change}
 
 
-def level_from_xp(xp: int) -> int:
-    return int((max(xp, 0) / 100) ** 0.5) + 1
-
-
 def xp_for_level(level: int) -> int:
-    return (level - 1) ** 2 * 100
+    """Total XP kumulatif untuk mencapai level L (v2, maks Level 100).
+
+    L<=20 sama seperti v1 ((L-1)^2*100); di atas itu melambat supaya
+    grind ke Level 100 butuh waktu panjang.
+    """
+    if level <= 1:
+        return 0
+    if level <= 20:
+        return (level - 1) ** 2 * 100
+    return 40_000 + int(400 * (level - 20) ** 1.7)
+
+
+def level_from_xp(xp: int) -> int:
+    xp = max(int(xp), 0)
+    level = 1
+    for lv in range(2, MAX_LEVEL + 1):
+        if xp >= xp_for_level(lv):
+            level = lv
+        else:
+            break
+    return level
+
+
+def season_now(ts: int | None = None) -> dict:
+    """Musim bergilir tiap minggu (Senin 00:00 UTC), deterministik."""
+    ts = ts if ts is not None else now_ts()
+    week = ts // SEASON_SECONDS
+    kind, label, emoji, desc = SEASONS[week % len(SEASONS)]
+    return {"week": week, "kind": kind, "label": label, "emoji": emoji,
+            "desc": desc,
+            "ends_in": SEASON_SECONDS - (ts % SEASON_SECONDS)}
+
+
+def skill_level(skills: dict, branch: str) -> int:
+    try:
+        return max(0, min(SKILL_MAX, int((skills or {}).get(branch, 0))))
+    except (TypeError, ValueError):
+        return 0
 
 
 # ---------------------------------------------------------------------------
@@ -299,6 +431,65 @@ def db() -> sqlite3.Connection:
         "  user_id INTEGER NOT NULL, type TEXT NOT NULL,"
         "  created_at INTEGER NOT NULL DEFAULT 0)"
     )
+    # --- v2: tabel baru ---
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS buildings ("
+        "  user_id INTEGER NOT NULL, kind TEXT NOT NULL,"
+        "  level INTEGER NOT NULL DEFAULT 1,"
+        "  created_at INTEGER NOT NULL DEFAULT 0,"
+        "  PRIMARY KEY (user_id, kind))"
+    )
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS production_jobs ("
+        "  id INTEGER PRIMARY KEY AUTOINCREMENT,"
+        "  user_id INTEGER NOT NULL, building TEXT NOT NULL,"
+        "  recipe TEXT NOT NULL, qty INTEGER NOT NULL DEFAULT 1,"
+        "  started_at INTEGER NOT NULL DEFAULT 0,"
+        "  ready_at INTEGER NOT NULL DEFAULT 0,"
+        "  status TEXT NOT NULL DEFAULT 'running')"
+    )
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS achievements_claimed ("
+        "  user_id INTEGER NOT NULL, ach_id INTEGER NOT NULL,"
+        "  claimed_at INTEGER NOT NULL DEFAULT 0,"
+        "  PRIMARY KEY (user_id, ach_id))"
+    )
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS guilds ("
+        "  id INTEGER PRIMARY KEY AUTOINCREMENT,"
+        "  name TEXT NOT NULL, leader_id INTEGER NOT NULL,"
+        "  created_at INTEGER NOT NULL DEFAULT 0)"
+    )
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS guild_members ("
+        "  guild_id INTEGER NOT NULL, user_id INTEGER NOT NULL,"
+        "  joined_at INTEGER NOT NULL DEFAULT 0,"
+        "  claimed_week INTEGER NOT NULL DEFAULT -1,"
+        "  PRIMARY KEY (guild_id, user_id))"
+    )
+    # --- v2: migrasi kolom users (idempotent, DB v1 tetap jalan) ---
+    existing = {r[1] for r in conn.execute("PRAGMA table_info(users)")}
+    for coldef in (
+        "gems INTEGER NOT NULL DEFAULT 0",
+        "skill_points INTEGER NOT NULL DEFAULT 0",
+        "skills TEXT NOT NULL DEFAULT '{}'",
+        "season_points INTEGER NOT NULL DEFAULT 0",
+        "season_week INTEGER NOT NULL DEFAULT 0",
+        "claimed_season INTEGER NOT NULL DEFAULT -1",
+        "last_fish_at INTEGER NOT NULL DEFAULT 0",
+        "last_mine_at INTEGER NOT NULL DEFAULT 0",
+        "fish_count INTEGER NOT NULL DEFAULT 0",
+        "mine_count INTEGER NOT NULL DEFAULT 0",
+        "produce_count INTEGER NOT NULL DEFAULT 0",
+        "melon_harvest INTEGER NOT NULL DEFAULT 0",
+        "gems_converted_today INTEGER NOT NULL DEFAULT 0",
+        "gems_convert_day TEXT NOT NULL DEFAULT ''",
+        "guild_id INTEGER NOT NULL DEFAULT 0",
+        "total_produced INTEGER NOT NULL DEFAULT 0",
+    ):
+        col = coldef.split()[0]
+        if col not in existing:
+            conn.execute(f"ALTER TABLE users ADD COLUMN {coldef}")
     conn.commit()
     return conn
 
@@ -380,10 +571,154 @@ def spend_energy(conn: sqlite3.Connection, row: sqlite3.Row) -> tuple[bool, sqli
 
 
 def add_xp_coins(conn: sqlite3.Connection, uid: int, xp: int = 0,
-                 coins: int = 0) -> None:
-    conn.execute("UPDATE users SET xp = xp + ?, coins = coins + ?"
-                 " WHERE user_id = ?", (xp, coins, uid))
+                 coins: int = 0, gems: int = 0) -> None:
+    """Tambah XP/Koin/Permata. v2: naik level -> +1 poin skill per level,
+    anggota guild -> +5% XP (bonus guild pasif)."""
+    if xp:
+        row = conn.execute(
+            "SELECT xp, guild_id FROM users WHERE user_id = ?", (uid,)
+        ).fetchone()
+        if row is not None:
+            old_level = level_from_xp(int(row["xp"]))
+            if int(row["guild_id"] or 0) > 0:
+                xp = max(1, round(xp * 1.05))
+            if season_now()["kind"] == "semi":  # v2: Musim Semi +10% XP
+                xp = max(1, round(xp * 1.10))
+            new_xp = int(row["xp"]) + xp
+            new_level = level_from_xp(new_xp)
+            gained_points = max(0, new_level - old_level)
+            conn.execute(
+                "UPDATE users SET xp = ?, skill_points = skill_points + ?"
+                " WHERE user_id = ?", (new_xp, gained_points, uid))
+    if coins or gems:
+        conn.execute("UPDATE users SET coins = coins + ?, gems = gems + ?"
+                     " WHERE user_id = ?", (coins, gems, uid))
     conn.commit()
+
+
+def ensure_season(conn: sqlite3.Connection, uid: int,
+                  row: sqlite3.Row | None = None) -> sqlite3.Row:
+    """Reset poin musim kalau minggu sudah berganti (server-side)."""
+    if row is None:
+        row = conn.execute("SELECT * FROM users WHERE user_id = ?",
+                           (uid,)).fetchone()
+    week = season_now()["week"]
+    if row is not None and int(row["season_week"] or 0) != week:
+        conn.execute("UPDATE users SET season_points = 0, season_week = ?"
+                     " WHERE user_id = ?", (week, uid))
+        conn.commit()
+        row = conn.execute("SELECT * FROM users WHERE user_id = ?",
+                           (uid,)).fetchone()
+    return row
+
+
+def bump_season(conn: sqlite3.Connection, uid: int, n: int = 1) -> None:
+    """Tambah poin turnamen musim ini (reset otomatis kalau minggu baru)."""
+    ensure_season(conn, uid)
+    conn.execute("UPDATE users SET season_points = season_points + ?"
+                 " WHERE user_id = ?", (n, uid))
+    conn.commit()
+
+
+def achievement_progress(conn: sqlite3.Connection, row: sqlite3.Row) -> dict:
+    """Nilai syarat tiap achievement v2 untuk satu pemain."""
+    return {
+        "level": level_from_xp(int(row["xp"])),
+        "harvest": int(row["total_harvest"]),
+        "sold": int(row["total_sold"]),
+        "produce": int(row["produce_count"]),
+        "fish": int(row["fish_count"]),
+        "mine": int(row["mine_count"]),
+        "guild": 1 if int(row["guild_id"] or 0) > 0 else 0,
+        "melon": int(row["melon_harvest"]),
+    }
+
+
+def achievements_v2_state(conn: sqlite3.Connection, uid: int,
+                          row: sqlite3.Row) -> list[dict]:
+    prog = achievement_progress(conn, row)
+    claimed = {r["ach_id"] for r in conn.execute(
+        "SELECT ach_id FROM achievements_claimed WHERE user_id = ?", (uid,))}
+    out = []
+    for aid, title, desc, kind, target, coins, gems in ACHIEVEMENTS_V2:
+        cur = prog.get(kind, 0)
+        out.append({"id": aid, "title": title, "desc": desc,
+                    "target": target, "progress": min(cur, target),
+                    "done": cur >= target, "claimed": aid in claimed,
+                    "reward_coins": coins, "reward_gems": gems})
+    return out
+
+
+def guild_info(conn: sqlite3.Connection, uid: int) -> dict | None:
+    """Info guild pemain: guild, jumlah anggota, progres tujuan mingguan."""
+    row = conn.execute("SELECT guild_id FROM users WHERE user_id = ?",
+                       (uid,)).fetchone()
+    gid = int(row["guild_id"] or 0) if row else 0
+    if not gid:
+        return None
+    g = conn.execute("SELECT * FROM guilds WHERE id = ?", (gid,)).fetchone()
+    if not g:
+        return None
+    week = season_now()["week"]
+    members = conn.execute(
+        "SELECT u.user_id, u.first_name, u.username, u.season_points,"
+        "  u.season_week FROM guild_members gm JOIN users u"
+        "  ON u.user_id = gm.user_id WHERE gm.guild_id = ?"
+        "  ORDER BY u.season_points DESC", (gid,)).fetchall()
+    progress = sum(int(m["season_points"])
+                   for m in members if int(m["season_week"] or 0) == week)
+    claimed = conn.execute(
+        "SELECT claimed_week FROM guild_members WHERE guild_id = ?"
+        " AND user_id = ?", (gid, uid)).fetchone()
+    return {
+        "id": g["id"], "name": g["name"], "leader_id": g["leader_id"],
+        "members": [{"name": m["first_name"] or m["username"]
+                     or f"Petani {m['user_id']}",
+                     "season_points": int(m["season_points"])
+                     if int(m["season_week"] or 0) == week else 0}
+                    for m in members],
+        "member_count": len(members),
+        "goal": GUILD_GOAL_POINTS, "goal_progress": progress,
+        "goal_reached": progress >= GUILD_GOAL_POINTS,
+        "reward_claimed_this_week":
+            bool(claimed and int(claimed["claimed_week"]) == week),
+        "reward_gems": GUILD_REWARD_GEMS,
+    }
+
+
+def list_guilds(conn: sqlite3.Connection) -> list[dict]:
+    rows = conn.execute(
+        "SELECT g.id, g.name, g.leader_id,"
+        "  (SELECT COUNT(*) FROM guild_members WHERE guild_id = g.id)"
+        "  AS members FROM guilds g ORDER BY members DESC, g.id ASC"
+        "  LIMIT 30").fetchall()
+    return [{"id": r["id"], "name": r["name"], "leader_id": r["leader_id"],
+             "members": r["members"]} for r in rows]
+
+
+def season_leaderboard(conn: sqlite3.Connection, limit: int = 20) -> list[dict]:
+    """Top poin musim minggu ini saja (season_week == minggu berjalan)."""
+    week = season_now()["week"]
+    rows = conn.execute(
+        "SELECT user_id, username, first_name, season_points FROM users"
+        " WHERE flagged = 0 AND season_week = ?"
+        " ORDER BY season_points DESC, xp DESC LIMIT ?",
+        (week, max(1, min(limit, 100)))).fetchall()
+    return [{"rank": i, "name": r["first_name"] or r["username"]
+             or f"Petani {r['user_id']}",
+             "season_points": int(r["season_points"])}
+            for i, r in enumerate(rows, start=1)]
+
+
+def season_rank(conn: sqlite3.Connection, uid: int) -> int | None:
+    week = season_now()["week"]
+    row = conn.execute(
+        "SELECT COUNT(*) FROM users WHERE flagged = 0 AND season_week = ?"
+        " AND (season_points > (SELECT season_points FROM users"
+        " WHERE user_id = ?) OR (season_points = (SELECT season_points"
+        " FROM users WHERE user_id = ?) AND user_id < ?))",
+        (week, uid, uid, uid)).fetchone()
+    return (row[0] + 1) if row else None
 
 
 def bump_mission(conn: sqlite3.Connection, uid: int, kind: str, n: int = 1) -> None:
@@ -448,7 +783,14 @@ def plot_view(conn: sqlite3.Connection, uid: int, w: dict,
         v.update({"crop_name": name, "emoji": emoji, "grow_secs": grow,
                   "yield_qty": yld})
         # Faktor tumbuh: cuaca x siram (0.75) x pupuk (0.5) x boost iklan
+        # x skill Bertani (-5%/level) x Musim Semi tidak berpengaruh di sini
         factor = w["factor"]
+        if uid is not None:
+            _urow = conn.execute(
+                "SELECT skills FROM users WHERE user_id = ?", (uid,)).fetchone()
+            if _urow:
+                factor *= (1 - 0.05 * skill_level(
+                    _json_loads(_urow["skills"], {}), "bertani"))
         if w["kind"] == "hujan":
             v["watered"] = True  # hujan = gratis siram
         elif w["kind"] == "panas" and r["water_count"] < 2:
@@ -497,7 +839,10 @@ def animal_view(conn: sqlite3.Connection, uid: int) -> list[dict]:
     out = []
     for r in rows:
         name, emoji, _price, product, interval, _feed = ANIMALS[r["kind"]]
-        pname, pem, _pb = ANIMAL_PRODUCTS[product]
+        if product in ANIMAL_PRODUCTS:
+            pname, pem, _pb = ANIMAL_PRODUCTS[product]
+        else:  # v2: wol dll. dari PRODUCTS
+            pname, pem, _pb = PRODUCTS[product]
         fed = now < int(r["fed_until"] or 0)
         last = int(r["last_produce_at"] or r["created_at"] or now)
         ready = fed and (now - last) >= interval
@@ -514,15 +859,38 @@ def animal_view(conn: sqlite3.Connection, uid: int) -> list[dict]:
 def build_state(conn: sqlite3.Connection, user: dict) -> dict:
     row = regen_energy(conn, get_or_create_user(conn, user))
     uid = int(user["id"])
+    row = ensure_season(conn, uid, row)  # v2: reset poin musim bila perlu
     w = weather_now()
     ev = event_now()
+    season = season_now()
     plots = plot_view(conn, uid, w, ev)
     animals = animal_view(conn, uid)
     inventory = _json_loads(row["inventory"], {})
     seeds = _json_loads(row["seeds"], {})
     missions = daily_missions(conn, uid)
-    items = list(CROPS) + list(ANIMAL_PRODUCTS)
+    items = list(CROPS) + list(ANIMAL_PRODUCTS) + list(PRODUCTS)
     market = {it: market_price(it) for it in items}
+    # v2: bangunan & job produksi pemain
+    buildings = {r["kind"]: {"level": r["level"]}
+                 for r in conn.execute(
+                     "SELECT kind, level FROM buildings WHERE user_id = ?",
+                     (uid,)).fetchall()}
+    jobs = conn.execute(
+        "SELECT * FROM production_jobs WHERE user_id = ? AND status = 'running'"
+        " ORDER BY ready_at", (uid,)).fetchall()
+    skills = _json_loads(row["skills"], {})
+    now = now_ts()
+    fish_cd = max(0, int(row["last_fish_at"] or 0)
+                  + FISH_COOLDOWN_SECS - now)
+    mine_cd = max(0, int(row["last_mine_at"] or 0)
+                  + MINE_COOLDOWN_SECS - now)
+    if season["kind"] == "panas":  # Musim Panas: cooldown -25%
+        fish_cd = int(fish_cd * 0.75)
+        mine_cd = int(mine_cd * 0.75)
+    # cooldown efektif skill Jelajah (-10%/level) — tampilkan di state
+    jel = skill_level(skills, "jelajah")
+    fish_cd = int(fish_cd * (1 - 0.10 * jel))
+    mine_cd = int(mine_cd * (1 - 0.10 * jel))
     listings = conn.execute(
         "SELECT id, seller_id, seller_name, item, qty, price_each,"
         "  created_at FROM listings WHERE status = 'open'"
@@ -540,7 +908,8 @@ def build_state(conn: sqlite3.Connection, user: dict) -> dict:
             "user_id": uid, "username": row["username"],
             "first_name": row["first_name"],
             "coins": int(row["coins"]), "xp": xp, "level": level,
-            "xp_next": xp_for_level(level + 1),
+            "xp_next": xp_for_level(level + 1) if level < MAX_LEVEL else None,
+            "max_level": MAX_LEVEL,
             "energy": int(row["energy"]), "energy_max": ENERGY_MAX,
             "grid_size": int(row["grid_size"]),
             "fertilizer": int(row["fertilizer"]), "feed": int(row["feed"]),
@@ -550,6 +919,57 @@ def build_state(conn: sqlite3.Connection, user: dict) -> dict:
             "total_sold": int(row["total_sold"]),
             "ad_rewards_today": ad_count_today(conn, uid),
             "flagged": bool(row["flagged"]),
+            # v2
+            "gems": int(row["gems"]),
+            "skill_points": int(row["skill_points"]),
+            "skills": skills,
+            "season_points": int(row["season_points"]),
+            "season_week": int(row["season_week"]),
+            "claimed_season": int(row["claimed_season"]),
+            "guild_id": int(row["guild_id"] or 0),
+            "fish_count": int(row["fish_count"]),
+            "mine_count": int(row["mine_count"]),
+            "produce_count": int(row["produce_count"]),
+            "fish_cooldown_in": fish_cd,
+            "mine_cooldown_in": mine_cd,
+        },
+        "season": season,
+        "season_top": season_leaderboard(conn, 10),
+        "achievements_v2": achievements_v2_state(conn, uid, row),
+        "buildings": buildings,
+        "building_defs": {
+            k: {"name": v["name"], "emoji": v["emoji"], "price": v["price"],
+                "min_level": v["min_level"], "recipe": v["recipe"],
+                "output": v["output"], "output_qty": v["output_qty"],
+                "time": v["time"],
+                "output_name": PRODUCTS[v["output"]][0],
+                "output_emoji": PRODUCTS[v["output"]][1]}
+            for k, v in BUILDINGS.items()},
+        "production_jobs": [{
+            "id": j["id"], "building": j["building"],
+            "building_name": BUILDINGS[j["building"]]["name"],
+            "recipe": j["recipe"], "qty": j["qty"],
+            "output": PRODUCTS[BUILDINGS[j["building"]]["output"]][0],
+            "output_emoji": PRODUCTS[BUILDINGS[j["building"]]["output"]][1],
+            "ready_at": j["ready_at"], "ready": now >= int(j["ready_at"]),
+            "ready_in": max(0, int(j["ready_at"]) - now),
+        } for j in jobs],
+        "guild": guild_info(conn, uid),
+        "guilds": list_guilds(conn),
+        "config_v2": {
+            "gem_to_coins": GEM_TO_COINS,
+            "gem_convert_max_day": GEM_CONVERT_MAX_DAY,
+            "fish_cooldown": FISH_COOLDOWN_SECS,
+            "mine_cooldown": MINE_COOLDOWN_SECS,
+            "guild_create_cost": GUILD_CREATE_COST,
+            "guild_goal": GUILD_GOAL_POINTS,
+            "guild_reward_gems": GUILD_REWARD_GEMS,
+            "tournament_min_points": TOURNAMENT_MIN_POINTS,
+            "crop_unlock": CROP_UNLOCK,
+            "animal_unlock": ANIMAL_UNLOCK,
+            "skill_branches": {k: {"name": v[0], "emoji": v[1],
+                                    "max": SKILL_MAX}
+                               for k, v in SKILL_BRANCHES.items()},
         },
         "plots": plots,
         "animals": animals,
@@ -621,6 +1041,11 @@ def do_action(conn: sqlite3.Connection, user: dict, body: dict) -> dict:
         qty = int(body.get("qty", 1) or 1)
         if crop not in CROPS or qty < 1 or qty > 100:
             return {"error": "invalid_values"}
+        if crop == "melon":
+            # v2: benih Melon Emas tidak dijual — hanya dari mutasi panen
+            return {"error": "not_for_sale"}
+        if level_from_xp(int(row["xp"])) < CROP_UNLOCK.get(crop, 1):
+            return {"error": "level_locked"}
         cost = CROPS[crop][2] * qty
         if row["coins"] < cost:
             return {"error": "insufficient_coins"}
@@ -636,6 +1061,8 @@ def do_action(conn: sqlite3.Connection, user: dict, body: dict) -> dict:
         kind = str(body.get("kind", ""))
         if kind not in ANIMALS:
             return {"error": "invalid_values"}
+        if level_from_xp(int(row["xp"])) < ANIMAL_UNLOCK.get(kind, 1):
+            return {"error": "level_locked"}
         price = ANIMALS[kind][2]
         if row["coins"] < price:
             return {"error": "insufficient_coins"}
@@ -695,7 +1122,8 @@ def do_action(conn: sqlite3.Connection, user: dict, body: dict) -> dict:
     if action == "sell":  # jual ke Pasar NPC
         item = str(body.get("item", ""))
         qty = int(body.get("qty", 0) or 0)
-        if item not in CROPS and item not in ANIMAL_PRODUCTS:
+        if (item not in CROPS and item not in ANIMAL_PRODUCTS
+                and item not in PRODUCTS):
             return {"error": "invalid_values"}
         if qty < 1 or qty > MAX_SELL_QTY:
             return {"error": "invalid_values"}
@@ -703,6 +1131,10 @@ def do_action(conn: sqlite3.Connection, user: dict, body: dict) -> dict:
         if inv.get(item, 0) < qty:
             return {"error": "insufficient_item"}
         price = market_price(item)["price"]
+        # v2: skill Dagang +5% harga jual per level
+        dagang = skill_level(_json_loads(row["skills"], {}), "dagang")
+        if dagang:
+            price = round(price * (1 + 0.05 * dagang))
         total = price * qty
         if total > MAX_COINS_DELTA_PER_ACTION * 20:
             return {"error": "values_too_large"}
@@ -712,6 +1144,7 @@ def do_action(conn: sqlite3.Connection, user: dict, body: dict) -> dict:
                      (json.dumps(inv), total, qty, uid))
         conn.commit()
         bump_mission(conn, uid, "jual", qty)
+        bump_season(conn, uid, 1)  # v2: jual = +1 poin musim
         return {"ok": True, "state": build_state(conn, user),
                 "message": f"Terjual {qty}x {item} — +{total:,} Koin! 🪙"}
 
@@ -719,7 +1152,8 @@ def do_action(conn: sqlite3.Connection, user: dict, body: dict) -> dict:
         item = str(body.get("item", ""))
         qty = int(body.get("qty", 0) or 0)
         price_each = int(body.get("price_each", 0) or 0)
-        if item not in CROPS and item not in ANIMAL_PRODUCTS:
+        if (item not in CROPS and item not in ANIMAL_PRODUCTS
+                and item not in PRODUCTS):
             return {"error": "invalid_values"}
         if qty < 1 or price_each < 1 or price_each > 100_000:
             return {"error": "invalid_values"}
@@ -769,9 +1203,12 @@ def do_action(conn: sqlite3.Connection, user: dict, body: dict) -> dict:
     if action == "claim_daily":
         streak = int(row["login_streak"])
         bonus = min(streak, 7) * 100
-        add_xp_coins(conn, uid, xp=20, coins=bonus)
-        return {"ok": True, "state": build_state(conn, user),
-                "message": f"Bonus login hari ke-{streak}: +{bonus} Koin, +20 XP! 🎁"}
+        gems = 2 if streak >= 7 else 0  # v2: streak 7 hari -> +2 Permata
+        add_xp_coins(conn, uid, xp=20, coins=bonus, gems=gems)
+        msg = f"Bonus login hari ke-{streak}: +{bonus} Koin, +20 XP! 🎁"
+        if gems:
+            msg += f" +{gems} 💎 Permata Panen!"
+        return {"ok": True, "state": build_state(conn, user), "message": msg}
 
     if action == "claim_mission":
         mid = str(body.get("mission_id", ""))
@@ -788,9 +1225,311 @@ def do_action(conn: sqlite3.Connection, user: dict, body: dict) -> dict:
         return {"ok": True, "state": build_state(conn, user),
                 "message": f"Misi selesai! +{m['reward']} Koin, +30 XP! ✅"}
 
+    # ==================== v2: bangunan produksi ====================
+    if action == "buy_building":
+        kind = str(body.get("kind", ""))
+        if kind not in BUILDINGS:
+            return {"error": "invalid_values"}
+        b = BUILDINGS[kind]
+        if level_from_xp(int(row["xp"])) < b["min_level"]:
+            return {"error": "level_locked"}
+        if conn.execute("SELECT 1 FROM buildings WHERE user_id = ? AND kind = ?",
+                        (uid, kind)).fetchone():
+            return {"error": "already_owned"}
+        if row["coins"] < b["price"]:
+            return {"error": "insufficient_coins"}
+        conn.execute("UPDATE users SET coins = coins - ? WHERE user_id = ?",
+                     (b["price"], uid))
+        conn.execute("INSERT INTO buildings (user_id, kind, level, created_at)"
+                     " VALUES (?, ?, 1, ?)", (uid, kind, now_ts()))
+        conn.commit()
+        return {"ok": True, "state": build_state(conn, user),
+                "message": f"{b['emoji']} {b['name']} dibangun! 🏭"}
+
+    if action == "upgrade_building":
+        kind = str(body.get("kind", ""))
+        if kind not in BUILDINGS:
+            return {"error": "invalid_values"}
+        brow = conn.execute("SELECT level FROM buildings WHERE user_id = ?"
+                            " AND kind = ?", (uid, kind)).fetchone()
+        if not brow:
+            return {"error": "not_owned"}
+        if brow["level"] >= BUILDING_MAX_LEVEL:
+            return {"error": "max_level"}
+        cost = BUILDINGS[kind]["price"] // 2
+        if row["coins"] < cost:
+            return {"error": "insufficient_coins"}
+        conn.execute("UPDATE users SET coins = coins - ? WHERE user_id = ?",
+                     (cost, uid))
+        conn.execute("UPDATE buildings SET level = level + 1"
+                     " WHERE user_id = ? AND kind = ?", (uid, kind))
+        conn.commit()
+        return {"ok": True, "state": build_state(conn, user),
+                "message": f"{BUILDINGS[kind]['name']} naik ke Level"
+                           f" {brow['level'] + 1}! Kapasitas job +1. 🏭"}
+
+    if action == "start_production":
+        kind = str(body.get("kind", ""))
+        if kind not in BUILDINGS:
+            return {"error": "invalid_values"}
+        b = BUILDINGS[kind]
+        brow = conn.execute("SELECT level FROM buildings WHERE user_id = ?"
+                            " AND kind = ?", (uid, kind)).fetchone()
+        if not brow:
+            return {"error": "not_owned"}
+        running = conn.execute(
+            "SELECT COUNT(*) FROM production_jobs WHERE user_id = ?"
+            " AND building = ? AND status = 'running'",
+            (uid, kind)).fetchone()[0]
+        if running >= brow["level"]:
+            return {"error": "no_capacity"}
+        inv = _json_loads(row["inventory"], {})
+        for item, need in b["recipe"].items():
+            if inv.get(item, 0) < need:
+                return {"error": "insufficient_item"}
+        for item, need in b["recipe"].items():
+            inv[item] -= need
+        conn.execute("UPDATE users SET inventory = ? WHERE user_id = ?",
+                     (json.dumps(inv), uid))
+        # v2: skill Produksi -10% waktu per level
+        prod_skill = skill_level(_json_loads(row["skills"], {}), "produksi")
+        secs = int(b["time"] * (1 - 0.10 * prod_skill))
+        conn.execute(
+            "INSERT INTO production_jobs (user_id, building, recipe, qty,"
+            " started_at, ready_at) VALUES (?, ?, ?, ?, ?, ?)",
+            (uid, kind, json.dumps(b["recipe"]), b["output_qty"],
+             now_ts(), now_ts() + secs))
+        conn.commit()
+        return {"ok": True, "state": build_state(conn, user),
+                "message": f"Produksi {PRODUCTS[b['output']][1]}"
+                           f" {PRODUCTS[b['output']][0]} dimulai"
+                           f" — siap {secs // 60} menit lagi! 🏭"}
+
+    if action == "collect_production":
+        try:
+            jid = int(body.get("job_id", 0) or 0)
+        except (TypeError, ValueError):
+            return {"error": "invalid_values"}
+        job = conn.execute(
+            "SELECT * FROM production_jobs WHERE id = ? AND user_id = ?"
+            " AND status = 'running'", (jid, uid)).fetchone()
+        if not job:
+            return {"error": "not_found"}
+        if now_ts() < int(job["ready_at"]):
+            return {"error": "not_ready"}
+        b = BUILDINGS[job["building"]]
+        inv = _json_loads(row["inventory"], {})
+        inv[b["output"]] = inv.get(b["output"], 0) + int(job["qty"])
+        conn.execute("UPDATE users SET inventory = ?,"
+                     " produce_count = produce_count + 1,"
+                     " total_produced = total_produced + ? WHERE user_id = ?",
+                     (json.dumps(inv), int(job["qty"]), uid))
+        conn.execute("UPDATE production_jobs SET status = 'done' WHERE id = ?",
+                     (jid,))
+        conn.commit()
+        bump_mission(conn, uid, "produksi", 1)
+        bump_season(conn, uid, 3)  # v2: produksi selesai = +3 poin musim
+        add_xp_coins(conn, uid, xp=25)
+        return {"ok": True, "state": build_state(conn, user),
+                "message": f"Produksi selesai! +{job['qty']}x"
+                           f" {PRODUCTS[b['output']][1]}"
+                           f" {PRODUCTS[b['output']][0]} (+25 XP) 🏭"}
+
+    # ==================== v2: skill tree ====================
+    if action == "learn_skill":
+        branch = str(body.get("branch", ""))
+        if branch not in SKILL_BRANCHES:
+            return {"error": "invalid_values"}
+        skills = _json_loads(row["skills"], {})
+        if skill_level(skills, branch) >= SKILL_MAX:
+            return {"error": "max_level"}
+        if int(row["skill_points"]) < 1:
+            return {"error": "no_skill_points"}
+        skills[branch] = skill_level(skills, branch) + 1
+        conn.execute("UPDATE users SET skills = ?, skill_points = skill_points - 1"
+                     " WHERE user_id = ?", (json.dumps(skills), uid))
+        conn.commit()
+        return {"ok": True, "state": build_state(conn, user),
+                "message": f"Skill {SKILL_BRANCHES[branch][1]}"
+                           f" {SKILL_BRANCHES[branch][0]} naik ke"
+                           f" Level {skills[branch]}! ⭐"}
+
+    # ==================== v2: Permata Panen ====================
+    if action == "convert_gems":
+        try:
+            n = int(body.get("gems", 0) or 0)
+        except (TypeError, ValueError):
+            return {"error": "invalid_values"}
+        if n < 1 or n > GEM_CONVERT_MAX_DAY:
+            return {"error": "invalid_values"}
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        converted = 0
+        if row["gems_convert_day"] == today:
+            converted = int(row["gems_converted_today"] or 0)
+        if converted + n > GEM_CONVERT_MAX_DAY:
+            return {"error": "daily_limit"}
+        if int(row["gems"]) < n:
+            return {"error": "insufficient_gems"}
+        conn.execute(
+            "UPDATE users SET gems = gems - ?, coins = coins + ?,"
+            " gems_converted_today = ?, gems_convert_day = ?"
+            " WHERE user_id = ?",
+            (n, n * GEM_TO_COINS, converted + n, today, uid))
+        conn.commit()
+        return {"ok": True, "state": build_state(conn, user),
+                "message": f"Tukar {n} 💎 jadi +{n * GEM_TO_COINS:,} Koin! 💱"}
+
+    # ==================== v2: achievement ====================
+    if action == "claim_achievement":
+        try:
+            aid = int(body.get("ach_id", 0) or 0)
+        except (TypeError, ValueError):
+            return {"error": "invalid_values"}
+        ach = next((a for a in ACHIEVEMENTS_V2 if a[0] == aid), None)
+        if not ach:
+            return {"error": "invalid_values"}
+        _id, _t, _d, kind, target, coins, gems = ach
+        prog = achievement_progress(conn, row)
+        if prog.get(kind, 0) < target:
+            return {"error": "not_done"}
+        if conn.execute("SELECT 1 FROM achievements_claimed"
+                        " WHERE user_id = ? AND ach_id = ?",
+                        (uid, aid)).fetchone():
+            return {"error": "already_claimed"}
+        conn.execute("INSERT INTO achievements_claimed"
+                     " (user_id, ach_id, claimed_at) VALUES (?, ?, ?)",
+                     (uid, aid, now_ts()))
+        add_xp_coins(conn, uid, coins=coins, gems=gems)
+        conn.commit()
+        return {"ok": True, "state": build_state(conn, user),
+                "message": f"Achievement '{_t}' diklaim! +{coins:,} Koin"
+                           + (f" +{gems} 💎" if gems else "") + " 🏆"}
+
+    # ==================== v2: guild ====================
+    if action == "create_guild":
+        name = str(body.get("name", "") or "").strip()
+        if len(name) < 3 or len(name) > 20:
+            return {"error": "invalid_values"}
+        if int(row["guild_id"] or 0) > 0:
+            return {"error": "already_in_guild"}
+        if row["coins"] < GUILD_CREATE_COST:
+            return {"error": "insufficient_coins"}
+        if conn.execute("SELECT 1 FROM guilds WHERE name = ?",
+                        (name,)).fetchone():
+            return {"error": "name_taken"}
+        conn.execute("UPDATE users SET coins = coins - ? WHERE user_id = ?",
+                     (GUILD_CREATE_COST, uid))
+        cur = conn.execute(
+            "INSERT INTO guilds (name, leader_id, created_at)"
+            " VALUES (?, ?, ?)", (name, uid, now_ts()))
+        gid = cur.lastrowid
+        conn.execute("INSERT INTO guild_members (guild_id, user_id, joined_at)"
+                     " VALUES (?, ?, ?)", (gid, uid, now_ts()))
+        conn.execute("UPDATE users SET guild_id = ? WHERE user_id = ?",
+                     (gid, uid))
+        conn.commit()
+        return {"ok": True, "state": build_state(conn, user),
+                "message": f"Guild '{name}' dibuat! Kamu jadi leader. 🤝"}
+
+    if action == "join_guild":
+        try:
+            gid = int(body.get("guild_id", 0) or 0)
+        except (TypeError, ValueError):
+            return {"error": "invalid_values"}
+        if int(row["guild_id"] or 0) > 0:
+            return {"error": "already_in_guild"}
+        g = conn.execute("SELECT id FROM guilds WHERE id = ?",
+                         (gid,)).fetchone()
+        if not g:
+            return {"error": "not_found"}
+        count = conn.execute("SELECT COUNT(*) FROM guild_members"
+                             " WHERE guild_id = ?", (gid,)).fetchone()[0]
+        if count >= GUILD_MAX_MEMBERS:
+            return {"error": "guild_full"}
+        conn.execute("INSERT INTO guild_members (guild_id, user_id, joined_at)"
+                     " VALUES (?, ?, ?)", (gid, uid, now_ts()))
+        conn.execute("UPDATE users SET guild_id = ? WHERE user_id = ?",
+                     (gid, uid))
+        conn.commit()
+        return {"ok": True, "state": build_state(conn, user),
+                "message": "Kamu bergabung dengan guild! 🤝"}
+
+    if action == "leave_guild":
+        gid = int(row["guild_id"] or 0)
+        if not gid:
+            return {"error": "not_in_guild"}
+        g = conn.execute("SELECT leader_id FROM guilds WHERE id = ?",
+                         (gid,)).fetchone()
+        conn.execute("DELETE FROM guild_members WHERE guild_id = ?"
+                     " AND user_id = ?", (gid, uid))
+        conn.execute("UPDATE users SET guild_id = 0 WHERE user_id = ?",
+                     (uid,))
+        # Kalau leader keluar dan guild kosong, hapus guild-nya
+        left = conn.execute("SELECT COUNT(*) FROM guild_members"
+                            " WHERE guild_id = ?", (gid,)).fetchone()[0]
+        if left == 0:
+            conn.execute("DELETE FROM guilds WHERE id = ?", (gid,))
+        elif g and int(g["leader_id"]) == uid:
+            # serahkan leader ke anggota paling lama
+            nxt = conn.execute("SELECT user_id FROM guild_members"
+                               " WHERE guild_id = ? ORDER BY joined_at ASC"
+                               " LIMIT 1", (gid,)).fetchone()
+            if nxt:
+                conn.execute("UPDATE guilds SET leader_id = ? WHERE id = ?",
+                             (nxt["user_id"], gid))
+        conn.commit()
+        return {"ok": True, "state": build_state(conn, user),
+                "message": "Kamu keluar dari guild."}
+
+    if action == "claim_guild_reward":
+        info = guild_info(conn, uid)
+        if not info:
+            return {"error": "not_in_guild"}
+        if not info["goal_reached"]:
+            return {"error": "goal_not_reached"}
+        if info["reward_claimed_this_week"]:
+            return {"error": "already_claimed"}
+        week = season_now()["week"]
+        conn.execute("UPDATE guild_members SET claimed_week = ?"
+                     " WHERE guild_id = ? AND user_id = ?",
+                     (week, info["id"], uid))
+        add_xp_coins(conn, uid, gems=GUILD_REWARD_GEMS)
+        conn.commit()
+        return {"ok": True, "state": build_state(conn, user),
+                "message": f"Tujuan guild tercapai! +{GUILD_REWARD_GEMS} 💎"
+                           " untuk semua anggota! 🤝"}
+
+    # ==================== v2: turnamen musim ====================
+    if action == "claim_season_reward":
+        ensure_season(conn, uid, row)
+        row = conn.execute("SELECT * FROM users WHERE user_id = ?",
+                           (uid,)).fetchone()
+        week = season_now()["week"]
+        if int(row["claimed_season"]) == week:
+            return {"error": "already_claimed"}
+        pts = int(row["season_points"])
+        if pts < TOURNAMENT_MIN_POINTS:
+            return {"error": "not_enough_points"}
+        rank = season_rank(conn, uid) or 999
+        if rank == 1:
+            gems = 50
+        elif rank <= 3:
+            gems = 30
+        elif rank <= 10:
+            gems = 15
+        else:
+            gems = 5
+        conn.execute("UPDATE users SET claimed_season = ? WHERE user_id = ?",
+                     (week, uid))
+        add_xp_coins(conn, uid, gems=gems)
+        conn.commit()
+        return {"ok": True, "state": build_state(conn, user),
+                "message": f"Hadiah turnamen musim: peringkat #{rank}"
+                           f" ({pts} poin) — +{gems} 💎! 🏆"}
+
     # --- Aksi pakai energi: tanam/siram/pupuk/panen/usir hama/hewan ---
     if action in ("plant", "water", "fertilize", "harvest", "pest",
-                  "feed_animal", "collect_animal"):
+                  "feed_animal", "collect_animal", "fish", "mine"):
         ok, row = spend_energy(conn, row)
         if not ok:
             return {"error": "no_energy"}
@@ -817,6 +1556,8 @@ def _energy_action(conn, user, row, action, body) -> dict:
         crop = str(body.get("crop", ""))
         if crop not in CROPS:
             return {"error": "invalid_values"}
+        if level_from_xp(int(row["xp"])) < CROP_UNLOCK.get(crop, 1):
+            return {"error": "level_locked"}
         if plot["crop"]:
             return {"error": "plot_occupied"}
         seeds = _json_loads(row["seeds"], {})
@@ -885,22 +1626,45 @@ def _energy_action(conn, user, row, action, body) -> dict:
         qty *= mult
         if w["kind"] == "badai" and random.random() < 0.10:
             qty = max(1, qty // 2)  # badai merusak sebagian panen
+        # v2: skill Bertani +1 hasil per 2 level; Musim Panen +10% hasil
+        skills = _json_loads(row["skills"], {})
+        qty += skill_level(skills, "bertani") // 2
+        if season_now()["kind"] == "panen":
+            qty = max(1, round(qty * 1.10))
         name, emoji, _s, _g, _y, xp, _b = CROPS[plot["crop"]]
         inv = _json_loads(row["inventory"], {})
         inv[plot["crop"]] = inv.get(plot["crop"], 0) + qty
+        extra_msg = ""
+        # v2: mutasi — 4% dapat benih Melon Emas, 0,5% Panen Legendaris (+1 💎)
+        if random.random() < MUTATION_CHANCE:
+            seeds = _json_loads(row["seeds"], {})
+            seeds["melon"] = seeds.get("melon", 0) + 1
+            conn.execute("UPDATE users SET seeds = ? WHERE user_id = ?",
+                         (json.dumps(seeds), uid))
+            extra_msg += " 🍈 Mutasi! Dapat 1 Benih Melon Emas!"
+        legendary = False
+        if random.random() < LEGENDARY_CHANCE:
+            legendary = True
+            extra_msg += " ✨ PANEN LEGENDARIS! +1 💎 Permata Panen!"
+        melon_bonus = 1 if plot["crop"] == "melon" else 0
         conn.execute(
-            "UPDATE users SET inventory = ?, xp = xp + ?,"
-            " total_harvest = total_harvest + 1 WHERE user_id = ?",
-            (json.dumps(inv), xp, uid))
+            "UPDATE users SET inventory = ?, total_harvest = total_harvest + 1,"
+            " melon_harvest = melon_harvest + ? WHERE user_id = ?",
+            (json.dumps(inv), melon_bonus, uid))
         conn.execute(
             "UPDATE plots SET crop = NULL, planted_at = 0, water_count = 0,"
             " fertilized = 0, pest_at = 0, pest_damage = 0,"
             " speed_boost_until = 0 WHERE user_id = ? AND idx = ?",
             (uid, idx))
         conn.commit()
+        # XP lewat add_xp_coins supaya naik level memberi poin skill (v2)
+        # dan bonus guild +5% XP ikut jalan; Permata legendaris juga di sini.
+        add_xp_coins(conn, uid, xp=xp, gems=1 if legendary else 0)
         bump_mission(conn, uid, "panen", 1)
+        bump_season(conn, uid, 1)  # v2: panen = +1 poin musim
         return {"ok": True, "state": build_state(conn, user),
-                "message": f"Panen {qty}x {emoji} {name}! +{xp} XP 🧺"}
+                "message": f"Panen {qty}x {emoji} {name}! +{xp} XP 🧺"
+                           + extra_msg}
 
     if action == "pest":
         if not plot["pest_at"]:
@@ -949,9 +1713,60 @@ def _energy_action(conn, user, row, action, body) -> dict:
         conn.commit()
         bump_mission(conn, uid, "hewan", 1)
         add_xp_coins(conn, uid, xp=10)
+        _pm = ANIMAL_PRODUCTS.get(product) or PRODUCTS.get(product)
         return {"ok": True, "state": build_state(conn, user),
-                "message": f"Kumpulkan 1x {ANIMAL_PRODUCTS[product][1]}"
-                           f" {ANIMAL_PRODUCTS[product][0]}! +10 XP"}
+                "message": f"Kumpulkan 1x {_pm[1]} {_pm[0]}! +10 XP"}
+
+    # --- v2: memancing & menambang (cooldown server-side, hadiah acak) ---
+    if action in ("fish", "mine"):
+        skills = _json_loads(row["skills"], {})
+        jel = skill_level(skills, "jelajah")
+        season = season_now()
+        cd = FISH_COOLDOWN_SECS if action == "fish" else MINE_COOLDOWN_SECS
+        cd = int(cd * (1 - 0.10 * jel))
+        if season["kind"] == "panas":
+            cd = int(cd * 0.75)
+        last_col = "last_fish_at" if action == "fish" else "last_mine_at"
+        last = int(row[last_col] or 0)
+        if now - last < cd:
+            return {"error": "cooldown"}
+        inv = _json_loads(row["inventory"], {})
+        gems = 0
+        if action == "fish":
+            qty = random.randint(1, 3)
+            qty = max(1, round(qty * (1 + 0.10 * jel)))
+            if random.random() < 0.10:
+                item, got = "ikan_emas", 1
+                msg = f"Mancing dapat {qty}x 🐟 Ikan + 1x ✨ Ikan Emas! 🎣"
+            else:
+                item, got = "ikan", qty
+                msg = f"Mancing dapat {qty}x 🐟 Ikan! 🎣"
+            inv[item] = inv.get(item, 0) + got
+            count_col, mission_kind = "fish_count", "ikan"
+        else:
+            qty = random.randint(1, 3)
+            qty = max(1, round(qty * (1 + 0.10 * jel)))
+            if random.random() < 0.02:
+                gems = 1
+                msg = f"Menambang dapat {qty}x 🪨 Batu + 1 💎 Permata! ⛏️"
+                inv["batu"] = inv.get("batu", 0) + qty
+            elif random.random() < 0.15:
+                msg = f"Menambang dapat 1x ⛏️ Bijih Emas! ⛏️"
+                inv["bijih_emas"] = inv.get("bijih_emas", 0) + 1
+            else:
+                msg = f"Menambang dapat {qty}x 🪨 Batu! ⛏️"
+                inv["batu"] = inv.get("batu", 0) + qty
+            count_col, mission_kind = "mine_count", "tambang"
+        conn.execute(
+            f"UPDATE users SET inventory = ?, {last_col} = ?,"
+            f" {count_col} = {count_col} + 1 WHERE user_id = ?",
+            (json.dumps(inv), now, uid))
+        conn.commit()
+        add_xp_coins(conn, uid, xp=15, gems=gems)
+        bump_mission(conn, uid, mission_kind, 1)
+        bump_season(conn, uid, 2)  # v2: mancing/menambang = +2 poin musim
+        return {"ok": True, "state": build_state(conn, user),
+                "message": msg + " (+15 XP)"}
 
     return {"error": "unknown_action"}
 
@@ -1282,12 +2097,27 @@ class ApiHandler(BaseHTTPRequestHandler):
                 limit = 20
             self._send_json(200, top_players(limit))
         elif path == "/api/market":
-            items = list(CROPS) + list(ANIMAL_PRODUCTS)
+            items = list(CROPS) + list(ANIMAL_PRODUCTS) + list(PRODUCTS)
             self._send_json(200, {"ok": True,
                                   "market": {it: market_price(it)
                                              for it in items},
                                   "weather": weather_now(),
                                   "event": event_now()})
+        elif path == "/api/guilds":  # v2
+            conn = db()
+            try:
+                self._send_json(200, {"ok": True,
+                                      "guilds": list_guilds(conn)})
+            finally:
+                conn.close()
+        elif path == "/api/season":  # v2
+            conn = db()
+            try:
+                self._send_json(200, {"ok": True,
+                                      "season": season_now(),
+                                      "top": season_leaderboard(conn, 20)})
+            finally:
+                conn.close()
         elif path == "/api/withdrawals/admin":
             result = list_withdrawals_admin(query.get("key", [""])[0])
             if result is None:
@@ -1388,9 +2218,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         f"Halo {user.first_name}! 👋\n\n"
         "Selamat datang di *Harvest Farm — Kebun Kripto* 🌾\n\n"
         "🌱 Tanam benih, siram, panen\n"
-        "🐔 Pelihara ayam, kambing & sapi\n"
-        "🛒 Jual hasil panen di pasar (harga naik-turun!)\n"
-        "🤝 Jual-beli dengan pemain lain\n"
+        "🐔 Pelihara ayam, kambing, sapi & domba\n"
+        "🏭 Olah hasil panen jadi Roti, Keju & Saus\n"
+        "🎣 Mancing & ⛏️ menambang — cari Permata Panen 💎\n"
+        "🤝 Gabung guild & menangkan turnamen mingguan\n"
         "🪙 Kumpulkan Koin Panen, tarik jadi DOGE via FaucetPay\n\n"
         "Kurs: 200.000 Koin = 0,01 DOGE • Min WD Level 5"
     )
@@ -1407,9 +2238,12 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         "4. Usir hama sebelum hasil panen berkurang!\n"
         "5. Panen, lalu jual di Pasar NPC saat harga tinggi,\n"
         "   atau pasang jualan sendiri di Pasar Pemain.\n"
-        "6. Beli hewan, beri pakan, kumpulkan telur/susu.\n"
+        "6. Beli hewan, beri pakan, kumpulkan telur/susu/wol.\n"
         "7. Nonton iklan AdGram buat +20 Energi.\n"
-        "8. Di Dompet, tarik Koin jadi DOGE via FaucetPay.\n\n"
+        "8. Di Dompet, tarik Koin jadi DOGE via FaucetPay.\n"
+        "9. v2: bangun Toko Roti / Pabrik Susu / Dapur Saus di tab Produksi,\n"
+        "   mancing & menambang tiap 30 menit, gabung guild, dan rebut\n"
+        "   hadiah turnamen mingguan (Permata Panen 💎).\n\n"
         "Perintah: /start /help /saldo"
     )
 
@@ -1418,7 +2252,8 @@ async def saldo_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     conn = db()
     try:
         row = conn.execute(
-            "SELECT coins, xp, energy, login_streak FROM users"
+            "SELECT coins, gems, xp, energy, login_streak, skill_points,"
+            " season_points FROM users"
             " WHERE user_id = ?", (update.effective_user.id,)).fetchone()
     finally:
         conn.close()
@@ -1430,7 +2265,9 @@ async def saldo_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(
         f"💰 Saldo Harvest Farm\n\n"
         f"🪙 Koin: *{row['coins']:,}*\n"
+        f"💎 Permata Panen: *{row['gems']:,}* (1 💎 = 500 Koin)\n"
         f"⭐ Level {level} ({row['xp']:,} XP)\n"
+        f"🎯 Poin skill: {row['skill_points']} • Poin musim: {row['season_points']}\n"
         f"⚡ Energi: {row['energy']}/{ENERGY_MAX}\n"
         f"🔥 Streak login: {row['login_streak']} hari\n\n"
         f"Kurs WD: {COINS_PER_UNIT:,} Koin = {DOGE_PER_UNIT} DOGE"

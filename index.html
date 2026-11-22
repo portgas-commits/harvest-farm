@@ -106,9 +106,14 @@
   <h1>🌾 Harvest Farm — Kebun Kripto</h1>
   <p>Tanam • Panen • Jual • Tukar jadi DOGE 🐶</p>
   <div class="hud">
-    <div class="chip"><b id="hud-coins">🪙 —</b><span>Koin Panen</span></div>
+    <div class="chip"><b id="hud-coins">🪙 —</b><span>Koin Panen</span><small id="hud-gems">💎 —</small></div>
     <div class="chip"><b id="hud-level">Level —</b><span id="hud-xp">XP —</span></div>
     <div class="chip"><b id="hud-energy">⚡ —/50</b><span>Energi</span><small id="hud-regen">regen 1 / 2 mnt</small></div>
+  </div>
+  <div class="hud" style="margin-top:6px">
+    <div class="chip"><b id="hud-season">🌸 —</b><span id="hud-season-bonus">Musim</span></div>
+    <div class="chip"><b id="hud-skill">⭐ — poin skill</b><span>Skill Tree (tab Misi)</span></div>
+    <div class="chip"><b id="hud-tourney">🏆 — poin</b><span>Turnamen Mingguan</span></div>
   </div>
 </header>
 
@@ -210,12 +215,61 @@
     </div>
   </section>
 
+  <!-- ============ PRODUKSI (v2) ============ -->
+  <section class="tab" id="tab-produksi">
+    <div class="card">
+      <h2>🏭 Bangunan Produksi</h2>
+      <p class="muted">Olah hasil panen jadi produk yang lebih mahal. Bangunan butuh Level tertentu &amp; Koin.</p>
+      <div id="building-list"></div>
+    </div>
+    <div class="card">
+      <h2>⚙️ Produksi Berjalan</h2>
+      <div id="job-list"></div>
+    </div>
+    <div class="card">
+      <h2>🎣 Memancing &amp; ⛏️ Menambang</h2>
+      <p class="muted">Cooldown 30 menit (lebih cepat dengan skill Jelajah &amp; Musim Panas). Hadiah acak — kadang dapat Permata Panen 💎!</p>
+      <div class="row">
+        <button class="btn blue" id="btn-fish" style="flex:1">🎣 Mancing</button>
+        <button class="btn gold" id="btn-mine" style="flex:1">⛏️ Menambang</button>
+      </div>
+      <p class="muted" id="gather-status" style="margin:8px 0 0"></p>
+    </div>
+  </section>
+
+  <!-- ============ GUILD (v2) ============ -->
+  <section class="tab" id="tab-guild">
+    <div class="card">
+      <h2>🤝 Guild-ku</h2>
+      <div id="my-guild"></div>
+    </div>
+    <div class="card">
+      <h2>🏰 Buat Guild</h2>
+      <p class="muted">Biaya 1.000 Koin. Nama 3–20 karakter.</p>
+      <input type="text" id="guild-name" placeholder="Nama guild, contoh: Tani Makmur" maxlength="20">
+      <button class="btn gold block" id="btn-create-guild">🏰 Buat Guild (1.000 🪙)</button>
+    </div>
+    <div class="card">
+      <h2>🔍 Daftar Guild</h2>
+      <div id="guild-list"></div>
+    </div>
+  </section>
+
   <!-- ============ MISI ============ -->
   <section class="tab" id="tab-misi">
     <div class="card">
       <h2>🎁 Bonus Login Harian</h2>
-      <p class="muted">Streak <b id="streak-text">—</b> hari • Klaim 1x sehari, jangan sampai putus!</p>
+      <p class="muted">Streak <b id="streak-text">—</b> hari • Klaim 1x sehari, jangan sampai putus! Streak 7 hari = +2 💎</p>
       <button class="btn gold block" id="btn-claim-daily">🎁 Klaim Bonus Harian</button>
+    </div>
+    <div class="card">
+      <h2>🌸 Musim &amp; Turnamen Mingguan</h2>
+      <div id="season-card"></div>
+    </div>
+    <div class="card">
+      <h2>⭐ Skill Tree</h2>
+      <p class="muted">Dapat 1 poin skill tiap naik level. Efek langsung terasa di kebun, produksi &amp; pasar.</p>
+      <div id="skill-list"></div>
     </div>
     <div class="card">
       <h2>🎯 Misi Harian</h2>
@@ -223,6 +277,8 @@
     </div>
     <div class="card">
       <h2>🏆 Achievement</h2>
+      <div id="achievements-v2"></div>
+      <h3>Statistik</h3>
       <div id="achievements" class="kvs"></div>
     </div>
   </section>
@@ -240,8 +296,16 @@
       <p style="font-size:13px;line-height:1.6;background:#fff8e1;border:1px solid #ffe082;border-radius:12px;padding:10px">
         💱 <b>Kurs: 200.000 Koin Panen = 0,01 DOGE</b><br>
         ✅ Min. withdraw: <b>200.000 Koin</b> &nbsp;•&nbsp; Min. Level: <b>5</b><br>
-        ⏳ Maks. <b>1x per 7 hari</b> &nbsp;•&nbsp; Dibayar ke FaucetPay (email / username).
+        ⏳ Maks. <b>1x per 7 hari</b> &nbsp;•&nbsp; Dibayar ke FaucetPay (email / username).<br>
+        💎 Permata Panen: <b id="wallet-gems">—</b> • Kurs tukar: <b>1 💎 = 500 Koin</b> (maks 50 💎/hari)
       </p>
+    </div>
+    <div class="card">
+      <h2>💎 Tukar Permata → Koin</h2>
+      <label>Jumlah Permata (maks 50/hari)</label>
+      <input type="number" id="gem-qty" min="1" max="50" value="1" inputmode="numeric">
+      <p class="muted" id="gem-preview">≈ 500 Koin</p>
+      <button class="btn blue block" id="btn-convert-gems">💱 Tukar Permata</button>
     </div>
     <div class="card">
       <h2>💸 Tarik DOGE</h2>
@@ -271,7 +335,9 @@
 <nav>
   <button data-tab="kebun" class="active"><span class="ic">🌱</span>Kebun</button>
   <button data-tab="hewan"><span class="ic">🐔</span>Hewan</button>
+  <button data-tab="produksi"><span class="ic">🏭</span>Produksi</button>
   <button data-tab="pasar"><span class="ic">🏪</span>Pasar</button>
+  <button data-tab="guild"><span class="ic">🤝</span>Guild</button>
   <button data-tab="misi"><span class="ic">🎯</span>Misi</button>
   <button data-tab="dompet"><span class="ic">👛</span>Dompet</button>
   <button data-tab="peringkat"><span class="ic">🏆</span>Peringkat</button>
@@ -292,12 +358,19 @@ var CROPS = {
   padi:     {name:'Padi',     emoji:'🌾', grow:1800},
   labu:     {name:'Labu',     emoji:'🎃', grow:3600},
   stroberi: {name:'Stroberi', emoji:'🍓', grow:7200},
-  kopi:     {name:'Kopi',     emoji:'☕', grow:14400}
+  kopi:     {name:'Kopi',     emoji:'☕', grow:14400},
+  melon:    {name:'Melon Emas', emoji:'🍈', grow:7200, shop:false} // v2: benih hanya dari mutasi panen
 };
 var ANIMALS = {
   ayam:    {name:'Ayam',    emoji:'🐔', produce:'telur', produceName:'Telur', every:1800},
   kambing: {name:'Kambing', emoji:'🐐', produce:'susu',  produceName:'Susu',  every:3600},
-  sapi:    {name:'Sapi',    emoji:'🐄', produce:'susu',  produceName:'Susu',  every:7200}
+  sapi:    {name:'Sapi',    emoji:'🐄', produce:'susu',  produceName:'Susu',  every:7200},
+  domba:   {name:'Domba',   emoji:'🐑', produce:'wol',   produceName:'Wol',   every:5400} // v2
+};
+var PRODUCTS = { // v2: produk olahan & hasil mancing/menambang
+  roti:{name:'Roti', emoji:'🍞'}, keju:{name:'Keju', emoji:'🧀'}, saus:{name:'Saus Tomat', emoji:'🥫'},
+  wol:{name:'Wol', emoji:'🧶'}, ikan:{name:'Ikan', emoji:'🐟'}, ikan_emas:{name:'Ikan Emas', emoji:'✨'},
+  batu:{name:'Batu', emoji:'🪨'}, bijih_emas:{name:'Bijih Emas', emoji:'⛏️'}
 };
 var ERR_ID = {
   not_enough_coins:'Koin tidak cukup.', not_enough_energy:'Energi habis. Tunggu regen atau tonton iklan +20 Energi.',
@@ -306,7 +379,15 @@ var ERR_ID = {
   not_enough_item:'Jumlah item di inventaris tidak cukup.', level_too_low:'Level belum cukup (min. Level 5).',
   min_withdraw:'Minimal withdraw 200.000 Koin.', cooldown:'Withdraw hanya 1x per 7 hari. Coba lagi nanti.',
   already_claimed:'Sudah diklaim hari ini.', mission_not_done:'Misi belum selesai.', invalid_destination:'Isi email / username FaucetPay yang benar.',
-  ad_limit:'Batas hadiah iklan hari ini sudah habis.', invalid_action:'Aksi tidak dikenal.', unauthorized:'Sesi tidak valid. Buka lagi dari Telegram.'
+  ad_limit:'Batas hadiah iklan hari ini sudah habis.', invalid_action:'Aksi tidak dikenal.', unauthorized:'Sesi tidak valid. Buka lagi dari Telegram.',
+  level_locked:'Level belum cukup untuk ini. Naik level dulu ya!', not_for_sale:'Item ini tidak dijual — dapat dari mutasi panen.',
+  no_skill_points:'Tidak ada poin skill. Naik level dulu untuk dapat poin skill.', insufficient_gems:'Permata Panen tidak cukup.',
+  daily_limit:'Batas harian sudah habis. Coba lagi besok.', already_in_guild:'Kamu sudah ada di guild.',
+  guild_full:'Guild sudah penuh (20 anggota).', not_in_guild:'Kamu belum gabung guild.',
+  goal_not_reached:'Tujuan guild minggu ini belum tercapai.', not_enough_points:'Poin musim belum cukup (min 50).',
+  not_owned:'Kamu belum punya bangunan ini.', already_owned:'Bangunan ini sudah kamu miliki.',
+  no_capacity:'Kapasitas produksi penuh — ambil hasil dulu atau upgrade bangunan.', max_level:'Sudah level maksimal.',
+  name_taken:'Nama guild sudah dipakai.', cooldown:'Masih cooldown. Tunggu sebentar lagi.'
 };
 function errText(code){ return ERR_ID[code] || ('Terjadi kesalahan: ' + code); }
 
@@ -354,6 +435,7 @@ function toast(msg, isErr){
 function cropMeta(key){ return CROPS[key] || {name:key, emoji:'🌱', grow:300}; }
 function itemMeta(key){
   if (CROPS[key]) return CROPS[key];
+  if (PRODUCTS[key]) return PRODUCTS[key];
   if (key === 'telur') return {name:'Telur', emoji:'🥚'};
   if (key === 'susu') return {name:'Susu', emoji:'🥛'};
   return {name:key, emoji:'📦'};
@@ -401,15 +483,23 @@ function renderEmpty(){
 function renderAll(){
   if (!S) return;
   renderHUD(); renderWeather(); renderGrid(); renderAnimals(); renderMarket(); renderMissions(); renderWallet(); renderSeedPicker();
+  renderProduction(); renderGuild(); renderSeason(); renderSkills(); renderAchievementsV2();
 }
 function renderHUD(){
   var u = S.user || {};
   $('hud-coins').textContent = '🪙 ' + fmt(u.coins);
-  $('hud-level').textContent = 'Level ' + (u.level || 1);
-  $('hud-xp').textContent = 'XP ' + fmt(u.xp || 0);
+  $('hud-gems').textContent = '💎 ' + fmt(u.gems || 0) + ' Permata';
+  $('hud-level').textContent = 'Level ' + (u.level || 1) + (u.max_level ? '/' + u.max_level : '');
+  $('hud-xp').textContent = 'XP ' + fmt(u.xp || 0) + (u.xp_next ? ' / ' + fmt(u.xp_next) : ' (MAX)');
   $('hud-energy').textContent = '⚡ ' + (u.energy != null ? u.energy : '—') + '/' + (u.energy_max || 50);
   $('streak-pill').textContent = '🔥 Streak: ' + (u.login_streak || 0) + ' hari';
   $('ad-status').textContent = 'Iklan hari ini: ' + (u.ad_rewards_today != null ? u.ad_rewards_today : '—') + ' hadiah diklaim';
+  if (S.season) {
+    $('hud-season').textContent = (S.season.emoji || '') + ' ' + S.season.label;
+    $('hud-season-bonus').textContent = S.season.desc || '';
+  }
+  $('hud-skill').textContent = '⭐ ' + (u.skill_points || 0) + ' poin skill';
+  $('hud-tourney').textContent = '🏆 ' + fmt(u.season_points || 0) + ' poin';
 }
 function renderWeather(){
   var w = S.weather, ev = S.event;
@@ -523,11 +613,11 @@ function renderAnimals(){
 function renderMarket(){
   // Toko benih (harga dari market? benih tidak ada di market — tampilkan stok + tombol beli, harga dari backend lewat pesan error/sukses)
   var seeds = S.seeds || {};
-  $('seed-shop').innerHTML = Object.keys(CROPS).map(function(k){
+  $('seed-shop').innerHTML = Object.keys(CROPS).filter(function(k){ return CROPS[k].shop !== false; }).map(function(k){
     var c = CROPS[k];
     return '<div class="price-row"><div><b>' + c.emoji + ' Benih ' + c.name + '</b><div class="muted">Stok kamu: ' + (seeds[k] || 0) + ' • tumbuh ' + fmtSecs(c.grow) + '</div></div>' +
       '<span><button class="btn small" data-buy-seed="' + k + '" data-qty="1">+1</button> <button class="btn gold small" data-buy-seed="' + k + '" data-qty="5">+5</button></span></div>';
-  }).join('');
+  }).join('') + '<p class="muted">🍈 Benih Melon Emas tidak dijual — dapat dari mutasi saat panen (peluang 4%). Stok Melon: ' + (seeds.melon || 0) + '</p>';
   $('seed-shop').querySelectorAll('[data-buy-seed]').forEach(function(b){
     b.addEventListener('click', function(){ doAction('buy_seed', {crop: b.getAttribute('data-buy-seed'), qty: parseInt(b.getAttribute('data-qty'),10)}, '🌱 Benih dibeli!'); });
   });
@@ -603,12 +693,127 @@ function renderMissions(){
     '<div>Hewan Dimiliki<b>' + ((S.animals||[]).length) + ' ekor</b></div>' +
     '<div>Panen Ganda Aktif<b>' + (u.double_next ? '✖️2 Ya' : 'Tidak') + '</b></div>';
 }
+/* ================= v2: PRODUKSI / GUILD / MUSIM / SKILL ================= */
+function renderProduction(){
+  var u = S.user || {};
+  var defs = S.building_defs || {};
+  var owned = S.buildings || {};
+  var inv = S.inventory || {};
+  var html = Object.keys(defs).map(function(k){
+    var d = defs[k];
+    var has = owned[k];
+    var recipeTxt = Object.keys(d.recipe).map(function(it){ return d.recipe[it] + 'x ' + itemMeta(it).emoji + ' ' + itemMeta(it).name; }).join(' + ');
+    var canBuild = (u.level || 1) >= d.min_level;
+    var btn = '';
+    if (!has) {
+      btn = '<button class="btn small" data-build="' + k + '"' + (canBuild ? '' : ' disabled') + '>Bangun — ' + fmt(d.price) + ' 🪙</button>';
+    } else {
+      var cap = has.level;
+      btn = '<span class="pill">Lv ' + cap + ' • kapasitas ' + cap + ' job</span> ' +
+        (cap < 3 ? '<button class="btn gold small" data-upgrade-build="' + k + '">⬆️ Upgrade (' + fmt(Math.floor(d.price/2)) + ' 🪙)</button>' : '<span class="pill">MAX</span>');
+    }
+    return '<div class="price-row"><div><b>' + d.emoji + ' ' + d.name + '</b>' +
+      '<div class="muted">' + recipeTxt + ' → ' + d.output_qty + 'x ' + d.output_emoji + ' ' + d.output_name +
+      ' • ' + fmtSecs(d.time) + ' • Min Lv ' + d.min_level + '</div>' +
+      '<div class="muted">Bahan di inventaris: ' + Object.keys(d.recipe).map(function(it){ return (inv[it]||0) + '/' + d.recipe[it] + ' ' + itemMeta(it).name; }).join(', ') + '</div></div>' +
+      '<div style="text-align:right">' + btn + (has ? '<br><button class="btn small" style="margin-top:6px" data-start-prod="' + k + '">⚙️ Mulai Produksi</button>' : '') + '</div></div>';
+  }).join('');
+  $('building-list').innerHTML = html || '<div class="empty">Belum ada bangunan.</div>';
+  $('building-list').querySelectorAll('[data-build]').forEach(function(b){ b.addEventListener('click', function(){ doAction('buy_building', {kind: b.getAttribute('data-build')}, '🏭 Bangunan dibangun!'); }); });
+  $('building-list').querySelectorAll('[data-upgrade-build]').forEach(function(b){ b.addEventListener('click', function(){ doAction('upgrade_building', {kind: b.getAttribute('data-upgrade-build')}, '🏭 Bangunan di-upgrade!'); }); });
+  $('building-list').querySelectorAll('[data-start-prod]').forEach(function(b){ b.addEventListener('click', function(){ doAction('start_production', {kind: b.getAttribute('data-start-prod')}, '⚙️ Produksi dimulai!'); }); });
+  var jobs = S.production_jobs || [];
+  $('job-list').innerHTML = jobs.length ? jobs.map(function(j){
+    return '<div class="listing"><div class="row between"><b>' + j.building_name + ' → ' + j.qty + 'x ' + j.output_emoji + ' ' + j.output + '</b>' +
+      (j.ready ? '<button class="btn gold small" data-collect-job="' + j.id + '">🧺 Ambil Hasil</button>' : '<span class="pill cd" data-secs="' + j.ready_in + '">' + fmtSecs(j.ready_in) + '</span>') + '</div></div>';
+  }).join('') : '<div class="empty">Tidak ada produksi berjalan. Bangun bangunan dulu, lalu mulai produksi.</div>';
+  $('job-list').querySelectorAll('[data-collect-job]').forEach(function(b){ b.addEventListener('click', function(){ doAction('collect_production', {job_id: b.getAttribute('data-collect-job')}, '🏭 Hasil produksi diambil!'); }); });
+  $('gather-status').textContent = '🎣 Mancing: ' + ((u.fish_cooldown_in || 0) > 0 ? 'tunggu ' + fmtSecs(u.fish_cooldown_in) : 'siap!') +
+    ' • ⛏️ Menambang: ' + ((u.mine_cooldown_in || 0) > 0 ? 'tunggu ' + fmtSecs(u.mine_cooldown_in) : 'siap!') +
+    ' • Total: ' + (u.fish_count || 0) + '× mancing, ' + (u.mine_count || 0) + '× menambang';
+  $('btn-fish').disabled = (u.fish_cooldown_in || 0) > 0;
+  $('btn-mine').disabled = (u.mine_cooldown_in || 0) > 0;
+}
+function renderGuild(){
+  var g = S.guild;
+  var el = $('my-guild');
+  if (!g) {
+    el.innerHTML = '<div class="empty"><div class="big">🤝</div>Belum gabung guild. Buat guild sendiri atau gabung dari daftar di bawah.</div>';
+  } else {
+    var members = (g.members || []).map(function(m){ return m.name + ' (' + m.season_points + ' poin)'; }).join('<br>');
+    el.innerHTML = '<b>🏰 ' + g.name + '</b> <span class="pill">' + g.member_count + '/20 anggota</span>' +
+      '<div class="muted" style="margin:6px 0">Tujuan mingguan: <b>' + g.goal_progress + ' / ' + g.goal + '</b> poin musim anggota</div>' +
+      '<div class="mini-bar"><i style="width:' + Math.min(100, Math.round(g.goal_progress/g.goal*100)) + '%"></i></div>' +
+      '<div style="font-size:13px;margin:8px 0">' + members + '</div>' +
+      '<div class="row"><button class="btn gold small" id="btn-claim-guild" ' + ((g.goal_reached && !g.reward_claimed_this_week) ? '' : 'disabled') + '>🎁 Klaim +' + g.reward_gems + ' 💎</button>' +
+      '<button class="btn ghost small" id="btn-leave-guild">🚪 Keluar Guild</button></div>' +
+      (g.goal_reached ? (g.reward_claimed_this_week ? '<p class="muted">Hadiah minggu ini sudah diklaim ✅</p>' : '<p class="muted">Tujuan tercapai! Klaim hadiahmu 🎉</p>') : '<p class="muted">Kumpulkan poin musim bersama — panen, jual, mancing, produksi!</p>');
+    var cb = $('btn-claim-guild'); if (cb) cb.addEventListener('click', function(){ doAction('claim_guild_reward', {}, '🎁 Hadiah guild diklaim!'); });
+    var lb = $('btn-leave-guild'); if (lb) lb.addEventListener('click', function(){ if (confirm('Yakin keluar dari guild?')) doAction('leave_guild', {}, 'Kamu keluar dari guild.'); });
+  }
+  var list = S.guilds || [];
+  $('guild-list').innerHTML = list.length ? list.map(function(x){
+    return '<div class="price-row"><div><b>🏰 ' + x.name + '</b><div class="muted">' + x.members + '/20 anggota</div></div>' +
+      '<button class="btn small" data-join-guild="' + x.id + '"' + (g ? ' disabled' : '') + '>Gabung</button></div>';
+  }).join('') : '<div class="empty">Belum ada guild. Jadilah yang pertama!</div>';
+  $('guild-list').querySelectorAll('[data-join-guild]').forEach(function(b){ b.addEventListener('click', function(){ doAction('join_guild', {guild_id: b.getAttribute('data-join-guild')}, '🤝 Berhasil gabung guild!'); }); });
+}
+function renderSeason(){
+  var s = S.season; if (!s) return;
+  var top = S.season_top || [];
+  var u = S.user || {};
+  var myRank = null;
+  top.forEach(function(t, i){ if (t.name === (u.first_name || u.username)) myRank = i + 1; });
+  $('season-card').innerHTML =
+    '<div class="banner weather" style="margin:0 0 8px">' + s.emoji + ' <b>' + s.label + '</b> — ' + s.desc +
+    ' <span class="muted">• ganti musim: <b class="cd" data-secs="' + s.ends_in + '">' + fmtSecs(s.ends_in) + '</b></span></div>' +
+    '<p style="font-size:13px">Poin musimku: <b>' + fmt(u.season_points || 0) + '</b> • Hadiah klaim 1×/musim (min 50 poin): 🥇 50 💎 • 🥈🥉 30 💎 • Top 10: 15 💎 • lainnya: 5 💎</p>' +
+    '<button class="btn gold block" id="btn-claim-season" ' + (((u.season_points || 0) >= 50) ? '' : 'disabled') + '>🏆 Klaim Hadiah Turnamen</button>' +
+    '<h3>Top Turnamen Minggu Ini</h3>' +
+    (top.length ? top.map(function(t){
+      var medal = t.rank === 1 ? '🥇' : t.rank === 2 ? '🥈' : t.rank === 3 ? '🥉' : ('#' + t.rank);
+      return '<div class="lb-row"><span>' + medal + ' <b>' + t.name + '</b></span><span>' + fmt(t.season_points) + ' poin</span></div>';
+    }).join('') : '<div class="empty">Belum ada poin musim minggu ini.</div>');
+  var b = $('btn-claim-season'); if (b) b.addEventListener('click', function(){ doAction('claim_season_reward', {}, '🏆 Hadiah turnamen diklaim!'); });
+}
+function renderSkills(){
+  var u = S.user || {};
+  var cfg = S.config_v2 || {};
+  var branches = cfg.skill_branches || {};
+  var skills = u.skills || {};
+  var desc = {
+    bertani: '−5% waktu tumbuh & +1 hasil panen per 2 level',
+    produksi: '−10% waktu proses produksi per level',
+    dagang: '+5% harga jual Pasar NPC per level',
+    jelajah: '−10% cooldown & +10% hadiah mancing/menambang per level'
+  };
+  $('skill-list').innerHTML = Object.keys(branches).map(function(k){
+    var b = branches[k];
+    var lv = skills[k] || 0;
+    return '<div class="price-row"><div><b>' + b.emoji + ' ' + b.name + ' — Lv ' + lv + '/' + b.max + '</b><div class="muted">' + (desc[k] || '') + '</div></div>' +
+      '<button class="btn small" data-skill="' + k + '"' + ((u.skill_points || 0) > 0 && lv < b.max ? '' : ' disabled') + '>Naik (1 ⭐)</button></div>';
+  }).join('') + '<p class="muted">Poin skill tersedia: <b>' + (u.skill_points || 0) + '</b> • Dapat 1 poin tiap naik level.</p>';
+  $('skill-list').querySelectorAll('[data-skill]').forEach(function(b){ b.addEventListener('click', function(){ doAction('learn_skill', {branch: b.getAttribute('data-skill')}, '⭐ Skill naik level!'); }); });
+}
+function renderAchievementsV2(){
+  var list = S.achievements_v2 || [];
+  $('achievements-v2').innerHTML = list.length ? list.map(function(a){
+    var btn = a.claimed ? '<button class="btn small" disabled>✅ Diklaim</button>'
+      : a.done ? '<button class="btn gold small" data-claim-ach="' + a.id + '">🎁 Klaim</button>'
+      : '<button class="btn small" disabled>' + a.progress + '/' + a.target + '</button>';
+    return '<div class="mission"><div class="row between"><b>' + a.title + '</b>' + btn + '</div>' +
+      '<div class="muted">' + a.desc + ' • ' + a.progress + '/' + a.target + ' • Hadiah: ' + fmt(a.reward_coins) + ' 🪙' + (a.reward_gems ? ' + ' + a.reward_gems + ' 💎' : '') + '</div></div>';
+  }).join('') : '<div class="empty">Belum ada achievement.</div>';
+  $('achievements-v2').querySelectorAll('[data-claim-ach]').forEach(function(b){ b.addEventListener('click', function(){ doAction('claim_achievement', {ach_id: b.getAttribute('data-claim-ach')}, '🏆 Achievement diklaim!'); }); });
+}
+
 function renderWallet(){
   var u = S.user || {};
   var cfg = S.config || {};
   var coinsPerUnit = cfg.coins_per_unit || 200000;
   var dogePerUnit = cfg.doge_per_unit || 0.01;
   $('wallet-coins').textContent = fmt(u.coins||0) + ' 🪙';
+  $('wallet-gems').textContent = fmt(u.gems||0) + ' 💎';
   $('wallet-level').textContent = 'Level ' + (u.level||1) + ' (min 5 untuk WD)';
   $('wallet-doge').textContent = '≈ ' + (((u.coins||0)/coinsPerUnit)*dogePerUnit).toFixed(4) + ' DOGE';
   $('wallet-streak').textContent = '🔥 ' + (u.login_streak||0) + ' hari';
@@ -734,6 +939,23 @@ $('btn-create-listing').addEventListener('click', function(){
   doAction('create_listing', {item: item, qty: qty, price_each: price}, '📢 Jualan dipasang di Pasar Pemain!');
 });
 $('btn-claim-daily').addEventListener('click', function(){ doAction('claim_daily', {}, '🎁 Bonus harian diklaim!'); });
+$('btn-fish').addEventListener('click', function(){ doAction('fish', {}, '🎣 Mancing!'); });
+$('btn-mine').addEventListener('click', function(){ doAction('mine', {}, '⛏️ Menambang!'); });
+$('btn-create-guild').addEventListener('click', function(){
+  var name = $('guild-name').value.trim();
+  if (name.length < 3) { toast('Nama guild minimal 3 karakter.', true); return; }
+  doAction('create_guild', {name: name}, '🏰 Guild dibuat!');
+});
+function updateGemPreview(){
+  var n = parseInt($('gem-qty').value, 10) || 0;
+  $('gem-preview').textContent = '≈ ' + fmt(n * 500) + ' Koin';
+}
+$('gem-qty').addEventListener('input', updateGemPreview);
+$('btn-convert-gems').addEventListener('click', function(){
+  var n = parseInt($('gem-qty').value, 10) || 0;
+  if (n < 1 || n > 50) { toast('Jumlah Permata 1–50.', true); return; }
+  doAction('convert_gems', {gems: n}, '💱 Permata ditukar jadi Koin!');
+});
 $('wd-coins').addEventListener('input', updateWdPreview);
 $('btn-withdraw').addEventListener('click', async function(){
   var coins = parseInt($('wd-coins').value, 10) || 0;
