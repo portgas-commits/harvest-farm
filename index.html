@@ -99,11 +99,85 @@
   .kvs b{display:block;font-size:15px}
   .lb-row{display:flex;justify-content:space-between;padding:9px 4px;border-bottom:1px solid #eee;font-size:14px}
   .ad-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  /* Layar Intro / Panduan */
+  #intro{position:fixed;inset:0;z-index:100;overflow-y:auto;background:linear-gradient(180deg,#dcedc8 0%,#f1f8e9 35%,#fffdf5 100%);padding:0 0 30px}
+  #intro[hidden]{display:none}
+  .intro-hero{background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff;text-align:center;padding:26px 16px 20px;border-radius:0 0 24px 24px;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+  .intro-hero .logo{font-size:56px;line-height:1}
+  .intro-hero h1{margin:8px 0 4px;font-size:24px;line-height:1.2}
+  .intro-hero p{margin:0;font-size:13px;opacity:.92}
+  .intro-body{max-width:560px;margin:0 auto;padding:14px 12px 0}
+  .intro-sec{background:#fff;border:1px solid #dcedc8;border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(46,125,50,.08)}
+  .intro-sec h2{margin:0 0 8px;font-size:16px}
+  .intro-sec p{margin:0;font-size:14px;line-height:1.6}
+  .intro-steps{list-style:none;margin:0;padding:0}
+  .intro-steps li{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #f1f8e9;font-size:14px;line-height:1.5}
+  .intro-steps li:last-child{border-bottom:0}
+  .intro-steps .num{flex:0 0 26px;width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .intro-cur{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .intro-cur div{background:#f1f8e9;border-radius:12px;padding:10px;font-size:13px;line-height:1.5}
+  .intro-cur b{display:block;font-size:14px;margin-bottom:2px}
+  .intro-rules{list-style:none;margin:0;padding:0;font-size:14px;line-height:1.6}
+  .intro-rules li{padding:4px 0}
+  .intro-cta{position:sticky;bottom:0;background:linear-gradient(180deg,rgba(255,253,245,0),#fffdf5 30%);padding:14px 0 4px;text-align:center}
+  .btn.guide{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.45);min-height:38px;padding:8px 12px;font-size:13px}
 </style>
 </head>
 <body>
+<!-- ============ INTRO / PANDUAN (tampil sebelum masuk game) ============ -->
+<div id="intro" hidden>
+  <div class="intro-hero">
+    <div class="logo">🌾</div>
+    <h1>Harvest Farm<br>Kebun Kripto</h1>
+    <p>Tanam • Panen • Jual • Tukar jadi DOGE 🐶</p>
+  </div>
+  <div class="intro-body">
+    <div class="intro-sec">
+      <h2>🌱 Apa itu Harvest Farm?</h2>
+      <p>Game bertani di Telegram: mulai dari kebun kecil, tanam benih, rawat tanaman, pelihara hewan, olah hasil panen jadi produk, lalu jual di pasar. Kumpulkan <b>Koin Panen 🪙</b> dan <b>Permata Panen 💎</b> — Koin bisa kamu tukar jadi <b>DOGE</b> lewat FaucetPay. Makin rajin main, makin besar kebunmu!</p>
+    </div>
+    <div class="intro-sec">
+      <h2>🎮 Cara Main</h2>
+      <ol class="intro-steps">
+        <li><span class="num">1</span><span><b>🌱 Tanam benih</b> di petak kosong (pakai 1 Energi ⚡).</span></li>
+        <li><span class="num">2</span><span><b>💧 Siram &amp; 🧪 pupuk</b> supaya tanaman tumbuh lebih cepat. Usir <b>🐛 hama</b> dengan cepat sebelum hasil panen berkurang!</span></li>
+        <li><span class="num">3</span><span><b>🧺 Panen</b> saat tanaman siap — kadang muncul mutasi <b>Melon Emas 🍈</b> yang langka!</span></li>
+        <li><span class="num">4</span><span><b>💰 Jual</b> hasil panen di Pasar NPC saat harga tinggi, atau pasang jualan sendiri di Pasar Pemain.</span></li>
+        <li><span class="num">5</span><span><b>🚀 Kembangkan kebunmu:</b> beli hewan 🐔, bangun Toko Roti / Pabrik Susu / Dapur Saus 🏭, mancing 🎣 &amp; menambang ⛏️, naik level, isi skill tree, dan gabung guild 🤝.</span></li>
+      </ol>
+    </div>
+    <div class="intro-sec">
+      <h2>💰 Mata Uang</h2>
+      <div class="intro-cur">
+        <div><b>🪙 Koin Panen</b>Mata uang utama. Untuk beli benih, hewan, bangunan &amp; upgrade. Didapat dari panen, jualan, misi &amp; bonus harian.</div>
+        <div><b>💎 Permata Panen</b>Mata uang premium — <b>hanya dari main</b>: achievement, turnamen, guild &amp; mutasi. 1 💎 = 500 Koin (maks tukar 50 💎/hari).</div>
+      </div>
+    </div>
+    <div class="intro-sec">
+      <h2>🐶 Cara Dapat DOGE</h2>
+      <p>Kumpulkan <b>200.000 Koin → tukar 0,01 DOGE</b> via FaucetPay (tab 👛 Dompet). Syarat: <b>min. Level 5</b>, maks <b>1x per 7 hari</b>, dan setiap withdraw <b>disetujui admin</b> dulu. Jujur ya: ini <b>bukan janji profit</b> — hadiah tergantung saldo &amp; persetujuan admin, dan kamu <b>tidak perlu deposit apa pun</b> untuk main.</p>
+    </div>
+    <div class="intro-sec">
+      <h2>📜 Aturan Main</h2>
+      <ul class="intro-rules">
+        <li>✅ Main jujur — bot, cheat &amp; akun ganda dilarang.</li>
+        <li>📺 Iklan AdGram <b>opsional</b> untuk bonus (Energi, percepat, panen ganda) — bukan syarat untuk main.</li>
+        <li>🌦️ Cuaca berubah tiap jam &amp; musim berganti tiap minggu — manfaatkan bonusnya!</li>
+        <li>🎁 Klaim bonus login harian supaya streak tidak putus (7 hari = +2 💎).</li>
+      </ul>
+    </div>
+    <div class="intro-cta">
+      <button class="btn gold block" id="btn-intro-start" style="font-size:16px;padding:15px">🌾 Mulai Bertani</button>
+      <button class="btn ghost block" id="btn-intro-skip" style="margin-top:8px">Lewati ➜</button>
+    </div>
+  </div>
+</div>
+
 <header>
-  <h1>🌾 Harvest Farm — Kebun Kripto</h1>
+  <div class="row between">
+    <h1>🌾 Harvest Farm — Kebun Kripto</h1>
+    <button class="btn guide" id="btn-guide" title="Lihat panduan game">❓ Panduan</button>
+  </div>
   <p>Tanam • Panen • Jual • Tukar jadi DOGE 🐶</p>
   <div class="hud">
     <div class="chip"><b id="hud-coins">🪙 —</b><span>Koin Panen</span><small id="hud-gems">💎 —</small></div>
@@ -982,6 +1056,24 @@ setInterval(function(){
 }, 1000);
 // Sync ke backend tiap 15 detik
 setInterval(function(){ loadState(false); }, 15000);
+
+/* ================= INTRO / PANDUAN ================= */
+var INTRO_KEY = 'hf_seen_intro';
+function showIntro(){
+  var el = $('intro'); el.hidden = false;
+  document.body.style.overflow = 'hidden';
+  window.scrollTo({top:0});
+}
+function hideIntro(){
+  var el = $('intro'); el.hidden = true;
+  document.body.style.overflow = '';
+  try { localStorage.setItem(INTRO_KEY, '1'); } catch(e){}
+}
+$('btn-intro-start').addEventListener('click', function(){ hideIntro(); toast('🌾 Selamat bertani!'); });
+$('btn-intro-skip').addEventListener('click', function(){ hideIntro(); });
+$('btn-guide').addEventListener('click', function(){ showIntro(); });
+// Tampil saat pertama kali dibuka di perangkat ini; pemain lama langsung masuk game
+try { if (localStorage.getItem(INTRO_KEY) !== '1') showIntro(); } catch(e){ showIntro(); }
 
 /* ================= INIT ================= */
 if (S) { renderAll(); setConn(false); }

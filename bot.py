@@ -2216,14 +2216,23 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user = update.effective_user
     text = (
         f"Halo {user.first_name}! 👋\n\n"
-        "Selamat datang di *Harvest Farm — Kebun Kripto* 🌾\n\n"
-        "🌱 Tanam benih, siram, panen\n"
-        "🐔 Pelihara ayam, kambing, sapi & domba\n"
-        "🏭 Olah hasil panen jadi Roti, Keju & Saus\n"
-        "🎣 Mancing & ⛏️ menambang — cari Permata Panen 💎\n"
-        "🤝 Gabung guild & menangkan turnamen mingguan\n"
-        "🪙 Kumpulkan Koin Panen, tarik jadi DOGE via FaucetPay\n\n"
-        "Kurs: 200.000 Koin = 0,01 DOGE • Min WD Level 5"
+        "Selamat datang di *Harvest Farm — Kebun Kripto* 🌾\n"
+        "Game bertani di Telegram: tanam, panen, jual — kumpulkan\n"
+        "Koin & Permata Panen, tukar jadi DOGE via FaucetPay.\n\n"
+        "*Cara main singkat:*\n"
+        "🌱 Tanam benih → 💧 siram & 🧪 pupuk → 🧺 panen\n"
+        "💰 Jual di pasar saat harga tinggi\n"
+        "🐔 Pelihara hewan, 🏭 olah jadi Roti/Keju/Saus\n"
+        "🎣 Mancing & ⛏️ menambang, 🤝 gabung guild\n\n"
+        "*Mata uang:*\n"
+        "🪙 Koin — dari panen, jualan & misi\n"
+        "💎 Permata Panen — hanya dari main (1 💎 = 500 Koin)\n\n"
+        "*Tukar jadi DOGE:*\n"
+        "200.000 Koin = 0,01 DOGE • Min Level 5 • Maks 1x/7 hari\n"
+        "• Disetujui admin • Bukan janji profit • Tanpa deposit\n\n"
+        "*Aturan:* main jujur, dilarang bot/cheat. Iklan AdGram\n"
+        "opsional untuk bonus — bukan syarat main.\n\n"
+        "👇 Ketuk *Main Game* untuk mulai bertani!"
     )
     await update.message.reply_text(text, reply_markup=main_keyboard(),
                                     parse_mode="Markdown")
