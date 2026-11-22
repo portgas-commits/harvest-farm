@@ -176,6 +176,14 @@ GUILD_MAX_MEMBERS = 20
 GUILD_GOAL_POINTS = 500       # total poin musim anggota per minggu
 GUILD_REWARD_GEMS = 10
 TOURNAMENT_MIN_POINTS = 50
+
+# --- v3: referral & multi-bahasa ---
+BOT_USERNAME = "harvestfarm_game_bot"
+REF_NEW_BONUS_COINS = 200       # bonus pemain baru yang masuk via link referral
+REF_MILESTONE_LEVEL = 3         # pengundang dapat hadiah saat yang diundang capai Lv 3
+REF_REWARD_COINS = 500          # hadiah pengundang per undangan yang capai Lv 3
+REF_REWARD_GEMS = 2
+LANGS = ("id", "en", "ru", "es", "pt")
 SEASON_SECONDS = 7 * 86400
 SEASONS = [
     ("semi",   "Musim Semi",   "🌸", "+10% XP semua aksi."),
@@ -467,6 +475,18 @@ def db() -> sqlite3.Connection:
         "  claimed_week INTEGER NOT NULL DEFAULT -1,"
         "  PRIMARY KEY (guild_id, user_id))"
     )
+    # --- v3: referral ---
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS referral_events ("
+        "  id INTEGER PRIMARY KEY AUTOINCREMENT,"
+        "  referrer_id INTEGER NOT NULL,"
+        "  referee_id INTEGER NOT NULL,"
+        "  event TEXT NOT NULL,"
+        "  coins INTEGER NOT NULL DEFAULT 0,"
+        "  gems INTEGER NOT NULL DEFAULT 0,"
+        "  created_at INTEGER NOT NULL DEFAULT 0,"
+        "  UNIQUE (referee_id, event))"
+    )
     # --- v2: migrasi kolom users (idempotent, DB v1 tetap jalan) ---
     existing = {r[1] for r in conn.execute("PRAGMA table_info(users)")}
     for coldef in (
@@ -486,6 +506,10 @@ def db() -> sqlite3.Connection:
         "gems_convert_day TEXT NOT NULL DEFAULT ''",
         "guild_id INTEGER NOT NULL DEFAULT 0",
         "total_produced INTEGER NOT NULL DEFAULT 0",
+        # v3: referral & bahasa
+        "referrer_id INTEGER NOT NULL DEFAULT 0",
+        "referred_rewarded INTEGER NOT NULL DEFAULT 0",
+        "language TEXT NOT NULL DEFAULT 'id'",
     ):
         col = coldef.split()[0]
         if col not in existing:
@@ -570,6 +594,111 @@ def spend_energy(conn: sqlite3.Connection, row: sqlite3.Row) -> tuple[bool, sqli
     return True, row
 
 
+# ---------------------------------------------------------------------------
+# v3: referral & bahasa
+# ---------------------------------------------------------------------------
+def norm_lang(code) -> str:
+    """Normalisasi kode bahasa Telegram (id/en/ru/es/pt), fallback 'id'."""
+    if not code:
+        return "id"
+    c = str(code).lower().replace("_", "-").split("-")[0]
+    return c if c in LANGS else "id"
+
+
+def apply_referral(conn: sqlite3.Connection, uid: int,
+                   referrer_id) -> str:
+    """Catat referrer untuk pemain baru yang masuk via link referral.
+
+    Kembalikan: 'ok' | 'self' | 'not_found' | 'already' | 'invalid'.
+    Anti-abuse: self-referral ditolak, referrer harus sudah terdaftar,
+    satu referrer per pemain (tidak bisa diganti), bonus pemain baru
+    +200 Koin hanya sekali saat pertama kali masuk lewat link.
+    """
+    try:
+        referrer_id = int(referrer_id)
+    except (TypeError, ValueError):
+        return "invalid"
+    if referrer_id <= 0 or referrer_id == uid:
+        return "self"
+    row = conn.execute(
+        "SELECT referrer_id FROM users WHERE user_id = ?", (uid,)).fetchone()
+    if row is None:
+        return "invalid"
+    if int(row["referrer_id"] or 0) > 0:
+        return "already"
+    ref = conn.execute(
+        "SELECT 1 FROM users WHERE user_id = ?", (referrer_id,)).fetchone()
+    if not ref:
+        return "not_found"
+    conn.execute(
+        "UPDATE users SET referrer_id = ?, coins = coins + ?"
+        " WHERE user_id = ?",
+        (referrer_id, REF_NEW_BONUS_COINS, uid))
+    conn.execute(
+        "INSERT OR IGNORE INTO referral_events"
+        " (referrer_id, referee_id, event, coins, gems, created_at)"
+        " VALUES (?, ?, 'joined', ?, 0, ?)",
+        (referrer_id, uid, REF_NEW_BONUS_COINS, now_ts()))
+    conn.commit()
+    return "ok"
+
+
+def _check_referral_milestone(conn: sqlite3.Connection, uid: int) -> None:
+    """Hadiah pengundang (+500 Koin + 2 Permata) saat yang diundang capai
+    Level 3 — sekali saja per undangan (flag referred_rewarded)."""
+    row = conn.execute(
+        "SELECT referrer_id, referred_rewarded FROM users"
+        " WHERE user_id = ?", (uid,)).fetchone()
+    if not row or not int(row["referrer_id"] or 0):
+        return
+    if int(row["referred_rewarded"] or 0):
+        return
+    referrer = int(row["referrer_id"])
+    if not conn.execute(
+            "SELECT 1 FROM users WHERE user_id = ?",
+            (referrer,)).fetchone():
+        return
+    conn.execute(
+        "UPDATE users SET referred_rewarded = 1 WHERE user_id = ?", (uid,))
+    conn.execute(
+        "UPDATE users SET coins = coins + ?, gems = gems + ?"
+        " WHERE user_id = ?",
+        (REF_REWARD_COINS, REF_REWARD_GEMS, referrer))
+    conn.execute(
+        "INSERT OR IGNORE INTO referral_events"
+        " (referrer_id, referee_id, event, coins, gems, created_at)"
+        " VALUES (?, ?, 'milestone', ?, ?, ?)",
+        (referrer, uid, REF_REWARD_COINS, REF_REWARD_GEMS, now_ts()))
+    conn.commit()
+
+
+def referral_info(conn: sqlite3.Connection, uid: int) -> dict:
+    """Info referral untuk tab Referral: link, statistik, daftar undangan."""
+    link = f"https://t.me/{BOT_USERNAME}?start=ref_{uid}"
+    invitees = conn.execute(
+        "SELECT user_id, username, first_name, xp, referred_rewarded"
+        " FROM users WHERE referrer_id = ? ORDER BY user_id",
+        (uid,)).fetchall()
+    ev = conn.execute(
+        "SELECT COALESCE(SUM(coins), 0) AS c, COALESCE(SUM(gems), 0) AS g"
+        " FROM referral_events WHERE referrer_id = ? AND event = 'milestone'",
+        (uid,)).fetchone()
+    return {
+        "link": link,
+        "invited_count": len(invitees),
+        "rewarded_count": sum(1 for r in invitees
+                              if int(r["referred_rewarded"] or 0)),
+        "total_coins": int(ev["c"] or 0),
+        "total_gems": int(ev["g"] or 0),
+        "invitees": [{
+            "name": r["first_name"] or r["username"]
+                    or f"Petani {r['user_id']}",
+            "level": level_from_xp(int(r["xp"])),
+            "rewarded": bool(int(r["referred_rewarded"] or 0)),
+        } for r in invitees],
+    }
+
+
 def add_xp_coins(conn: sqlite3.Connection, uid: int, xp: int = 0,
                  coins: int = 0, gems: int = 0) -> None:
     """Tambah XP/Koin/Permata. v2: naik level -> +1 poin skill per level,
@@ -590,6 +719,9 @@ def add_xp_coins(conn: sqlite3.Connection, uid: int, xp: int = 0,
             conn.execute(
                 "UPDATE users SET xp = ?, skill_points = skill_points + ?"
                 " WHERE user_id = ?", (new_xp, gained_points, uid))
+            # v3: milestone referral — yang diundang capai Level 3
+            if new_level >= REF_MILESTONE_LEVEL:
+                _check_referral_milestone(conn, uid)
     if coins or gems:
         conn.execute("UPDATE users SET coins = coins + ?, gems = gems + ?"
                      " WHERE user_id = ?", (coins, gems, uid))
@@ -932,7 +1064,11 @@ def build_state(conn: sqlite3.Connection, user: dict) -> dict:
             "produce_count": int(row["produce_count"]),
             "fish_cooldown_in": fish_cd,
             "mine_cooldown_in": mine_cd,
+            # v3
+            "language": row["language"] or "id",
+            "referrer_id": int(row["referrer_id"] or 0),
         },
+        "referral": referral_info(conn, uid),
         "season": season,
         "season_top": season_leaderboard(conn, 10),
         "achievements_v2": achievements_v2_state(conn, uid, row),
@@ -1526,6 +1662,15 @@ def do_action(conn: sqlite3.Connection, user: dict, body: dict) -> dict:
         return {"ok": True, "state": build_state(conn, user),
                 "message": f"Hadiah turnamen musim: peringkat #{rank}"
                            f" ({pts} poin) — +{gems} 💎! 🏆"}
+
+    # ==================== v3: bahasa ====================
+    if action == "set_language":
+        lang = norm_lang(str(body.get("lang", "")))
+        conn.execute("UPDATE users SET language = ? WHERE user_id = ?",
+                     (lang, uid))
+        conn.commit()
+        return {"ok": True, "state": build_state(conn, user),
+                "message": "OK"}
 
     # --- Aksi pakai energi: tanam/siram/pupuk/panen/usir hama/hewan ---
     if action in ("plant", "water", "fertilize", "harvest", "pest",
@@ -2182,6 +2327,10 @@ class ApiHandler(BaseHTTPRequestHandler):
                 if result.get("error") in ("ad_cooldown",):
                     status = 429
                 self._send_json(status, result)
+            elif path == "/api/referral":  # v3
+                self._send_json(200, {"ok": True,
+                                      "referral": referral_info(
+                                          conn, int(user["id"]))})
             elif path == "/api/leaderboard":
                 self._send_json(200, top_players(
                     int(body.get("limit", 20) or 20)))
@@ -2204,60 +2353,393 @@ def serve_api() -> None:
 # ---------------------------------------------------------------------------
 # Bot Telegram
 # ---------------------------------------------------------------------------
-def main_keyboard() -> InlineKeyboardMarkup:
+# ---------------------------------------------------------------------------
+# Bot Telegram — teks 5 bahasa (v3)
+# ---------------------------------------------------------------------------
+BOT_TEXTS = {
+    "play": {
+        "id": "🌾 Main Game", "en": "🌾 Play Game", "ru": "🌾 Играть",
+        "es": "🌾 Jugar", "pt": "🌾 Jogar",
+    },
+    "howto_btn": {
+        "id": "❓ Cara Main", "en": "❓ How to Play", "ru": "❓ Как играть",
+        "es": "❓ Cómo jugar", "pt": "❓ Como jogar",
+    },
+    "start": {
+        "id": (
+            "Halo {name}! 👋\n\n"
+            "Selamat datang di *Harvest Farm — Kebun Kripto* 🌾\n"
+            "Game bertani di Telegram: tanam, panen, jual — kumpulkan\n"
+            "Koin & Permata Panen, tukar jadi DOGE via FaucetPay.\n\n"
+            "*Cara main singkat:*\n"
+            "🌱 Tanam benih → 💧 siram & 🧪 pupuk → 🧺 panen\n"
+            "💰 Jual di pasar saat harga tinggi\n"
+            "🐔 Pelihara hewan, 🏭 olah jadi Roti/Keju/Saus\n"
+            "🎣 Mancing & ⛏️ menambang, 🤝 gabung guild\n"
+            "🎁 Undang teman lewat link referral di dalam game\n\n"
+            "*Mata uang:*\n"
+            "🪙 Koin — dari panen, jualan & misi\n"
+            "💎 Permata Panen — hanya dari main (1 💎 = 500 Koin)\n\n"
+            "*Tukar jadi DOGE:*\n"
+            "200.000 Koin = 0,01 DOGE • Min Level 5 • Maks 1x/7 hari\n"
+            "• Disetujui admin • Bukan janji profit • Tanpa deposit\n\n"
+            "*Aturan:* main jujur, dilarang bot/cheat. Iklan AdGram\n"
+            "opsional untuk bonus — bukan syarat main.\n\n"
+            "👇 Ketuk *Main Game* untuk mulai bertani!"
+        ),
+        "en": (
+            "Hello {name}! 👋\n\n"
+            "Welcome to *Harvest Farm — Crypto Garden* 🌾\n"
+            "A farming game on Telegram: plant, harvest, sell — collect\n"
+            "Coins & Harvest Gems, exchange them for DOGE via FaucetPay.\n\n"
+            "*Quick guide:*\n"
+            "🌱 Plant seeds → 💧 water & 🧪 fertilize → 🧺 harvest\n"
+            "💰 Sell at the market when prices are high\n"
+            "🐔 Raise animals, 🏭 process them into Bread/Cheese/Sauce\n"
+            "🎣 Fish & ⛏️ mine, 🤝 join a guild\n"
+            "🎁 Invite friends with your referral link inside the game\n\n"
+            "*Currencies:*\n"
+            "🪙 Coins — from harvests, sales & quests\n"
+            "💎 Harvest Gems — earned only by playing (1 💎 = 500 Coins)\n\n"
+            "*Exchange for DOGE:*\n"
+            "200,000 Coins = 0.01 DOGE • Min Level 5 • Max 1×/7 days\n"
+            "• Admin approval required • Not a profit promise • No deposit\n\n"
+            "*Rules:* play fair, no bots/cheats. AdGram ads are\n"
+            "optional for bonuses — never required to play.\n\n"
+            "👇 Tap *Play Game* to start farming!"
+        ),
+        "ru": (
+            "Привет, {name}! 👋\n\n"
+            "Добро пожаловать в *Harvest Farm — Криптоферма* 🌾\n"
+            "Игра-ферма в Telegram: сажай, собирай урожай, продавай —\n"
+            "копи Монеты и Кристаллы урожая, меняй их на DOGE через FaucetPay.\n\n"
+            "*Кратко об игре:*\n"
+            "🌱 Посади семена → 💧 полей и 🧪 удобри → 🧺 собери урожай\n"
+            "💰 Продавай на рынке, когда цены высокие\n"
+            "🐔 Разводи животных, 🏭 перерабатывай в Хлеб/Сыр/Соус\n"
+            "🎣 Рыбачь и ⛏️ добывай руду, 🤝 вступай в гильдию\n"
+            "🎁 Приглашай друзей по реферальной ссылке в игре\n\n"
+            "*Валюта:*\n"
+            "🪙 Монеты — за урожай, продажи и задания\n"
+            "💎 Кристаллы урожая — только за игру (1 💎 = 500 монет)\n\n"
+            "*Обмен на DOGE:*\n"
+            "200 000 монет = 0,01 DOGE • Мин. уровень 5 • Макс. 1 раз в 7 дней\n"
+            "• Нужно одобрение админа • Это не обещание прибыли • Без вложений\n\n"
+            "*Правила:* играй честно, боты и читы запрещены. Реклама AdGram\n"
+            "необязательна — это бонус, а не условие игры.\n\n"
+            "👇 Нажми *Играть*, чтобы начать!"
+        ),
+        "es": (
+            "¡Hola, {name}! 👋\n\n"
+            "Bienvenido a *Harvest Farm — Granja Cripto* 🌾\n"
+            "Un juego de granja en Telegram: planta, cosecha, vende —\n"
+            "gana Monedas y Gemas de Cosecha y cámbialas por DOGE con FaucetPay.\n\n"
+            "*Guía rápida:*\n"
+            "🌱 Planta semillas → 💧 riega y 🧪 abona → 🧺 cosecha\n"
+            "💰 Vende en el mercado cuando los precios estén altos\n"
+            "🐔 Cría animales, 🏭 procesa Pan/Queso/Salsa\n"
+            "🎣 Pesca y ⛏️ mina, 🤝 únete a un gremio\n"
+            "🎁 Invita amigos con tu enlace de referidos dentro del juego\n\n"
+            "*Monedas:*\n"
+            "🪙 Monedas — de cosechas, ventas y misiones\n"
+            "💎 Gemas de Cosecha — solo se ganan jugando (1 💎 = 500 monedas)\n\n"
+            "*Cambiar por DOGE:*\n"
+            "200.000 monedas = 0,01 DOGE • Niv. mín. 5 • Máx. 1×/7 días\n"
+            "• Requiere aprobación del admin • No es promesa de ganancias • Sin depósito\n\n"
+            "*Reglas:* juega limpio, sin bots ni trampas. Los anuncios de AdGram\n"
+            "son opcionales para bonos — nunca obligatorios para jugar.\n\n"
+            "👇 Toca *Jugar* para empezar a cultivar."
+        ),
+        "pt": (
+            "Olá, {name}! 👋\n\n"
+            "Bem-vindo ao *Harvest Farm — Fazenda Cripto* 🌾\n"
+            "Um jogo de fazenda no Telegram: plante, colha, venda —\n"
+            "ganhe Moedas e Gemas da Colheita e troque por DOGE via FaucetPay.\n\n"
+            "*Guia rápido:*\n"
+            "🌱 Plante sementes → 💧 regue e 🧪 adube → 🧺 colha\n"
+            "💰 Venda no mercado quando os preços estiverem altos\n"
+            "🐔 Crie animais, 🏭 processe em Pão/Queijo/Molho\n"
+            "🎣 Pesque e ⛏️ minere, 🤝 entre para uma guilda\n"
+            "🎁 Convide amigos com seu link de indicação dentro do jogo\n\n"
+            "*Moedas:*\n"
+            "🪙 Moedas — de colheitas, vendas e missões\n"
+            "💎 Gemas da Colheita — só se ganha jogando (1 💎 = 500 moedas)\n\n"
+            "*Trocar por DOGE:*\n"
+            "200.000 moedas = 0,01 DOGE • Nív. mín. 5 • Máx. 1×/7 dias\n"
+            "• Precisa de aprovação do admin • Não é promessa de lucro • Sem depósito\n\n"
+            "*Regras:* jogue limpo, sem bots ou trapaças. Os anúncios AdGram\n"
+            "são opcionais para bônus — nunca obrigatórios para jogar.\n\n"
+            "👇 Toque em *Jogar* para começar a cultivar!"
+        ),
+    },
+    "ref_joined": {
+        "id": "🎁 Kamu masuk lewat undangan teman — bonus +200 Koin sudah masuk ke kebunmu! Kalau kamu mencapai Level 3, temanmu itu dapat +500 Koin + 2 💎. Ajak temanmu juga lewat tab Referral di dalam game!",
+        "en": "🎁 You joined through a friend's invitation — a +200 Coin bonus is already in your farm! When you reach Level 3, your friend gets +500 Coins + 2 💎. Invite your friends too, from the Referral tab in the game!",
+        "ru": "🎁 Ты пришёл по приглашению друга — бонус +200 монет уже на твоей ферме! Когда ты достигнешь 3-го уровня, твой друг получит +500 монет и 2 💎. Приглашай друзей — ссылка во вкладке «Рефералка» в игре!",
+        "es": "🎁 Entraste por la invitación de un amigo — ¡el bono de +200 monedas ya está en tu granja! Cuando llegues al Nivel 3, tu amigo recibirá +500 monedas y 2 💎. ¡Invita a tus amigos desde la pestaña Referidos del juego!",
+        "pt": "🎁 Você entrou pelo convite de um amigo — o bônus de +200 moedas já está na sua fazenda! Quando você chegar ao Nível 3, seu amigo ganha +500 moedas e 2 💎. Convide seus amigos na aba Indicação do jogo!",
+    },
+    "ref_self": {
+        "id": "⚠️ Link referral itu milikmu sendiri — tidak bisa dipakai untuk mengundang dirimu sendiri. Bagikan link itu ke temanmu ya!",
+        "en": "⚠️ That referral link is your own — you can't invite yourself with it. Share it with your friends instead!",
+        "ru": "⚠️ Эта реферальная ссылка — твоя собственная, пригласить самого себя нельзя. Поделись ею с друзьями!",
+        "es": "⚠️ Ese enlace de referidos es el tuyo — no puedes invitarte a ti mismo. ¡Compártelo con tus amigos!",
+        "pt": "⚠️ Esse link de indicação é o seu — você não pode convidar a si mesmo. Compartilhe com seus amigos!",
+    },
+    "help": {
+        "id": (
+            "Cara main Harvest Farm:\n"
+            "1. Ketuk Main Game.\n"
+            "2. Tanam benih di petak kosong (pakai 1 Energi).\n"
+            "3. Siram biar tumbuh 25% lebih cepat, beri pupuk +50%.\n"
+            "4. Usir hama sebelum hasil panen berkurang!\n"
+            "5. Panen, lalu jual di Pasar NPC saat harga tinggi,\n"
+            "   atau pasang jualan sendiri di Pasar Pemain.\n"
+            "6. Beli hewan, beri pakan, kumpulkan telur/susu/wol.\n"
+            "7. Nonton iklan AdGram buat +20 Energi.\n"
+            "8. Di Dompet, tarik Koin jadi DOGE via FaucetPay.\n"
+            "9. v2: bangun Toko Roti / Pabrik Susu / Dapur Saus di tab Produksi,\n"
+            "   mancing & menambang tiap 30 menit, gabung guild, dan rebut\n"
+            "   hadiah turnamen mingguan (Permata Panen 💎).\n"
+            "10. Undang teman dari tab Referral: temanmu dapat +200 Koin\n"
+            "    saat masuk, dan kamu dapat +500 Koin + 2 💎 saat dia capai Level 3.\n\n"
+            "Perintah: /start /help /saldo"
+        ),
+        "en": (
+            "How to play Harvest Farm:\n"
+            "1. Tap Play Game.\n"
+            "2. Plant seeds in empty plots (uses 1 Energy).\n"
+            "3. Water for +25% growth, fertilize for +50%.\n"
+            "4. Chase pests away before they cut your harvest!\n"
+            "5. Harvest, then sell at the NPC Market when prices are high,\n"
+            "   or list your own goods at the Player Market.\n"
+            "6. Buy animals, feed them, collect eggs/milk/wool.\n"
+            "7. Watch AdGram ads for +20 Energy.\n"
+            "8. In the Wallet tab, withdraw Coins as DOGE via FaucetPay.\n"
+            "9. v2: build the Bakery / Dairy / Sauce Kitchen in the Factory tab,\n"
+            "   fish & mine every 30 minutes, join a guild, and win\n"
+            "   weekly tournament prizes (Harvest Gems 💎).\n"
+            "10. Invite friends from the Referral tab: your friend gets +200 Coins\n"
+            "    when joining, and you get +500 Coins + 2 💎 when they reach Level 3.\n\n"
+            "Commands: /start /help /saldo"
+        ),
+        "ru": (
+            "Как играть в Harvest Farm:\n"
+            "1. Нажми «Играть».\n"
+            "2. Посади семена на пустых грядках (1 энергия).\n"
+            "3. Поливай: рост +25%, удобряй: +50%.\n"
+            "4. Прогоняй вредителей, пока они не испортили урожай!\n"
+            "5. Собери урожай и продай на рынке NPC, когда цены высокие,\n"
+            "   или выстави свой товар на рынке игроков.\n"
+            "6. Купи животных, корми их, собирай яйца/молоко/шерсть.\n"
+            "7. Смотри рекламу AdGram и получай +20 энергии.\n"
+            "8. Во вкладке «Кошелёк» выводи монеты в DOGE через FaucetPay.\n"
+            "9. v2: построй Пекарню / Молочную фабрику / Кухню соусов во вкладке\n"
+            "   «Производство», рыбачь и добывай руду каждые 30 минут, вступай\n"
+            "   в гильдию и выигрывай еженедельные турниры (Кристаллы 💎).\n"
+            "10. Приглашай друзей из вкладки «Рефералка»: друг получит +200 монет\n"
+            "    при входе, а ты — +500 монет и 2 💎, когда он достигнет 3-го уровня.\n\n"
+            "Команды: /start /help /saldo"
+        ),
+        "es": (
+            "Cómo jugar a Harvest Farm:\n"
+            "1. Toca Jugar.\n"
+            "2. Planta semillas en parcelas vacías (usa 1 de Energía).\n"
+            "3. Riega para +25% de crecimiento, abona para +50%.\n"
+            "4. ¡Ahuyenta las plagas antes de que reduzcan tu cosecha!\n"
+            "5. Cosecha y vende en el Mercado NPC cuando los precios estén altos,\n"
+            "   o publica tus productos en el Mercado de Jugadores.\n"
+            "6. Compra animales, aliméntalos y recoge huevos/leche/lana.\n"
+            "7. Mira anuncios de AdGram para +20 de Energía.\n"
+            "8. En la pestaña Billetera, retira Monedas como DOGE con FaucetPay.\n"
+            "9. v2: construye la Panadería / Lechería / Cocina de Salsas en Producción,\n"
+            "   pesca y mina cada 30 minutos, únete a un gremio y gana\n"
+            "   premios semanales (Gemas de Cosecha 💎).\n"
+            "10. Invita amigos desde Referidos: tu amigo recibe +200 monedas\n"
+            "    al entrar, y tú +500 monedas y 2 💎 cuando llegue al Nivel 3.\n\n"
+            "Comandos: /start /help /saldo"
+        ),
+        "pt": (
+            "Como jogar Harvest Farm:\n"
+            "1. Toque em Jogar.\n"
+            "2. Plante sementes em canteiros vazios (usa 1 de Energia).\n"
+            "3. Regue para +25% de crescimento, adube para +50%.\n"
+            "4. Afaste as pragas antes que reduzam sua colheita!\n"
+            "5. Colha e venda no Mercado NPC quando os preços estiverem altos,\n"
+            "   ou anuncie seus produtos no Mercado de Jogadores.\n"
+            "6. Compre animais, alimente-os e colete ovos/leite/lã.\n"
+            "7. Assista anúncios AdGram para +20 de Energia.\n"
+            "8. Na aba Carteira, saque Moedas como DOGE via FaucetPay.\n"
+            "9. v2: construa a Padaria / Laticínio / Cozinha de Molhos na aba Produção,\n"
+            "   pesque e minere a cada 30 minutos, entre para uma guilda e ganhe\n"
+            "   prêmios semanais (Gemas da Colheita 💎).\n"
+            "10. Convide amigos na aba Indicação: seu amigo ganha +200 moedas\n"
+            "    ao entrar, e você +500 moedas e 2 💎 quando ele chegar ao Nível 3.\n\n"
+            "Comandos: /start /help /saldo"
+        ),
+    },
+    "saldo_none": {
+        "id": "Kamu belum punya kebun. Ketuk Main Game dulu di /start! 🌱",
+        "en": "You don't have a farm yet. Tap Play Game in /start first! 🌱",
+        "ru": "У тебя пока нет фермы. Сначала нажми «Играть» в /start! 🌱",
+        "es": "Aún no tienes granja. ¡Toca Jugar en /start primero! 🌱",
+        "pt": "Você ainda não tem fazenda. Toque em Jogar no /start primeiro! 🌱",
+    },
+    "saldo": {
+        "id": (
+            "💰 Saldo Harvest Farm\n\n"
+            "🪙 Koin: *{coins:,}*\n"
+            "💎 Permata Panen: *{gems:,}* (1 💎 = 500 Koin)\n"
+            "⭐ Level {level} ({xp:,} XP)\n"
+            "🎯 Poin skill: {skill} • Poin musim: {season}\n"
+            "⚡ Energi: {energy}/{max}\n"
+            "🔥 Streak login: {streak} hari\n\n"
+            "Kurs WD: {unit:,} Koin = {doge} DOGE (min Level {minlevel})"
+        ),
+        "en": (
+            "💰 Harvest Farm Balance\n\n"
+            "🪙 Coins: *{coins:,}*\n"
+            "💎 Harvest Gems: *{gems:,}* (1 💎 = 500 Coins)\n"
+            "⭐ Level {level} ({xp:,} XP)\n"
+            "🎯 Skill points: {skill} • Season points: {season}\n"
+            "⚡ Energy: {energy}/{max}\n"
+            "🔥 Login streak: {streak} days\n\n"
+            "Withdraw rate: {unit:,} Coins = {doge} DOGE (min Level {minlevel})"
+        ),
+        "ru": (
+            "💰 Баланс Harvest Farm\n\n"
+            "🪙 Монеты: *{coins:,}*\n"
+            "💎 Кристаллы урожая: *{gems:,}* (1 💎 = 500 монет)\n"
+            "⭐ Уровень {level} ({xp:,} опыта)\n"
+            "🎯 Очки навыков: {skill} • Очки сезона: {season}\n"
+            "⚡ Энергия: {energy}/{max}\n"
+            "🔥 Серия входов: {streak} дн.\n\n"
+            "Курс вывода: {unit:,} монет = {doge} DOGE (мин. уровень {minlevel})"
+        ),
+        "es": (
+            "💰 Saldo de Harvest Farm\n\n"
+            "🪙 Monedas: *{coins:,}*\n"
+            "💎 Gemas de Cosecha: *{gems:,}* (1 💎 = 500 monedas)\n"
+            "⭐ Nivel {level} ({xp:,} XP)\n"
+            "🎯 Puntos de habilidad: {skill} • Puntos de temporada: {season}\n"
+            "⚡ Energía: {energy}/{max}\n"
+            "🔥 Racha de inicio: {streak} días\n\n"
+            "Tasa de retiro: {unit:,} monedas = {doge} DOGE (niv. mín. {minlevel})"
+        ),
+        "pt": (
+            "💰 Saldo do Harvest Farm\n\n"
+            "🪙 Moedas: *{coins:,}*\n"
+            "💎 Gemas da Colheita: *{gems:,}* (1 💎 = 500 moedas)\n"
+            "⭐ Nível {level} ({xp:,} XP)\n"
+            "🎯 Pontos de habilidade: {skill} • Pontos da temporada: {season}\n"
+            "⚡ Energia: {energy}/{max}\n"
+            "🔥 Sequência de login: {streak} dias\n\n"
+            "Taxa de saque: {unit:,} moedas = {doge} DOGE (nív. mín. {minlevel})"
+        ),
+    },
+    "howto": {
+        "id": (
+            "❓ *Cara Main Harvest Farm*\n\n"
+            "• Tanam → Siram → Panen → Jual.\n"
+            "• Cuaca berubah tiap jam: Hujan mempercepat, Badai berbahaya.\n"
+            "• Hama muncul acak — tap cepat untuk mengusir!\n"
+            "• Hewan butuh pakan, kalau lapar tidak berproduksi.\n"
+            "• Harga pasar berubah tiap 30 menit — jual saat tinggi!"
+        ),
+        "en": (
+            "❓ *How to Play Harvest Farm*\n\n"
+            "• Plant → Water → Harvest → Sell.\n"
+            "• Weather changes every hour: Rain speeds growth, Storms are dangerous.\n"
+            "• Pests appear at random — tap fast to chase them away!\n"
+            "• Animals need feed; hungry animals stop producing.\n"
+            "• Market prices change every 30 minutes — sell when high!"
+        ),
+        "ru": (
+            "❓ *Как играть в Harvest Farm*\n\n"
+            "• Посади → Полей → Собери → Продай.\n"
+            "• Погода меняется каждый час: дождь ускоряет рост, гроза опасна.\n"
+            "• Вредители появляются случайно — быстро прогоняй их!\n"
+            "• Животным нужен корм: голодные не дают продукцию.\n"
+            "• Цены на рынке меняются каждые 30 минут — продавай на пике!"
+        ),
+        "es": (
+            "❓ *Cómo jugar a Harvest Farm*\n\n"
+            "• Planta → Riega → Cosecha → Vende.\n"
+            "• El clima cambia cada hora: la lluvia acelera, la tormenta es peligrosa.\n"
+            "• Las plagas aparecen al azar — ¡tócalas rápido para ahuyentarlas!\n"
+            "• Los animales necesitan comida; si tienen hambre, no producen.\n"
+            "• Los precios cambian cada 30 minutos — ¡vende cuando estén altos!"
+        ),
+        "pt": (
+            "❓ *Como jogar Harvest Farm*\n\n"
+            "• Plante → Regue → Colha → Venda.\n"
+            "• O clima muda a cada hora: a chuva acelera o crescimento, a tempestade é perigosa.\n"
+            "• Pragas aparecem aleatoriamente — toque rápido para afastá-las!\n"
+            "• Os animais precisam de ração; com fome, não produzem.\n"
+            "• Os preços mudam a cada 30 minutos — venda quando estiverem altos!"
+        ),
+    },
+}
+
+
+def bot_text(key: str, lang: str, **kw) -> str:
+    """Ambil teks bot untuk kunci & bahasa (fallback Indonesia)."""
+    lang = norm_lang(lang)
+    tpl = BOT_TEXTS.get(key, {}).get(lang) or BOT_TEXTS.get(key, {}).get("id", "")
+    try:
+        return tpl.format(**kw) if kw else tpl
+    except (KeyError, ValueError):
+        return tpl
+
+
+def main_keyboard(lang: str = "id") -> InlineKeyboardMarkup:
+    lang = norm_lang(lang)
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("🌾 Main Game",
+        [InlineKeyboardButton(bot_text("play", lang),
                               web_app=WebAppInfo(url=WEBAPP_URL))],
-        [InlineKeyboardButton("❓ Cara Main", callback_data="howto")],
+        [InlineKeyboardButton(bot_text("howto_btn", lang),
+                              callback_data="howto")],
     ])
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user = update.effective_user
-    text = (
-        f"Halo {user.first_name}! 👋\n\n"
-        "Selamat datang di *Harvest Farm — Kebun Kripto* 🌾\n"
-        "Game bertani di Telegram: tanam, panen, jual — kumpulkan\n"
-        "Koin & Permata Panen, tukar jadi DOGE via FaucetPay.\n\n"
-        "*Cara main singkat:*\n"
-        "🌱 Tanam benih → 💧 siram & 🧪 pupuk → 🧺 panen\n"
-        "💰 Jual di pasar saat harga tinggi\n"
-        "🐔 Pelihara hewan, 🏭 olah jadi Roti/Keju/Saus\n"
-        "🎣 Mancing & ⛏️ menambang, 🤝 gabung guild\n\n"
-        "*Mata uang:*\n"
-        "🪙 Koin — dari panen, jualan & misi\n"
-        "💎 Permata Panen — hanya dari main (1 💎 = 500 Koin)\n\n"
-        "*Tukar jadi DOGE:*\n"
-        "200.000 Koin = 0,01 DOGE • Min Level 5 • Maks 1x/7 hari\n"
-        "• Disetujui admin • Bukan janji profit • Tanpa deposit\n\n"
-        "*Aturan:* main jujur, dilarang bot/cheat. Iklan AdGram\n"
-        "opsional untuk bonus — bukan syarat main.\n\n"
-        "👇 Ketuk *Main Game* untuk mulai bertani!"
-    )
-    await update.message.reply_text(text, reply_markup=main_keyboard(),
+    lang = norm_lang(getattr(user, "language_code", None))
+    # v3: referral — /start ref_<telegram_user_id>
+    ref_id = None
+    for arg in (context.args or []):
+        m = re.match(r"ref_(\d+)$", str(arg))
+        if m:
+            ref_id = int(m.group(1))
+            break
+    ref_status = None
+    conn = db()
+    try:
+        is_new = conn.execute(
+            "SELECT 1 FROM users WHERE user_id = ?",
+            (user.id,)).fetchone() is None
+        get_or_create_user(conn, {"id": user.id, "username": user.username,
+                                  "first_name": user.first_name})
+        if is_new and ref_id:
+            ref_status = apply_referral(conn, user.id, ref_id)
+    finally:
+        conn.close()
+    text = bot_text("start", lang, name=user.first_name)
+    if ref_status == "ok":
+        text += "\n\n" + bot_text("ref_joined", lang)
+    elif ref_status == "self":
+        text += "\n\n" + bot_text("ref_self", lang)
+    await update.message.reply_text(text, reply_markup=main_keyboard(lang),
                                     parse_mode="Markdown")
 
 
 async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text(
-        "Cara main Harvest Farm:\n"
-        "1. Ketuk Main Game.\n"
-        "2. Tanam benih di petak kosong (pakai 1 Energi).\n"
-        "3. Siram biar tumbuh 25% lebih cepat, beri pupuk +50%.\n"
-        "4. Usir hama sebelum hasil panen berkurang!\n"
-        "5. Panen, lalu jual di Pasar NPC saat harga tinggi,\n"
-        "   atau pasang jualan sendiri di Pasar Pemain.\n"
-        "6. Beli hewan, beri pakan, kumpulkan telur/susu/wol.\n"
-        "7. Nonton iklan AdGram buat +20 Energi.\n"
-        "8. Di Dompet, tarik Koin jadi DOGE via FaucetPay.\n"
-        "9. v2: bangun Toko Roti / Pabrik Susu / Dapur Saus di tab Produksi,\n"
-        "   mancing & menambang tiap 30 menit, gabung guild, dan rebut\n"
-        "   hadiah turnamen mingguan (Permata Panen 💎).\n\n"
-        "Perintah: /start /help /saldo"
-    )
+    lang = norm_lang(getattr(update.effective_user, "language_code", None))
+    await update.message.reply_text(bot_text("help", lang))
 
 
 async def saldo_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    lang = norm_lang(getattr(update.effective_user, "language_code", None))
     conn = db()
     try:
         row = conn.execute(
@@ -2267,35 +2749,27 @@ async def saldo_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     finally:
         conn.close()
     if not row:
-        await update.message.reply_text(
-            "Kamu belum punya kebun. Ketuk Main Game dulu di /start! 🌱")
+        await update.message.reply_text(bot_text("saldo_none", lang))
         return
     level = level_from_xp(row["xp"])
     await update.message.reply_text(
-        f"💰 Saldo Harvest Farm\n\n"
-        f"🪙 Koin: *{row['coins']:,}*\n"
-        f"💎 Permata Panen: *{row['gems']:,}* (1 💎 = 500 Koin)\n"
-        f"⭐ Level {level} ({row['xp']:,} XP)\n"
-        f"🎯 Poin skill: {row['skill_points']} • Poin musim: {row['season_points']}\n"
-        f"⚡ Energi: {row['energy']}/{ENERGY_MAX}\n"
-        f"🔥 Streak login: {row['login_streak']} hari\n\n"
-        f"Kurs WD: {COINS_PER_UNIT:,} Koin = {DOGE_PER_UNIT} DOGE"
-        f" (min Level {WITHDRAW_MIN_LEVEL})",
+        bot_text("saldo", lang, coins=row["coins"], gems=row["gems"],
+                 level=level, xp=row["xp"],
+                 skill=row["skill_points"], season=row["season_points"],
+                 energy=row["energy"], max=ENERGY_MAX,
+                 streak=row["login_streak"], unit=COINS_PER_UNIT,
+                 doge=DOGE_PER_UNIT, minlevel=WITHDRAW_MIN_LEVEL),
         parse_mode="Markdown")
 
 
 async def howto_callback(update: Update,
                          context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
+    lang = norm_lang(getattr(update.effective_user, "language_code", None))
     await query.answer()
     await query.edit_message_text(
-        "❓ *Cara Main Harvest Farm*\n\n"
-        "• Tanam → Siram → Panen → Jual.\n"
-        "• Cuaca berubah tiap jam: Hujan mempercepat, Badai berbahaya.\n"
-        "• Hama muncul acak — tap cepat untuk mengusir!\n"
-        "• Hewan butuh pakan, kalau lapar tidak berproduksi.\n"
-        "• Harga pasar berubah tiap 30 menit — jual saat tinggi!",
-        reply_markup=main_keyboard(), parse_mode="Markdown")
+        bot_text("howto", lang),
+        reply_markup=main_keyboard(lang), parse_mode="Markdown")
 
 
 def main() -> None:

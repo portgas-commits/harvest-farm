@@ -121,6 +121,12 @@
   .intro-rules li{padding:4px 0}
   .intro-cta{position:sticky;bottom:0;background:linear-gradient(180deg,rgba(255,253,245,0),#fffdf5 30%);padding:14px 0 4px;text-align:center}
   .btn.guide{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.45);min-height:38px;padding:8px 12px;font-size:13px}
+  /* Pemilih bahasa (v3) */
+  .lang-picker{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+  .lang-picker button{border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.14);color:#fff;border-radius:99px;padding:7px 12px;font-size:13px;font-weight:700;cursor:pointer}
+  .lang-picker button.active{background:#fff;color:#1b5e20}
+  .lang-select{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.45);border-radius:10px;padding:7px 8px;font-size:13px;font-weight:700;width:auto;margin:0;min-height:38px;cursor:pointer}
+  .lang-select option{color:#1b2a1b}
 </style>
 </head>
 <body>
@@ -129,46 +135,53 @@
   <div class="intro-hero">
     <div class="logo">🌾</div>
     <h1>Harvest Farm<br>Kebun Kripto</h1>
-    <p>Tanam • Panen • Jual • Tukar jadi DOGE 🐶</p>
+    <p data-i18n="tagline">Tanam • Panen • Jual • Tukar jadi DOGE 🐶</p>
+    <div class="lang-picker" id="intro-lang">
+      <button data-lang="id">🇮🇩 ID</button>
+      <button data-lang="en">🇬🇧 EN</button>
+      <button data-lang="ru">🇷🇺 RU</button>
+      <button data-lang="es">🇪🇸 ES</button>
+      <button data-lang="pt">🇧🇷 PT</button>
+    </div>
   </div>
   <div class="intro-body">
     <div class="intro-sec">
-      <h2>🌱 Apa itu Harvest Farm?</h2>
-      <p>Game bertani di Telegram: mulai dari kebun kecil, tanam benih, rawat tanaman, pelihara hewan, olah hasil panen jadi produk, lalu jual di pasar. Kumpulkan <b>Koin Panen 🪙</b> dan <b>Permata Panen 💎</b> — Koin bisa kamu tukar jadi <b>DOGE</b> lewat FaucetPay. Makin rajin main, makin besar kebunmu!</p>
+      <h2 data-i18n="intro_what_t">🌱 Apa itu Harvest Farm?</h2>
+      <p data-i18n="intro_what_x" data-i18n-html="1">Game bertani di Telegram: mulai dari kebun kecil, tanam benih, rawat tanaman, pelihara hewan, olah hasil panen jadi produk, lalu jual di pasar. Kumpulkan <b>Koin Panen 🪙</b> dan <b>Permata Panen 💎</b> — Koin bisa kamu tukar jadi <b>DOGE</b> lewat FaucetPay. Makin rajin main, makin besar kebunmu!</p>
     </div>
     <div class="intro-sec">
-      <h2>🎮 Cara Main</h2>
+      <h2 data-i18n="intro_how_t">🎮 Cara Main</h2>
       <ol class="intro-steps">
-        <li><span class="num">1</span><span><b>🌱 Tanam benih</b> di petak kosong (pakai 1 Energi ⚡).</span></li>
-        <li><span class="num">2</span><span><b>💧 Siram &amp; 🧪 pupuk</b> supaya tanaman tumbuh lebih cepat. Usir <b>🐛 hama</b> dengan cepat sebelum hasil panen berkurang!</span></li>
-        <li><span class="num">3</span><span><b>🧺 Panen</b> saat tanaman siap — kadang muncul mutasi <b>Melon Emas 🍈</b> yang langka!</span></li>
-        <li><span class="num">4</span><span><b>💰 Jual</b> hasil panen di Pasar NPC saat harga tinggi, atau pasang jualan sendiri di Pasar Pemain.</span></li>
-        <li><span class="num">5</span><span><b>🚀 Kembangkan kebunmu:</b> beli hewan 🐔, bangun Toko Roti / Pabrik Susu / Dapur Saus 🏭, mancing 🎣 &amp; menambang ⛏️, naik level, isi skill tree, dan gabung guild 🤝.</span></li>
+        <li><span class="num">1</span><span data-i18n="step1" data-i18n-html="1"><b>🌱 Tanam benih</b> di petak kosong (pakai 1 Energi ⚡).</span></li>
+        <li><span class="num">2</span><span data-i18n="step2" data-i18n-html="1"><b>💧 Siram &amp; 🧪 pupuk</b> supaya tanaman tumbuh lebih cepat. Usir <b>🐛 hama</b> dengan cepat sebelum hasil panen berkurang!</span></li>
+        <li><span class="num">3</span><span data-i18n="step3" data-i18n-html="1"><b>🧺 Panen</b> saat tanaman siap — kadang muncul mutasi <b>Melon Emas 🍈</b> yang langka!</span></li>
+        <li><span class="num">4</span><span data-i18n="step4" data-i18n-html="1"><b>💰 Jual</b> hasil panen di Pasar NPC saat harga tinggi, atau pasang jualan sendiri di Pasar Pemain.</span></li>
+        <li><span class="num">5</span><span data-i18n="step5" data-i18n-html="1"><b>🚀 Kembangkan kebunmu:</b> beli hewan 🐔, bangun Toko Roti / Pabrik Susu / Dapur Saus 🏭, mancing 🎣 &amp; menambang ⛏️, naik level, isi skill tree, dan gabung guild 🤝.</span></li>
       </ol>
     </div>
     <div class="intro-sec">
-      <h2>💰 Mata Uang</h2>
+      <h2 data-i18n="intro_cur_t">💰 Mata Uang</h2>
       <div class="intro-cur">
-        <div><b>🪙 Koin Panen</b>Mata uang utama. Untuk beli benih, hewan, bangunan &amp; upgrade. Didapat dari panen, jualan, misi &amp; bonus harian.</div>
-        <div><b>💎 Permata Panen</b>Mata uang premium — <b>hanya dari main</b>: achievement, turnamen, guild &amp; mutasi. 1 💎 = 500 Koin (maks tukar 50 💎/hari).</div>
+        <div><b data-i18n="coins_name">🪙 Koin Panen</b><span data-i18n="coins_desc">Mata uang utama. Untuk beli benih, hewan, bangunan &amp; upgrade. Didapat dari panen, jualan, misi &amp; bonus harian.</span></div>
+        <div><b data-i18n="gems_name">💎 Permata Panen</b><span data-i18n="gems_desc" data-i18n-html="1">Mata uang premium — <b>hanya dari main</b>: achievement, turnamen, guild &amp; mutasi. 1 💎 = 500 Koin (maks tukar 50 💎/hari).</span></div>
       </div>
     </div>
     <div class="intro-sec">
-      <h2>🐶 Cara Dapat DOGE</h2>
-      <p>Kumpulkan <b>200.000 Koin → tukar 0,01 DOGE</b> via FaucetPay (tab 👛 Dompet). Syarat: <b>min. Level 5</b>, maks <b>1x per 7 hari</b>, dan setiap withdraw <b>disetujui admin</b> dulu. Jujur ya: ini <b>bukan janji profit</b> — hadiah tergantung saldo &amp; persetujuan admin, dan kamu <b>tidak perlu deposit apa pun</b> untuk main.</p>
+      <h2 data-i18n="intro_doge_t">🐶 Cara Dapat DOGE</h2>
+      <p data-i18n="intro_doge_x" data-i18n-html="1">Kumpulkan <b>200.000 Koin → tukar 0,01 DOGE</b> via FaucetPay (tab 👛 Dompet). Syarat: <b>min. Level 5</b>, maks <b>1x per 7 hari</b>, dan setiap withdraw <b>disetujui admin</b> dulu. Jujur ya: ini <b>bukan janji profit</b> — hadiah tergantung saldo &amp; persetujuan admin, dan kamu <b>tidak perlu deposit apa pun</b> untuk main.</p>
     </div>
     <div class="intro-sec">
-      <h2>📜 Aturan Main</h2>
+      <h2 data-i18n="intro_rules_t">📜 Aturan Main</h2>
       <ul class="intro-rules">
-        <li>✅ Main jujur — bot, cheat &amp; akun ganda dilarang.</li>
-        <li>📺 Iklan AdGram <b>opsional</b> untuk bonus (Energi, percepat, panen ganda) — bukan syarat untuk main.</li>
-        <li>🌦️ Cuaca berubah tiap jam &amp; musim berganti tiap minggu — manfaatkan bonusnya!</li>
-        <li>🎁 Klaim bonus login harian supaya streak tidak putus (7 hari = +2 💎).</li>
+        <li data-i18n="rule1">✅ Main jujur — bot, cheat &amp; akun ganda dilarang.</li>
+        <li data-i18n="rule2" data-i18n-html="1">📺 Iklan AdGram <b>opsional</b> untuk bonus (Energi, percepat, panen ganda) — bukan syarat untuk main.</li>
+        <li data-i18n="rule3">🌦️ Cuaca berubah tiap jam &amp; musim berganti tiap minggu — manfaatkan bonusnya!</li>
+        <li data-i18n="rule4">🎁 Klaim bonus login harian supaya streak tidak putus (7 hari = +2 💎).</li>
       </ul>
     </div>
     <div class="intro-cta">
-      <button class="btn gold block" id="btn-intro-start" style="font-size:16px;padding:15px">🌾 Mulai Bertani</button>
-      <button class="btn ghost block" id="btn-intro-skip" style="margin-top:8px">Lewati ➜</button>
+      <button class="btn gold block" id="btn-intro-start" style="font-size:16px;padding:15px" data-i18n="btn_start">🌾 Mulai Bertani</button>
+      <button class="btn ghost block" id="btn-intro-skip" style="margin-top:8px" data-i18n="btn_skip">Lewati ➜</button>
     </div>
   </div>
 </div>
@@ -176,18 +189,27 @@
 <header>
   <div class="row between">
     <h1>🌾 Harvest Farm — Kebun Kripto</h1>
-    <button class="btn guide" id="btn-guide" title="Lihat panduan game">❓ Panduan</button>
+    <div class="row">
+      <select id="lang-select" class="lang-select" aria-label="Bahasa">
+        <option value="id">🇮🇩 ID</option>
+        <option value="en">🇬🇧 EN</option>
+        <option value="ru">🇷🇺 RU</option>
+        <option value="es">🇪🇸 ES</option>
+        <option value="pt">🇧🇷 PT</option>
+      </select>
+      <button class="btn guide" id="btn-guide" title="Lihat panduan game" data-i18n="btn_guide">❓ Panduan</button>
+    </div>
   </div>
-  <p>Tanam • Panen • Jual • Tukar jadi DOGE 🐶</p>
+  <p data-i18n="tagline">Tanam • Panen • Jual • Tukar jadi DOGE 🐶</p>
   <div class="hud">
-    <div class="chip"><b id="hud-coins">🪙 —</b><span>Koin Panen</span><small id="hud-gems">💎 —</small></div>
+    <div class="chip"><b id="hud-coins">🪙 —</b><span data-i18n="hud_coins">Koin Panen</span><small id="hud-gems">💎 —</small></div>
     <div class="chip"><b id="hud-level">Level —</b><span id="hud-xp">XP —</span></div>
-    <div class="chip"><b id="hud-energy">⚡ —/50</b><span>Energi</span><small id="hud-regen">regen 1 / 2 mnt</small></div>
+    <div class="chip"><b id="hud-energy">⚡ —/50</b><span data-i18n="hud_energy">Energi</span><small id="hud-regen" data-i18n="hud_regen">regen 1 / 2 mnt</small></div>
   </div>
   <div class="hud" style="margin-top:6px">
     <div class="chip"><b id="hud-season">🌸 —</b><span id="hud-season-bonus">Musim</span></div>
-    <div class="chip"><b id="hud-skill">⭐ — poin skill</b><span>Skill Tree (tab Misi)</span></div>
-    <div class="chip"><b id="hud-tourney">🏆 — poin</b><span>Turnamen Mingguan</span></div>
+    <div class="chip"><b id="hud-skill">⭐ — poin skill</b><span data-i18n="hud_skill_note">Skill Tree (tab Misi)</span></div>
+    <div class="chip"><b id="hud-tourney">🏆 — poin</b><span data-i18n="hud_tourney">Turnamen Mingguan</span></div>
   </div>
 </header>
 
@@ -200,35 +222,35 @@
   <section class="tab active" id="tab-kebun">
     <div class="card">
       <div class="row between">
-        <h2 style="margin:0">🌱 Kebunku</h2>
+        <h2 style="margin:0" data-i18n="garden_t">🌱 Kebunku</h2>
         <span class="pill" id="streak-pill">🔥 Streak: — hari</span>
       </div>
-      <p class="muted" id="garden-hint">Ketuk petak kosong untuk menanam, tanaman tumbuh untuk menyiram / memupuk, tanaman siap untuk memanen. Hama muncul? Ketuk cepat untuk mengusir!</p>
-      <div id="grid" class="grid g3"><div class="loader"><span class="spin">🌱</span><br>Memuat kebun…</div></div>
+      <p class="muted" id="garden-hint" data-i18n="garden_hint">Ketuk petak kosong untuk menanam, tanaman tumbuh untuk menyiram / memupuk, tanaman siap untuk memanen. Hama muncul? Ketuk cepat untuk mengusir!</p>
+      <div id="grid" class="grid g3"><div class="loader"><span class="spin">🌱</span><br><span data-i18n="loading_garden">Memuat kebun…</span></div></div>
       <div class="row" style="margin-top:12px">
-        <button class="btn gold" id="btn-upgrade" style="flex:1">⬆️ Upgrade Grid</button>
-        <button class="btn blue" id="btn-ad-energy" style="flex:1">📺 Iklan: +20 ⚡</button>
+        <button class="btn gold" id="btn-upgrade" style="flex:1" data-i18n="btn_upgrade">⬆️ Upgrade Grid</button>
+        <button class="btn blue" id="btn-ad-energy" style="flex:1" data-i18n="btn_ad_energy">📺 Iklan: +20 ⚡</button>
       </div>
       <p class="muted" id="upgrade-info" style="margin:8px 0 0"></p>
     </div>
 
     <div class="card" id="seed-picker-card" style="display:none">
-      <h2>🌱 Pilih Benih — Petak <span id="seed-plot-no">?</span></h2>
+      <h2 id="seed-picker-title">🌱 Pilih Benih</h2>
       <div class="seedrow" id="seed-row"></div>
       <div class="row">
-        <button class="btn block" id="btn-plant" style="flex:1">🌱 Tanam</button>
-        <button class="btn ghost" id="btn-cancel-seed">Batal</button>
+        <button class="btn block" id="btn-plant" style="flex:1" data-i18n="btn_plant">🌱 Tanam</button>
+        <button class="btn ghost" id="btn-cancel-seed" data-i18n="btn_cancel">Batal</button>
       </div>
     </div>
 
     <div class="card">
-      <h2>📺 Iklan Berhadiah (AdGram)</h2>
-      <p class="muted">Tonton iklan, dapat hadiah. Hadiah hanya masuk kalau iklan selesai ditonton.</p>
+      <h2 data-i18n="ad_t">📺 Iklan Berhadiah (AdGram)</h2>
+      <p class="muted" data-i18n="ad_desc">Tonton iklan, dapat hadiah. Hadiah hanya masuk kalau iklan selesai ditonton.</p>
       <div class="ad-grid">
-        <button class="btn blue small" data-ad="energy">⚡ +20 Energi</button>
-        <button class="btn blue small" data-ad="speed">⏩ Percepat 1 Petak 50%</button>
-        <button class="btn blue small" data-ad="double">✖️2 Panen Berikutnya</button>
-        <button class="btn blue small" data-ad="seed">🌱 Benih Gratis 1 Pack</button>
+        <button class="btn blue small" data-ad="energy" data-i18n="ad_btn_energy">⚡ +20 Energi</button>
+        <button class="btn blue small" data-ad="speed" data-i18n="ad_btn_speed">⏩ Percepat 1 Petak 50%</button>
+        <button class="btn blue small" data-ad="double" data-i18n="ad_btn_double">✖️2 Panen Berikutnya</button>
+        <button class="btn blue small" data-ad="seed" data-i18n="ad_btn_seed">🌱 Benih Gratis 1 Pack</button>
       </div>
       <p class="muted" id="ad-status" style="margin:8px 0 0">Iklan hari ini: —</p>
     </div>
@@ -237,14 +259,14 @@
   <!-- ============ HEWAN ============ -->
   <section class="tab" id="tab-hewan">
     <div class="card">
-      <h2>🐔 Hewan Ternak</h2>
-      <p class="muted">Hewan harus diberi pakan supaya terus berproduksi. Kalau lapar, produksi berhenti.</p>
-      <div class="row"><span class="pill">🌾 Pakan: <b id="feed-count">—</b></span>
-      <button class="btn gold small" id="btn-buy-feed">Beli Pakan (+10)</button></div>
+      <h2 data-i18n="animals_t">🐔 Hewan Ternak</h2>
+      <p class="muted" data-i18n="animals_desc">Hewan harus diberi pakan supaya terus berproduksi. Kalau lapar, produksi berhenti.</p>
+      <div class="row"><span class="pill"><span data-i18n="feed_label">🌾 Pakan:</span> <b id="feed-count">—</b></span>
+      <button class="btn gold small" id="btn-buy-feed" data-i18n="buy_feed">Beli Pakan (+10)</button></div>
       <div id="animal-list" style="margin-top:12px"></div>
     </div>
     <div class="card">
-      <h2>🛒 Beli Hewan</h2>
+      <h2 data-i18n="buy_animal_t">🛒 Beli Hewan</h2>
       <div id="animal-shop"></div>
     </div>
   </section>
@@ -252,39 +274,39 @@
   <!-- ============ PASAR ============ -->
   <section class="tab" id="tab-pasar">
     <div class="card">
-      <h2>🌱 Toko Benih</h2>
+      <h2 data-i18n="seed_shop_t">🌱 Toko Benih</h2>
       <div id="seed-shop"></div>
-      <h3>🧪 Toko Pupuk &amp; Pakan</h3>
+      <h3 data-i18n="fert_shop_t">🧪 Toko Pupuk &amp; Pakan</h3>
       <div class="row">
-        <button class="btn small" id="btn-buy-fert">🧪 Beli Pupuk (+5)</button>
-        <button class="btn gold small" id="btn-buy-feed2">🌾 Beli Pakan (+10)</button>
+        <button class="btn small" id="btn-buy-fert" data-i18n="btn_buy_fert">🧪 Beli Pupuk (+5)</button>
+        <button class="btn gold small" id="btn-buy-feed2" data-i18n="buy_feed">🌾 Beli Pakan (+10)</button>
       </div>
-      <p class="muted">Pupuk: <b id="fert-count">—</b> • Pakan: <b id="feed-count2">—</b></p>
+      <p class="muted" id="fert-feed-line"></p>
     </div>
 
     <div class="card">
-      <h2>🏪 Pasar NPC — Jual Hasil Panen</h2>
-      <p class="muted">Harga berubah-ubah. Kalau lagi naik tinggi, jual sekarang!</p>
+      <h2 data-i18n="npc_t">🏪 Pasar NPC — Jual Hasil Panen</h2>
+      <p class="muted" data-i18n="npc_desc">Harga berubah-ubah. Kalau lagi naik tinggi, jual sekarang!</p>
       <div id="npc-market"></div>
       <div id="sell-panel" style="display:none;margin-top:10px;border-top:1px dashed #c8e6c9;padding-top:10px">
-        <label>Jual <b id="sell-item-name">—</b> — jumlah</label>
+        <label id="sell-label">Jual — jumlah</label>
         <input type="number" id="sell-qty" min="1" value="1" inputmode="numeric">
-        <div class="row"><button class="btn block" id="btn-sell-confirm" style="flex:1">💰 Jual Sekarang</button>
-        <button class="btn ghost" id="btn-sell-cancel">Batal</button></div>
+        <div class="row"><button class="btn block" id="btn-sell-confirm" style="flex:1" data-i18n="sell_confirm">💰 Jual Sekarang</button>
+        <button class="btn ghost" id="btn-sell-cancel" data-i18n="btn_cancel">Batal</button></div>
       </div>
-      <div class="row" style="margin-top:8px"><button class="btn ghost small" id="btn-refresh-market">🔄 Refresh Harga</button></div>
+      <div class="row" style="margin-top:8px"><button class="btn ghost small" id="btn-refresh-market" data-i18n="btn_refresh">🔄 Refresh Harga</button></div>
     </div>
 
     <div class="card">
-      <h2>🤝 Pasar Pemain (P2P)</h2>
-      <label>Item dari inventaris</label>
+      <h2 data-i18n="p2p_t">🤝 Pasar Pemain (P2P)</h2>
+      <label data-i18n="p2p_item_l">Item dari inventaris</label>
       <select id="p2p-item"></select>
-      <label>Jumlah</label>
+      <label data-i18n="p2p_qty_l">Jumlah</label>
       <input type="number" id="p2p-qty" min="1" value="1" inputmode="numeric">
-      <label>Harga / buah (Koin)</label>
+      <label data-i18n="p2p_price_l">Harga / buah (Koin)</label>
       <input type="number" id="p2p-price" min="1" value="100" inputmode="numeric">
-      <button class="btn gold block" id="btn-create-listing">📢 Pasang Jualan</button>
-      <h3>Listing Terbaru</h3>
+      <button class="btn gold block" id="btn-create-listing" data-i18n="btn_list">📢 Pasang Jualan</button>
+      <h3 data-i18n="listings_t">Listing Terbaru</h3>
       <div id="p2p-list"></div>
     </div>
   </section>
@@ -292,20 +314,20 @@
   <!-- ============ PRODUKSI (v2) ============ -->
   <section class="tab" id="tab-produksi">
     <div class="card">
-      <h2>🏭 Bangunan Produksi</h2>
-      <p class="muted">Olah hasil panen jadi produk yang lebih mahal. Bangunan butuh Level tertentu &amp; Koin.</p>
+      <h2 data-i18n="prod_t">🏭 Bangunan Produksi</h2>
+      <p class="muted" data-i18n="prod_desc">Olah hasil panen jadi produk yang lebih mahal. Bangunan butuh Level tertentu &amp; Koin.</p>
       <div id="building-list"></div>
     </div>
     <div class="card">
-      <h2>⚙️ Produksi Berjalan</h2>
+      <h2 data-i18n="jobs_t">⚙️ Produksi Berjalan</h2>
       <div id="job-list"></div>
     </div>
     <div class="card">
-      <h2>🎣 Memancing &amp; ⛏️ Menambang</h2>
-      <p class="muted">Cooldown 30 menit (lebih cepat dengan skill Jelajah &amp; Musim Panas). Hadiah acak — kadang dapat Permata Panen 💎!</p>
+      <h2 data-i18n="fish_mine_t">🎣 Memancing &amp; ⛏️ Menambang</h2>
+      <p class="muted" data-i18n="fish_mine_desc">Cooldown 30 menit (lebih cepat dengan skill Jelajah &amp; Musim Panas). Hadiah acak — kadang dapat Permata Panen 💎!</p>
       <div class="row">
-        <button class="btn blue" id="btn-fish" style="flex:1">🎣 Mancing</button>
-        <button class="btn gold" id="btn-mine" style="flex:1">⛏️ Menambang</button>
+        <button class="btn blue" id="btn-fish" style="flex:1" data-i18n="btn_fish">🎣 Mancing</button>
+        <button class="btn gold" id="btn-mine" style="flex:1" data-i18n="btn_mine">⛏️ Menambang</button>
       </div>
       <p class="muted" id="gather-status" style="margin:8px 0 0"></p>
     </div>
@@ -314,17 +336,17 @@
   <!-- ============ GUILD (v2) ============ -->
   <section class="tab" id="tab-guild">
     <div class="card">
-      <h2>🤝 Guild-ku</h2>
+      <h2 data-i18n="my_guild_t">🤝 Guild-ku</h2>
       <div id="my-guild"></div>
     </div>
     <div class="card">
-      <h2>🏰 Buat Guild</h2>
-      <p class="muted">Biaya 1.000 Koin. Nama 3–20 karakter.</p>
-      <input type="text" id="guild-name" placeholder="Nama guild, contoh: Tani Makmur" maxlength="20">
-      <button class="btn gold block" id="btn-create-guild">🏰 Buat Guild (1.000 🪙)</button>
+      <h2 data-i18n="create_guild_t">🏰 Buat Guild</h2>
+      <p class="muted" data-i18n="create_guild_desc">Biaya 1.000 Koin. Nama 3–20 karakter.</p>
+      <input type="text" id="guild-name" placeholder="Nama guild, contoh: Tani Makmur" maxlength="20" data-i18n-ph="guild_name_ph">
+      <button class="btn gold block" id="btn-create-guild" data-i18n="btn_create_guild">🏰 Buat Guild (1.000 🪙)</button>
     </div>
     <div class="card">
-      <h2>🔍 Daftar Guild</h2>
+      <h2 data-i18n="guild_list_t">🔍 Daftar Guild</h2>
       <div id="guild-list"></div>
     </div>
   </section>
@@ -332,27 +354,27 @@
   <!-- ============ MISI ============ -->
   <section class="tab" id="tab-misi">
     <div class="card">
-      <h2>🎁 Bonus Login Harian</h2>
-      <p class="muted">Streak <b id="streak-text">—</b> hari • Klaim 1x sehari, jangan sampai putus! Streak 7 hari = +2 💎</p>
-      <button class="btn gold block" id="btn-claim-daily">🎁 Klaim Bonus Harian</button>
+      <h2 data-i18n="daily_t">🎁 Bonus Login Harian</h2>
+      <p class="muted" id="daily-desc">Streak — hari • Klaim 1x sehari, jangan sampai putus! Streak 7 hari = +2 💎</p>
+      <button class="btn gold block" id="btn-claim-daily" data-i18n="btn_claim_daily">🎁 Klaim Bonus Harian</button>
     </div>
     <div class="card">
-      <h2>🌸 Musim &amp; Turnamen Mingguan</h2>
+      <h2 data-i18n="season_t">🌸 Musim &amp; Turnamen Mingguan</h2>
       <div id="season-card"></div>
     </div>
     <div class="card">
-      <h2>⭐ Skill Tree</h2>
-      <p class="muted">Dapat 1 poin skill tiap naik level. Efek langsung terasa di kebun, produksi &amp; pasar.</p>
+      <h2 data-i18n="skill_t">⭐ Skill Tree</h2>
+      <p class="muted" data-i18n="skill_desc">Dapat 1 poin skill tiap naik level. Efek langsung terasa di kebun, produksi &amp; pasar.</p>
       <div id="skill-list"></div>
     </div>
     <div class="card">
-      <h2>🎯 Misi Harian</h2>
+      <h2 data-i18n="missions_t">🎯 Misi Harian</h2>
       <div id="mission-list"></div>
     </div>
     <div class="card">
-      <h2>🏆 Achievement</h2>
+      <h2 data-i18n="ach_t">🏆 Achievement</h2>
       <div id="achievements-v2"></div>
-      <h3>Statistik</h3>
+      <h3 data-i18n="stats_t">Statistik</h3>
       <div id="achievements" class="kvs"></div>
     </div>
   </section>
@@ -360,14 +382,14 @@
   <!-- ============ DOMPET ============ -->
   <section class="tab" id="tab-dompet">
     <div class="card">
-      <h2>👛 Dompet</h2>
+      <h2 data-i18n="wallet_t">👛 Dompet</h2>
       <div class="kvs">
-        <div>Saldo Koin<b id="wallet-coins">—</b></div>
-        <div>Level<b id="wallet-level">—</b></div>
-        <div>Setara DOGE (kurs)<b id="wallet-doge">—</b></div>
-        <div>Streak Login<b id="wallet-streak">—</b></div>
+        <div><span data-i18n="wallet_coins">Saldo Koin</span><b id="wallet-coins">—</b></div>
+        <div><span data-i18n="wallet_level">Level</span><b id="wallet-level">—</b></div>
+        <div><span data-i18n="wallet_doge">Setara DOGE (kurs)</span><b id="wallet-doge">—</b></div>
+        <div><span data-i18n="wallet_streak">Streak Login</span><b id="wallet-streak">—</b></div>
       </div>
-      <p style="font-size:13px;line-height:1.6;background:#fff8e1;border:1px solid #ffe082;border-radius:12px;padding:10px">
+      <p id="wallet-info" style="font-size:13px;line-height:1.6;background:#fff8e1;border:1px solid #ffe082;border-radius:12px;padding:10px">
         💱 <b>Kurs: 200.000 Koin Panen = 0,01 DOGE</b><br>
         ✅ Min. withdraw: <b>200.000 Koin</b> &nbsp;•&nbsp; Min. Level: <b>5</b><br>
         ⏳ Maks. <b>1x per 7 hari</b> &nbsp;•&nbsp; Dibayar ke FaucetPay (email / username).<br>
@@ -375,23 +397,23 @@
       </p>
     </div>
     <div class="card">
-      <h2>💎 Tukar Permata → Koin</h2>
-      <label>Jumlah Permata (maks 50/hari)</label>
+      <h2 data-i18n="convert_t">💎 Tukar Permata → Koin</h2>
+      <label data-i18n="convert_l">Jumlah Permata (maks 50/hari)</label>
       <input type="number" id="gem-qty" min="1" max="50" value="1" inputmode="numeric">
       <p class="muted" id="gem-preview">≈ 500 Koin</p>
-      <button class="btn blue block" id="btn-convert-gems">💱 Tukar Permata</button>
+      <button class="btn blue block" id="btn-convert-gems" data-i18n="convert_btn">💱 Tukar Permata</button>
     </div>
     <div class="card">
-      <h2>💸 Tarik DOGE</h2>
-      <label>Jumlah Koin (min 200.000)</label>
+      <h2 data-i18n="wd_t">💸 Tarik DOGE</h2>
+      <label data-i18n="wd_coins_l">Jumlah Koin (min 200.000)</label>
       <input type="number" id="wd-coins" min="200000" step="1000" value="200000" inputmode="numeric">
-      <label>Email / Username FaucetPay</label>
-      <input type="text" id="wd-dest" placeholder="contoh: kamu@email.com" autocomplete="off">
+      <label data-i18n="wd_dest_l">Email / Username FaucetPay</label>
+      <input type="text" id="wd-dest" placeholder="contoh: kamu@email.com" autocomplete="off" data-i18n-ph="wd_dest_ph">
       <p class="muted" id="wd-preview">≈ 0,01 DOGE</p>
-      <button class="btn gold block" id="btn-withdraw">💸 Ajukan Withdraw</button>
+      <button class="btn gold block" id="btn-withdraw" data-i18n="wd_btn">💸 Ajukan Withdraw</button>
     </div>
     <div class="card">
-      <h2>📜 Riwayat Withdraw</h2>
+      <h2 data-i18n="wd_hist_t">📜 Riwayat Withdraw</h2>
       <div id="wd-history"></div>
     </div>
   </section>
@@ -399,22 +421,51 @@
   <!-- ============ PERINGKAT ============ -->
   <section class="tab" id="tab-peringkat">
     <div class="card">
-      <h2>🏆 Peringkat — Top Petani</h2>
-      <div id="leaderboard"><div class="loader"><span class="spin">🏆</span><br>Memuat peringkat…</div></div>
-      <button class="btn ghost block" id="btn-refresh-lb" style="margin-top:10px">🔄 Refresh</button>
+      <h2 data-i18n="lb_t">🏆 Peringkat — Top Petani</h2>
+      <div id="leaderboard"><div class="loader"><span class="spin">🏆</span><br><span data-i18n="loading_lb">Memuat peringkat…</span></div></div>
+      <button class="btn ghost block" id="btn-refresh-lb" style="margin-top:10px" data-i18n="btn_refresh_lb">🔄 Refresh</button>
+    </div>
+  </section>
+
+  <!-- ============ REFERRAL (v3) ============ -->
+  <section class="tab" id="tab-referral">
+    <div class="card">
+      <h2 data-i18n="ref_t">🎁 Referral — Ajak Teman</h2>
+      <p class="muted" data-i18n="ref_desc" data-i18n-html="1">Bagikan link referral kamu. Teman yang masuk lewat linkmu dapat <b>+200 Koin</b> — dan saat dia mencapai <b>Level 3</b>, kamu dapat <b>+500 Koin + 2 💎 Permata Panen</b>!</p>
+      <label data-i18n="ref_link_l">Link referral kamu</label>
+      <div class="row">
+        <input type="text" id="ref-link" readonly style="flex:1" value="">
+        <button class="btn small" id="btn-copy-ref" data-i18n="btn_copy">📋 Salin</button>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <button class="btn blue" id="btn-share-ref" style="flex:1" data-i18n="btn_share">✈️ Bagikan ke Telegram</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2 data-i18n="ref_stats_t">📊 Statistik Referral</h2>
+      <div class="kvs" id="ref-stats"></div>
+    </div>
+    <div class="card">
+      <h2 data-i18n="ref_rules_t">📜 Cara Dapat Hadiah</h2>
+      <ol class="intro-steps" id="ref-rules"></ol>
+    </div>
+    <div class="card">
+      <h2 data-i18n="ref_list_t">👥 Teman yang Kamu Undang</h2>
+      <div id="ref-list"></div>
     </div>
   </section>
 </div>
 
 <nav>
-  <button data-tab="kebun" class="active"><span class="ic">🌱</span>Kebun</button>
-  <button data-tab="hewan"><span class="ic">🐔</span>Hewan</button>
-  <button data-tab="produksi"><span class="ic">🏭</span>Produksi</button>
-  <button data-tab="pasar"><span class="ic">🏪</span>Pasar</button>
-  <button data-tab="guild"><span class="ic">🤝</span>Guild</button>
-  <button data-tab="misi"><span class="ic">🎯</span>Misi</button>
-  <button data-tab="dompet"><span class="ic">👛</span>Dompet</button>
-  <button data-tab="peringkat"><span class="ic">🏆</span>Peringkat</button>
+  <button data-tab="kebun" class="active"><span class="ic">🌱</span><span data-i18n="nav_kebun">Kebun</span></button>
+  <button data-tab="hewan"><span class="ic">🐔</span><span data-i18n="nav_hewan">Hewan</span></button>
+  <button data-tab="produksi"><span class="ic">🏭</span><span data-i18n="nav_produksi">Produksi</span></button>
+  <button data-tab="pasar"><span class="ic">🏪</span><span data-i18n="nav_pasar">Pasar</span></button>
+  <button data-tab="guild"><span class="ic">🤝</span><span data-i18n="nav_guild">Guild</span></button>
+  <button data-tab="misi"><span class="ic">🎯</span><span data-i18n="nav_misi">Misi</span></button>
+  <button data-tab="dompet"><span class="ic">👛</span><span data-i18n="nav_dompet">Dompet</span></button>
+  <button data-tab="peringkat"><span class="ic">🏆</span><span data-i18n="nav_peringkat">Peringkat</span></button>
+  <button data-tab="referral"><span class="ic">🎁</span><span data-i18n="nav_referral">Referral</span></button>
 </nav>
 
 <div id="toast"></div>
@@ -446,24 +497,875 @@ var PRODUCTS = { // v2: produk olahan & hasil mancing/menambang
   wol:{name:'Wol', emoji:'🧶'}, ikan:{name:'Ikan', emoji:'🐟'}, ikan_emas:{name:'Ikan Emas', emoji:'✨'},
   batu:{name:'Batu', emoji:'🪨'}, bijih_emas:{name:'Bijih Emas', emoji:'⛏️'}
 };
-var ERR_ID = {
-  not_enough_coins:'Koin tidak cukup.', not_enough_energy:'Energi habis. Tunggu regen atau tonton iklan +20 Energi.',
-  plot_not_empty:'Petak sudah terisi.', plot_empty:'Petak masih kosong.', no_seed:'Benih habis. Beli dulu di Toko Benih.',
-  not_ready:'Belum siap dipanen.', no_fertilizer:'Pupuk habis.', no_feed:'Pakan habis. Beli pakan dulu.',
-  not_enough_item:'Jumlah item di inventaris tidak cukup.', level_too_low:'Level belum cukup (min. Level 5).',
-  min_withdraw:'Minimal withdraw 200.000 Koin.', cooldown:'Withdraw hanya 1x per 7 hari. Coba lagi nanti.',
-  already_claimed:'Sudah diklaim hari ini.', mission_not_done:'Misi belum selesai.', invalid_destination:'Isi email / username FaucetPay yang benar.',
-  ad_limit:'Batas hadiah iklan hari ini sudah habis.', invalid_action:'Aksi tidak dikenal.', unauthorized:'Sesi tidak valid. Buka lagi dari Telegram.',
-  level_locked:'Level belum cukup untuk ini. Naik level dulu ya!', not_for_sale:'Item ini tidak dijual — dapat dari mutasi panen.',
-  no_skill_points:'Tidak ada poin skill. Naik level dulu untuk dapat poin skill.', insufficient_gems:'Permata Panen tidak cukup.',
-  daily_limit:'Batas harian sudah habis. Coba lagi besok.', already_in_guild:'Kamu sudah ada di guild.',
-  guild_full:'Guild sudah penuh (20 anggota).', not_in_guild:'Kamu belum gabung guild.',
-  goal_not_reached:'Tujuan guild minggu ini belum tercapai.', not_enough_points:'Poin musim belum cukup (min 50).',
-  not_owned:'Kamu belum punya bangunan ini.', already_owned:'Bangunan ini sudah kamu miliki.',
-  no_capacity:'Kapasitas produksi penuh — ambil hasil dulu atau upgrade bangunan.', max_level:'Sudah level maksimal.',
-  name_taken:'Nama guild sudah dipakai.', cooldown:'Masih cooldown. Tunggu sebentar lagi.'
+/* ================= I18N (v3) — Indonesia, English, Русский, Español, Português ================= */
+var LANGS = {
+id:{
+tagline:'Tanam • Panen • Jual • Tukar jadi DOGE 🐶',btn_guide:'❓ Panduan',lang_pick:'🌐 Bahasa',
+hud_coins:'Koin Panen',hud_gems:'Permata',hud_energy:'Energi',hud_regen:'regen 1 / 2 mnt',hud_season:'Musim',hud_skill_note:'Skill Tree (tab Misi)',hud_tourney:'Turnamen Mingguan',
+nav_kebun:'Kebun',nav_hewan:'Hewan',nav_produksi:'Produksi',nav_pasar:'Pasar',nav_guild:'Guild',nav_misi:'Misi',nav_dompet:'Dompet',nav_peringkat:'Peringkat',nav_referral:'Referral',
+intro_what_t:'🌱 Apa itu Harvest Farm?',
+intro_what_x:'Game bertani di Telegram: mulai dari kebun kecil, tanam benih, rawat tanaman, pelihara hewan, olah hasil panen jadi produk, lalu jual di pasar. Kumpulkan <b>Koin Panen 🪙</b> dan <b>Permata Panen 💎</b> — Koin bisa kamu tukar jadi <b>DOGE</b> lewat FaucetPay. Makin rajin main, makin besar kebunmu!',
+intro_how_t:'🎮 Cara Main',
+step1:'<b>🌱 Tanam benih</b> di petak kosong (pakai 1 Energi ⚡).',
+step2:'<b>💧 Siram & 🧪 pupuk</b> supaya tanaman tumbuh lebih cepat. Usir <b>🐛 hama</b> dengan cepat sebelum hasil panen berkurang!',
+step3:'<b>🧺 Panen</b> saat tanaman siap — kadang muncul mutasi <b>Melon Emas 🍈</b> yang langka!',
+step4:'<b>💰 Jual</b> hasil panen di Pasar NPC saat harga tinggi, atau pasang jualan sendiri di Pasar Pemain.',
+step5:'<b>🚀 Kembangkan kebunmu:</b> beli hewan 🐔, bangun Toko Roti / Pabrik Susu / Dapur Saus 🏭, mancing 🎣 & menambang ⛏️, naik level, isi skill tree, dan gabung guild 🤝.',
+intro_cur_t:'💰 Mata Uang',coins_name:'🪙 Koin Panen',
+coins_desc:'Mata uang utama. Untuk beli benih, hewan, bangunan & upgrade. Didapat dari panen, jualan, misi & bonus harian.',
+gems_name:'💎 Permata Panen',
+gems_desc:'Mata uang premium — <b>hanya dari main</b>: achievement, turnamen, guild & mutasi. 1 💎 = 500 Koin (maks tukar 50 💎/hari).',
+intro_doge_t:'🐶 Cara Dapat DOGE',
+intro_doge_x:'Kumpulkan <b>200.000 Koin → tukar 0,01 DOGE</b> via FaucetPay (tab 👛 Dompet). Syarat: <b>min. Level 5</b>, maks <b>1x per 7 hari</b>, dan setiap withdraw <b>disetujui admin</b> dulu. Jujur ya: ini <b>bukan janji profit</b> — hadiah tergantung saldo & persetujuan admin, dan kamu <b>tidak perlu deposit apa pun</b> untuk main.',
+intro_rules_t:'📜 Aturan Main',
+rule1:'✅ Main jujur — bot, cheat & akun ganda dilarang.',
+rule2:'📺 Iklan AdGram <b>opsional</b> untuk bonus (Energi, percepat, panen ganda) — bukan syarat untuk main.',
+rule3:'🌦️ Cuaca berubah tiap jam & musim berganti tiap minggu — manfaatkan bonusnya!',
+rule4:'🎁 Klaim bonus login harian supaya streak tidak putus (7 hari = +2 💎).',
+btn_start:'🌾 Mulai Bertani',btn_skip:'Lewati ➜',
+garden_t:'🌱 Kebunku',
+garden_hint:'Ketuk petak kosong untuk menanam, tanaman tumbuh untuk menyiram / memupuk, tanaman siap untuk memanen. Hama muncul? Ketuk cepat untuk mengusir!',
+btn_upgrade:'⬆️ Upgrade Grid',btn_ad_energy:'📺 Iklan: +20 ⚡',
+upgrade_info:'Grid saat ini {size}×{size} ({total} petak). Upgrade menambah petak tanam.',
+ad_t:'📺 Iklan Berhadiah (AdGram)',ad_desc:'Tonton iklan, dapat hadiah. Hadiah hanya masuk kalau iklan selesai ditonton.',
+ad_today:'Iklan hari ini: {n} hadiah diklaim',seed_pick_t:'🌱 Pilih Benih — Petak {n}',
+btn_plant:'🌱 Tanam',btn_cancel:'Batal',empty_plot:'Petak {n}',tap_plant:'Ketuk untuk tanam',
+ready_harvest:'✅ Siap panen!',pest_alert:'🐛 HAMA! Ketuk cepat!',
+loading_garden:'Memuat kebun…',no_plots:'Belum ada petak. Coba refresh.',
+growing_wait:'🌿 Tanaman sedang tumbuh — tunggu sebentar ya.',choose_seed:'Pilih benih dulu ya 🌱',
+confirm_fert:'Tanaman sudah disiram. Beri pupuk supaya tumbuh lebih cepat?',
+stock_label:'Stok: {n}',
+animals_t:'🐔 Hewan Ternak',
+animals_desc:'Hewan harus diberi pakan supaya terus berproduksi. Kalau lapar, produksi berhenti.',
+buy_feed:'Beli Pakan (+10)',buy_animal_t:'🛒 Beli Hewan',
+no_animals:'Belum punya hewan. Beli di bawah yuk!',
+animal_hungry:'🍽️ Lapar — beri pakan dulu!',animal_fed:'😋 Sudah diberi pakan',animal_ready:'✅ <b>Siap dikumpulkan!</b>',
+feed_btn:'🌾 Beri Pakan',collect_btn:'🧺 Kumpulkan',buy_btn:'Beli',
+animal_shop_note:'Harga beli hewan mengikuti harga dari backend (tanya bot kalau tombol gagal — cek pesan error).',
+produce_in:'Hasil ({name}) dalam:',
+seed_shop_t:'🌱 Toko Benih',fert_shop_t:'🧪 Toko Pupuk & Pakan',btn_buy_fert:'🧪 Beli Pupuk (+5)',
+npc_t:'🏪 Pasar NPC — Jual Hasil Panen',npc_desc:'Harga berubah-ubah. Kalau lagi naik tinggi, jual sekarang!',
+btn_refresh:'🔄 Refresh Harga',sell_qty_l:'Jual {name} — jumlah',sell_confirm:'💰 Jual Sekarang',
+p2p_t:'🤝 Pasar Pemain (P2P)',p2p_item_l:'Item dari inventaris',p2p_qty_l:'Jumlah',p2p_price_l:'Harga / buah (Koin)',
+btn_list:'📢 Pasang Jualan',listings_t:'Listing Terbaru',
+no_listings:'Belum ada listing pemain. Jadilah penjual pertama!',
+buy_listing:'🛒 Beli',
+melon_note:'🍈 Benih Melon Emas tidak dijual — dapat dari mutasi saat panen (peluang 4%). Stok Melon: {n}',
+base_price:'Harga dasar {n}',sell_btn:'Jual',high_price:'🔥 Harga lagi tinggi, jual sekarang!',
+seller_label:'Penjual: {name} • Total: {total} 🪙',grows_in:'tumbuh {t}',
+prod_t:'🏭 Bangunan Produksi',
+prod_desc:'Olah hasil panen jadi produk yang lebih mahal. Bangunan butuh Level tertentu & Koin.',
+jobs_t:'⚙️ Produksi Berjalan',
+no_jobs:'Tidak ada produksi berjalan. Bangun bangunan dulu, lalu mulai produksi.',
+fish_mine_t:'🎣 Memancing & ⛏️ Menambang',
+fish_mine_desc:'Cooldown 30 menit (lebih cepat dengan skill Jelajah & Musim Panas). Hadiah acak — kadang dapat Permata Panen 💎!',
+btn_fish:'🎣 Mancing',btn_mine:'⛏️ Menambang',
+gather_status:'🎣 Mancing: {fish} • ⛏️ Menambang: {mine} • Total: {fc}× mancing, {mc}× menambang',
+ready_now:'siap!',wait_for:'tunggu {t}',
+no_buildings:'Belum ada bangunan.',build_btn:'Bangun — {price} 🪙',
+upgrade_build_btn:'⬆️ Upgrade ({price} 🪙)',start_prod_btn:'⚙️ Mulai Produksi',collect_job_btn:'🧺 Ambil Hasil',
+build_level:'Lv {lv} • kapasitas {cap} job',build_min:'Min Lv {n}',
+materials_label:'Bahan di inventaris:',
+my_guild_t:'🤝 Guild-ku',
+no_guild:'Belum gabung guild. Buat guild sendiri atau gabung dari daftar di bawah.',
+create_guild_t:'🏰 Buat Guild',create_guild_desc:'Biaya 1.000 Koin. Nama 3–20 karakter.',
+guild_name_ph:'Nama guild, contoh: Tani Makmur',btn_create_guild:'🏰 Buat Guild (1.000 🪙)',
+guild_list_t:'🔍 Daftar Guild',no_guilds:'Belum ada guild. Jadilah yang pertama!',
+btn_join:'Gabung',btn_leave:'🚪 Keluar Guild',btn_claim_guild:'🎁 Klaim +{n} 💎',
+goal_t:'Tujuan mingguan: <b>{a} / {b}</b> poin musim anggota',
+goal_reached:'Tujuan tercapai! Klaim hadiahmu 🎉',goal_claimed:'Hadiah minggu ini sudah diklaim ✅',
+goal_hint:'Kumpulkan poin musim bersama — panen, jual, mancing, produksi!',
+members_label:'{n}/20 anggota',
+daily_t:'🎁 Bonus Login Harian',
+daily_desc:'Streak <b>{n}</b> hari • Klaim 1x sehari, jangan sampai putus! Streak 7 hari = +2 💎',
+btn_claim_daily:'🎁 Klaim Bonus Harian',season_t:'🌸 Musim & Turnamen Mingguan',
+season_points_me:'Poin musimku: <b>{n}</b> • Hadiah klaim 1×/musim (min 50 poin): 🥇 50 💎 • 🥈🥉 30 💎 • Top 10: 15 💎 • lainnya: 5 💎',
+season_top_t:'Top Turnamen Minggu Ini',btn_claim_season:'🏆 Klaim Hadiah Turnamen',
+no_season_top:'Belum ada poin musim minggu ini.',
+skill_t:'⭐ Skill Tree',
+skill_desc:'Dapat 1 poin skill tiap naik level. Efek langsung terasa di kebun, produksi & pasar.',
+skill_points_left:'Poin skill tersedia: <b>{n}</b> • Dapat 1 poin tiap naik level.',
+skill_up_btn:'Naik (1 ⭐)',
+skill_desc_bertani:'−5% waktu tumbuh & +1 hasil panen per 2 level',
+skill_desc_produksi:'−10% waktu proses produksi per level',
+skill_desc_dagang:'+5% harga jual Pasar NPC per level',
+skill_desc_jelajah:'−10% cooldown & +10% hadiah mancing/menambang per level',
+missions_t:'🎯 Misi Harian',no_missions:'Belum ada misi hari ini.',
+ach_t:'🏆 Achievement',stats_t:'Statistik',no_ach:'Belum ada achievement.',
+claim_btn:'🎁 Klaim {reward} 🪙',claimed_btn:'✅ Sudah diklaim',
+reward_label:'Hadiah: {coins} 🪙{gems}',done_label:' • Selesai!',
+stat_level:'Level Saat Ini',stat_xp:'Total XP',stat_streak:'Streak Login',stat_grid:'Ukuran Kebun',
+stat_animals:'Hewan Dimiliki',stat_double:'Panen Ganda Aktif',stat_double_yes:'✖️2 Ya',stat_double_no:'Tidak',
+wallet_t:'👛 Dompet',wallet_coins:'Saldo Koin',wallet_level:'Level',wallet_doge:'Setara DOGE (kurs)',wallet_streak:'Streak Login',
+wallet_info:'💱 <b>Kurs: 200.000 Koin Panen = 0,01 DOGE</b><br>✅ Min. withdraw: <b>200.000 Koin</b> &nbsp;•&nbsp; Min. Level: <b>5</b><br>⏳ Maks. <b>1x per 7 hari</b> &nbsp;•&nbsp; Dibayar ke FaucetPay (email / username).<br>💎 Permata Panen: <b>{gems}</b> • Kurs tukar: <b>1 💎 = 500 Koin</b> (maks 50 💎/hari)',
+convert_t:'💎 Tukar Permata → Koin',convert_l:'Jumlah Permata (maks 50/hari)',convert_btn:'💱 Tukar Permata',
+wd_t:'💸 Tarik DOGE',wd_coins_l:'Jumlah Koin (min 200.000)',wd_dest_l:'Email / Username FaucetPay',
+wd_btn:'💸 Ajukan Withdraw',wd_hist_t:'📜 Riwayat Withdraw',no_wd:'Belum ada riwayat withdraw.',
+wd_dest_ph:'contoh: kamu@email.com',convert_preview:'≈ {n} Koin',wd_preview:'≈ {n} DOGE',
+ref_t:'🎁 Referral — Ajak Teman',
+ref_desc:'Bagikan link referral kamu. Teman yang masuk lewat linkmu dapat <b>+200 Koin</b> — dan saat dia mencapai <b>Level 3</b>, kamu dapat <b>+500 Koin + 2 💎 Permata Panen</b>!',
+ref_link_l:'Link referral kamu',btn_copy:'📋 Salin',btn_share:'✈️ Bagikan ke Telegram',
+ref_stats_t:'📊 Statistik Referral',ref_invited:'Teman Diundang',ref_rewarded:'Sudah Dapat Hadiah',
+ref_earned:'Total Koin Hadiah',ref_earned_gems:'Total Permata Hadiah',ref_rules_t:'📜 Cara Dapat Hadiah',
+ref_rule1:'<b>Bagikan link referral</b> kamu ke teman (Telegram, WhatsApp, sosmed).',
+ref_rule2:'Teman <b>daftar lewat linkmu</b> dan langsung dapat <b>+200 Koin</b> bonus awal.',
+ref_rule3:'Saat temanmu mencapai <b>Level 3</b>, kamu dapat <b>+500 Koin + 2 💎</b> — sekali per teman.',
+ref_rule4:'Main jujur: <b>tidak bisa mengundang diri sendiri</b>, satu teman hanya dihitung untuk satu pengundang, dan akun ganda dilarang.',
+ref_list_t:'👥 Teman yang Kamu Undang',
+ref_none:'Belum ada teman yang diundang. Bagikan link referral kamu yuk!',
+ref_copied:'📋 Link referral disalin!',ref_level:'Level {n}',
+ref_rewarded_badge:'✅ Hadiah masuk',ref_pending:'⏳ Menunggu Level 3',
+ref_share_text:'🌾 Ayo main Harvest Farm — game bertani di Telegram! Tanam, panen, jual, tukar Koin jadi DOGE. Daftar lewat linkku dan dapat +200 Koin!',
+lb_t:'🏆 Peringkat — Top Petani',btn_refresh_lb:'🔄 Refresh',no_lb:'Belum ada peringkat.',
+lb_fail:'Gagal memuat peringkat. Backend belum terhubung?',
+conn_err:'⚠️ <b>Backend belum terhubung</b> — cek API_URL. Buka dengan <code>?api=https://...railway.app</code> atau set <code>window.HARVESTFARM_API_URL</code>. Data di bawah ini data terakhir yang tersimpan.',
+toast_welcome:'🌾 Selamat bertani!',loading_lb:'Memuat peringkat…',
+empty_inventory:'— Inventaris kosong —',loading_market:'Harga pasar belum tersedia.',
+market_updated:'🔄 Harga pasar diperbarui',invalid_amount:'Jumlah tidak valid.',
+empty_p2p:'Inventaris kosong — tidak ada yang bisa dijual.',
+amount_price_err:'Jumlah dan harga harus diisi.',
+guild_name_short:'Nama guild minimal 3 karakter.',gems_range:'Jumlah Permata 1–50.',
+wd_min:'Minimal withdraw 200.000 Koin.',wd_dest_empty:'Isi email / username FaucetPay dulu.',
+wd_submitted:'💸 Withdraw diajukan!',wd_status:'Status: {s}',
+ad_not_ready:'📺 Iklan belum aktif — isi Block ID AdGram dulu',
+ad_not_done:'Iklan belum selesai — hadiah tidak masuk.',ad_reward_in:'🎉 Hadiah iklan masuk!',
+no_growing:'Tidak ada tanaman yang sedang tumbuh.',success_default:'Berhasil! ✅',
+err_fallback:'Terjadi kesalahan: {code}',
+level_label:'Level {n}',xp_label:'XP {a} / {b}',xp_max:'XP {a} (MAX)',
+streak_pill:'🔥 Streak: {n} hari',skill_points_hud:'⭐ {n} poin skill',tourney_points:'🏆 {n} poin',
+mission_progress:'{a} / {b} • Hadiah: {c} 🪙',
+weather_change:'ganti cuaca:',event_ends:'berakhir:',season_change:'ganti musim:',ready_label:'Siap! ✅',
+plot_empty_backend:'Backend belum terhubung — cek API_URL.',
+plot_empty_hint:'Buka file ini dengan ?api=https://alamat-backend-railway-kamu',
+confirm_leave:'Yakin keluar dari guild?'
+},
+en:{
+tagline:'Plant • Harvest • Sell • Trade for DOGE 🐶',btn_guide:'❓ Guide',lang_pick:'🌐 Language',
+hud_coins:'Harvest Coins',hud_gems:'Gems',hud_energy:'Energy',hud_regen:'regen 1 / 2 min',hud_season:'Season',hud_skill_note:'Skill Tree (Quests tab)',hud_tourney:'Weekly Tournament',
+nav_kebun:'Farm',nav_hewan:'Animals',nav_produksi:'Factory',nav_pasar:'Market',nav_guild:'Guild',nav_misi:'Quests',nav_dompet:'Wallet',nav_peringkat:'Ranking',nav_referral:'Referral',
+intro_what_t:'🌱 What is Harvest Farm?',
+intro_what_x:'A farming game on Telegram: start with a small garden, plant seeds, care for crops, raise animals, turn your harvest into products, then sell them at the market. Collect <b>Harvest Coins 🪙</b> and <b>Harvest Gems 💎</b> — Coins can be exchanged for <b>DOGE</b> via FaucetPay. The more you play, the bigger your farm grows!',
+intro_how_t:'🎮 How to Play',
+step1:'<b>🌱 Plant seeds</b> in an empty plot (uses 1 Energy ⚡).',
+step2:'<b>💧 Water & 🧪 fertilize</b> so crops grow faster. Chase <b>🐛 pests</b> away quickly before they cut your harvest!',
+step3:'<b>🧺 Harvest</b> when crops are ready — sometimes a rare <b>Golden Melon 🍈</b> mutation appears!',
+step4:'<b>💰 Sell</b> your harvest at the NPC Market when prices are high, or list your own goods at the Player Market.',
+step5:'<b>🚀 Grow your farm:</b> buy animals 🐔, build the Bakery / Dairy / Sauce Kitchen 🏭, fish 🎣 & mine ⛏️, level up, fill your skill tree, and join a guild 🤝.',
+intro_cur_t:'💰 Currencies',coins_name:'🪙 Harvest Coins',
+coins_desc:'The main currency. For seeds, animals, buildings & upgrades. Earned from harvests, sales, quests & daily bonuses.',
+gems_name:'💎 Harvest Gems',
+gems_desc:'Premium currency — <b>earned only by playing</b>: achievements, tournaments, guilds & mutations. 1 💎 = 500 Coins (max 50 💎/day).',
+intro_doge_t:'🐶 How to Earn DOGE',
+intro_doge_x:'Collect <b>200,000 Coins → exchange for 0.01 DOGE</b> via FaucetPay (👛 Wallet tab). Requirements: <b>min. Level 5</b>, max <b>1× per 7 days</b>, and every withdrawal needs <b>admin approval</b> first. Honestly: this is <b>not a profit promise</b> — rewards depend on balance & admin approval, and you <b>never need to deposit anything</b> to play.',
+intro_rules_t:'📜 Rules',
+rule1:'✅ Play fair — bots, cheats & multiple accounts are banned.',
+rule2:'📺 AdGram ads are <b>optional</b> for bonuses (Energy, speed-up, double harvest) — never required to play.',
+rule3:'🌦️ Weather changes every hour & seasons change weekly — use the bonuses!',
+rule4:'🎁 Claim your daily login bonus so your streak never breaks (7 days = +2 💎).',
+btn_start:'🌾 Start Farming',btn_skip:'Skip ➜',
+garden_t:'🌱 My Farm',
+garden_hint:'Tap an empty plot to plant, a growing crop to water / fertilize, a ready crop to harvest. Pests? Tap fast to chase them away!',
+btn_upgrade:'⬆️ Upgrade Grid',btn_ad_energy:'📺 Ad: +20 ⚡',
+upgrade_info:'Current grid {size}×{size} ({total} plots). Upgrading adds more plots.',
+ad_t:'📺 Rewarded Ads (AdGram)',ad_desc:'Watch ads, earn rewards. Rewards only count if you finish the ad.',
+ad_today:'Ads today: {n} rewards claimed',seed_pick_t:'🌱 Pick a Seed — Plot {n}',
+btn_plant:'🌱 Plant',btn_cancel:'Cancel',empty_plot:'Plot {n}',tap_plant:'Tap to plant',
+ready_harvest:'✅ Ready to harvest!',pest_alert:'🐛 PEST! Tap fast!',
+loading_garden:'Loading farm…',no_plots:'No plots yet. Try refreshing.',
+growing_wait:'🌿 The crop is still growing — wait a little.',choose_seed:'Pick a seed first 🌱',
+confirm_fert:'Already watered. Add fertilizer to grow faster?',
+stock_label:'Stock: {n}',
+animals_t:'🐔 Livestock',
+animals_desc:'Animals need feed to keep producing. If hungry, production stops.',
+buy_feed:'Buy Feed (+10)',buy_animal_t:'🛒 Buy Animals',
+no_animals:'No animals yet. Buy one below!',
+animal_hungry:'🍽️ Hungry — feed first!',animal_fed:'😋 Already fed',animal_ready:'✅ <b>Ready to collect!</b>',
+feed_btn:'🌾 Feed',collect_btn:'🧺 Collect',buy_btn:'Buy',
+animal_shop_note:'Animal prices come from the backend (check the error message if a button fails).',
+produce_in:'Next {name} in:',
+seed_shop_t:'🌱 Seed Shop',fert_shop_t:'🧪 Fertilizer & Feed Shop',btn_buy_fert:'🧪 Buy Fertilizer (+5)',
+npc_t:'🏪 NPC Market — Sell Your Harvest',npc_desc:'Prices keep changing. If they are high, sell now!',
+btn_refresh:'🔄 Refresh Prices',sell_qty_l:'Sell {name} — quantity',sell_confirm:'💰 Sell Now',
+p2p_t:'🤝 Player Market (P2P)',p2p_item_l:'Item from inventory',p2p_qty_l:'Quantity',p2p_price_l:'Price / unit (Coins)',
+btn_list:'📢 List for Sale',listings_t:'Latest Listings',
+no_listings:'No player listings yet. Be the first seller!',
+buy_listing:'🛒 Buy',
+melon_note:'🍈 Golden Melon seeds are not sold — get them from harvest mutations (4% chance). Melon stock: {n}',
+base_price:'Base price {n}',sell_btn:'Sell',high_price:'🔥 Price is high, sell now!',
+seller_label:'Seller: {name} • Total: {total} 🪙',grows_in:'grows in {t}',
+prod_t:'🏭 Production Buildings',
+prod_desc:'Turn harvests into more valuable products. Buildings need a certain Level & Coins.',
+jobs_t:'⚙️ Production in Progress',
+no_jobs:'No production running. Build a building first, then start production.',
+fish_mine_t:'🎣 Fishing & ⛏️ Mining',
+fish_mine_desc:'30-minute cooldown (faster with the Explorer skill & Summer season). Random rewards — sometimes Harvest Gems 💎!',
+btn_fish:'🎣 Fish',btn_mine:'⛏️ Mine',
+gather_status:'🎣 Fishing: {fish} • ⛏️ Mining: {mine} • Total: {fc}× fished, {mc}× mined',
+ready_now:'ready!',wait_for:'wait {t}',
+no_buildings:'No buildings yet.',build_btn:'Build — {price} 🪙',
+upgrade_build_btn:'⬆️ Upgrade ({price} 🪙)',start_prod_btn:'⚙️ Start Production',collect_job_btn:'🧺 Collect',
+build_level:'Lv {lv} • capacity {cap} jobs',build_min:'Min Lv {n}',
+materials_label:'Materials in inventory:',
+my_guild_t:'🤝 My Guild',
+no_guild:'Not in a guild yet. Create your own or join one from the list below.',
+create_guild_t:'🏰 Create a Guild',create_guild_desc:'Costs 1,000 Coins. Name 3–20 characters.',
+guild_name_ph:'Guild name, e.g. Green Valley',btn_create_guild:'🏰 Create Guild (1,000 🪙)',
+guild_list_t:'🔍 Guild List',no_guilds:'No guilds yet. Be the first!',
+btn_join:'Join',btn_leave:'🚪 Leave Guild',btn_claim_guild:'🎁 Claim +{n} 💎',
+goal_t:'Weekly goal: <b>{a} / {b}</b> member season points',
+goal_reached:'Goal reached! Claim your reward 🎉',goal_claimed:'This week\'s reward already claimed ✅',
+goal_hint:'Earn season points together — harvest, sell, fish, produce!',
+members_label:'{n}/20 members',
+daily_t:'🎁 Daily Login Bonus',
+daily_desc:'Streak <b>{n}</b> days • Claim 1× a day, don\'t break it! 7-day streak = +2 💎',
+btn_claim_daily:'🎁 Claim Daily Bonus',season_t:'🌸 Season & Weekly Tournament',
+season_points_me:'My season points: <b>{n}</b> • Claim 1×/season (min 50 points): 🥇 50 💎 • 🥈🥉 30 💎 • Top 10: 15 💎 • others: 5 💎',
+season_top_t:'This Week\'s Tournament Top',btn_claim_season:'🏆 Claim Tournament Prize',
+no_season_top:'No season points this week yet.',
+skill_t:'⭐ Skill Tree',
+skill_desc:'Earn 1 skill point per level-up. Effects apply instantly to farm, production & market.',
+skill_points_left:'Skill points available: <b>{n}</b> • Earn 1 point per level-up.',
+skill_up_btn:'Upgrade (1 ⭐)',
+skill_desc_bertani:'−5% grow time & +1 harvest yield per 2 levels',
+skill_desc_produksi:'−10% production time per level',
+skill_desc_dagang:'+5% NPC Market sell price per level',
+skill_desc_jelajah:'−10% cooldown & +10% fishing/mining rewards per level',
+missions_t:'🎯 Daily Quests',no_missions:'No quests today yet.',
+ach_t:'🏆 Achievements',stats_t:'Statistics',no_ach:'No achievements yet.',
+claim_btn:'🎁 Claim {reward} 🪙',claimed_btn:'✅ Already claimed',
+reward_label:'Reward: {coins} 🪙{gems}',done_label:' • Done!',
+stat_level:'Current Level',stat_xp:'Total XP',stat_streak:'Login Streak',stat_grid:'Farm Size',
+stat_animals:'Animals Owned',stat_double:'Double Harvest Active',stat_double_yes:'✖️2 Yes',stat_double_no:'No',
+wallet_t:'👛 Wallet',wallet_coins:'Coin Balance',wallet_level:'Level',wallet_doge:'DOGE Equivalent (rate)',wallet_streak:'Login Streak',
+wallet_info:'💱 <b>Rate: 200,000 Harvest Coins = 0.01 DOGE</b><br>✅ Min. withdraw: <b>200,000 Coins</b> &nbsp;•&nbsp; Min. Level: <b>5</b><br>⏳ Max <b>1× per 7 days</b> &nbsp;•&nbsp; Paid to FaucetPay (email / username).<br>💎 Harvest Gems: <b>{gems}</b> • Exchange rate: <b>1 💎 = 500 Coins</b> (max 50 💎/day)',
+convert_t:'💎 Exchange Gems → Coins',convert_l:'Amount of Gems (max 50/day)',convert_btn:'💱 Exchange Gems',
+wd_t:'💸 Withdraw DOGE',wd_coins_l:'Amount of Coins (min 200,000)',wd_dest_l:'FaucetPay Email / Username',
+wd_btn:'💸 Request Withdrawal',wd_hist_t:'📜 Withdrawal History',no_wd:'No withdrawal history yet.',
+wd_dest_ph:'e.g. you@email.com',convert_preview:'≈ {n} Coins',wd_preview:'≈ {n} DOGE',
+ref_t:'🎁 Referral — Invite Friends',
+ref_desc:'Share your referral link. Friends who join through it get <b>+200 Coins</b> — and when they reach <b>Level 3</b>, you get <b>+500 Coins + 2 💎 Harvest Gems</b>!',
+ref_link_l:'Your referral link',btn_copy:'📋 Copy',btn_share:'✈️ Share on Telegram',
+ref_stats_t:'📊 Referral Stats',ref_invited:'Friends Invited',ref_rewarded:'Rewards Earned',
+ref_earned:'Total Coins Earned',ref_earned_gems:'Total Gems Earned',ref_rules_t:'📜 How to Earn Rewards',
+ref_rule1:'<b>Share your referral link</b> with friends (Telegram, WhatsApp, social media).',
+ref_rule2:'Your friend <b>joins through your link</b> and instantly gets a <b>+200 Coin</b> welcome bonus.',
+ref_rule3:'When your friend reaches <b>Level 3</b>, you get <b>+500 Coins + 2 💎</b> — once per friend.',
+ref_rule4:'Play fair: <b>you can\'t invite yourself</b>, each friend counts for one inviter only, and duplicate accounts are banned.',
+ref_list_t:'👥 Friends You Invited',
+ref_none:'No friends invited yet. Share your referral link!',
+ref_copied:'📋 Referral link copied!',ref_level:'Level {n}',
+ref_rewarded_badge:'✅ Reward received',ref_pending:'⏳ Waiting for Level 3',
+ref_share_text:'🌾 Come play Harvest Farm — a farming game on Telegram! Plant, harvest, sell, trade Coins for DOGE. Join with my link and get +200 Coins!',
+lb_t:'🏆 Ranking — Top Farmers',btn_refresh_lb:'🔄 Refresh',no_lb:'No ranking yet.',
+lb_fail:'Failed to load ranking. Backend not connected?',
+conn_err:'⚠️ <b>Backend not connected</b> — check API_URL. Open with <code>?api=https://...railway.app</code> or set <code>window.HARVESTFARM_API_URL</code>. Data below is the last saved copy.',
+toast_welcome:'🌾 Happy farming!',loading_lb:'Loading ranking…',
+empty_inventory:'— Inventory empty —',loading_market:'Market prices not available.',
+market_updated:'🔄 Market prices updated',invalid_amount:'Invalid amount.',
+empty_p2p:'Inventory empty — nothing to sell.',
+amount_price_err:'Quantity and price are required.',
+guild_name_short:'Guild name needs at least 3 characters.',gems_range:'Gems amount 1–50.',
+wd_min:'Minimum withdrawal is 200,000 Coins.',wd_dest_empty:'Enter your FaucetPay email / username first.',
+wd_submitted:'💸 Withdrawal submitted!',wd_status:'Status: {s}',
+ad_not_ready:'📺 Ads not active yet — set the AdGram Block ID first',
+ad_not_done:'Ad not finished — no reward.',ad_reward_in:'🎉 Ad reward received!',
+no_growing:'No crops are growing right now.',success_default:'Done! ✅',
+err_fallback:'An error occurred: {code}',
+level_label:'Level {n}',xp_label:'XP {a} / {b}',xp_max:'XP {a} (MAX)',
+streak_pill:'🔥 Streak: {n} days',skill_points_hud:'⭐ {n} skill points',tourney_points:'🏆 {n} points',
+mission_progress:'{a} / {b} • Reward: {c} 🪙',
+weather_change:'weather changes in:',event_ends:'ends in:',season_change:'season changes in:',ready_label:'Ready! ✅',
+plot_empty_backend:'Backend not connected — check API_URL.',
+plot_empty_hint:'Open this file with ?api=https://your-railway-backend',
+confirm_leave:'Are you sure you want to leave the guild?'
+},
+ru:{
+tagline:'Сажай • Собирай • Продавай • Меняй на DOGE 🐶',btn_guide:'❓ Гайд',lang_pick:'🌐 Язык',
+hud_coins:'Монеты',hud_gems:'Кристаллы',hud_energy:'Энергия',hud_regen:'1 / 2 мин',hud_season:'Сезон',hud_skill_note:'Дерево навыков (вкладка «Задания»)',hud_tourney:'Еженедельный турнир',
+nav_kebun:'Ферма',nav_hewan:'Животные',nav_produksi:'Завод',nav_pasar:'Рынок',nav_guild:'Гильдия',nav_misi:'Задания',nav_dompet:'Кошелёк',nav_peringkat:'Рейтинг',nav_referral:'Рефералка',
+intro_what_t:'🌱 Что такое Harvest Farm?',
+intro_what_x:'Игра-ферма в Telegram: начни с маленького огорода, сажай семена, ухаживай за растениями, разводи животных, перерабатывай урожай в товары и продавай их на рынке. Собирай <b>Монеты 🪙</b> и <b>Кристаллы урожая 💎</b> — монеты можно обменять на <b>DOGE</b> через FaucetPay. Чем чаще играешь, тем больше твоя ферма!',
+intro_how_t:'🎮 Как играть',
+step1:'<b>🌱 Посади семена</b> на пустой грядке (1 энергия ⚡).',
+step2:'<b>💧 Поливай и 🧪 удобряй</b>, чтобы растения росли быстрее. Быстро прогоняй <b>🐛 вредителей</b>, пока они не испортили урожай!',
+step3:'<b>🧺 Собери урожай</b>, когда растения созреют — иногда появляется редкая мутация <b>Золотая дыня 🍈</b>!',
+step4:'<b>💰 Продай</b> урожай на рынке NPC, когда цены высокие, или выстави свой товар на рынке игроков.',
+step5:'<b>🚀 Развивай ферму:</b> покупай животных 🐔, строй Пекарню / Молочную фабрику / Кухню соусов 🏭, рыбачь 🎣 и добывай руду ⛏️, повышай уровень, качай навыки и вступай в гильдию 🤝.',
+intro_cur_t:'💰 Валюта',coins_name:'🪙 Монеты',
+coins_desc:'Основная валюта. На семена, животных, здания и улучшения. За урожай, продажи, задания и ежедневные бонусы.',
+gems_name:'💎 Кристаллы урожая',
+gems_desc:'Премиальная валюта — <b>только за игру</b>: достижения, турниры, гильдии и мутации. 1 💎 = 500 монет (макс. 50 💎/день).',
+intro_doge_t:'🐶 Как получить DOGE',
+intro_doge_x:'Собери <b>200 000 монет → обменяй на 0,01 DOGE</b> через FaucetPay (вкладка 👛 «Кошелёк»). Условия: <b>мин. уровень 5</b>, макс. <b>1 раз в 7 дней</b>, каждый вывод сначала <b>одобряет админ</b>. Честно: это <b>не обещание прибыли</b> — награды зависят от баланса и одобрения админа, а для игры <b>не нужно ничего вкладывать</b>.',
+intro_rules_t:'📜 Правила',
+rule1:'✅ Играй честно — боты, читы и мультиаккаунты запрещены.',
+rule2:'📺 Реклама AdGram <b>необязательна</b> — бонусы (энергия, ускорение, двойной урожай), а не условие игры.',
+rule3:'🌦️ Погода меняется каждый час, а сезоны — каждую неделю. Используй бонусы!',
+rule4:'🎁 Забирай ежедневный бонус за вход, чтобы не прервать серию (7 дней = +2 💎).',
+btn_start:'🌾 Начать фермерство',btn_skip:'Пропустить ➜',
+garden_t:'🌱 Моя ферма',
+garden_hint:'Нажми на пустую грядку, чтобы посадить, на растущее растение — полить или удобрить, на созревшее — собрать. Вредители? Быстро прогоняй их!',
+btn_upgrade:'⬆️ Улучшить поле',btn_ad_energy:'📺 Реклама: +20 ⚡',
+upgrade_info:'Сейчас поле {size}×{size} ({total} грядок). Улучшение добавляет грядки.',
+ad_t:'📺 Реклама с наградой (AdGram)',ad_desc:'Смотри рекламу и получай награды. Награда засчитывается, только если досмотреть рекламу до конца.',
+ad_today:'Реклама сегодня: получено наград — {n}',seed_pick_t:'🌱 Выбери семя — Грядка {n}',
+btn_plant:'🌱 Посадить',btn_cancel:'Отмена',empty_plot:'Грядка {n}',tap_plant:'Нажми, чтобы посадить',
+ready_harvest:'✅ Готово к сбору!',pest_alert:'🐛 ВРЕДИТЕЛЬ! Быстро нажми!',
+loading_garden:'Загрузка фермы…',no_plots:'Грядок пока нет. Попробуй обновить.',
+growing_wait:'🌿 Растение ещё растёт — подожди немного.',choose_seed:'Сначала выбери семя 🌱',
+confirm_fert:'Уже полито. Добавить удобрение, чтобы росло быстрее?',
+stock_label:'Запас: {n}',
+animals_t:'🐔 Животные',
+animals_desc:'Животных нужно кормить, чтобы они давали продукцию. Голодные не производят.',
+buy_feed:'Купить корм (+10)',buy_animal_t:'🛒 Купить животных',
+no_animals:'Животных пока нет. Купи ниже!',
+animal_hungry:'🍽️ Голоден — сначала покорми!',animal_fed:'😋 Уже накормлен',animal_ready:'✅ <b>Готово к сбору!</b>',
+feed_btn:'🌾 Покормить',collect_btn:'🧺 Собрать',buy_btn:'Купить',
+animal_shop_note:'Цены на животных — от сервера (если кнопка не работает, смотри сообщение об ошибке).',
+produce_in:'След. {name} через:',
+seed_shop_t:'🌱 Магазин семян',fert_shop_t:'🧪 Удобрения и корм',btn_buy_fert:'🧪 Купить удобрение (+5)',
+npc_t:'🏪 Рынок NPC — продажа урожая',npc_desc:'Цены меняются. Если высокие — продавай сейчас!',
+btn_refresh:'🔄 Обновить цены',sell_qty_l:'Продать {name} — количество',sell_confirm:'💰 Продать',
+p2p_t:'🤝 Рынок игроков (P2P)',p2p_item_l:'Товар из инвентаря',p2p_qty_l:'Количество',p2p_price_l:'Цена / шт. (монеты)',
+btn_list:'📢 Выставить на продажу',listings_t:'Последние лоты',
+no_listings:'Лотов игроков пока нет. Стань первым продавцом!',
+buy_listing:'🛒 Купить',
+melon_note:'🍈 Семена Золотой дыни не продаются — только мутации при сборе урожая (шанс 4%). Запас: {n}',
+base_price:'Базовая цена {n}',sell_btn:'Продать',high_price:'🔥 Цена высокая — продавай сейчас!',
+seller_label:'Продавец: {name} • Итого: {total} 🪙',grows_in:'растёт {t}',
+prod_t:'🏭 Производственные здания',
+prod_desc:'Перерабатывай урожай в более дорогие товары. Зданиям нужны уровень и монеты.',
+jobs_t:'⚙️ Производство идёт',
+no_jobs:'Производство не запущено. Сначала построй здание, потом начни производство.',
+fish_mine_t:'🎣 Рыбалка и ⛏️ Добыча',
+fish_mine_desc:'Перезарядка 30 минут (быстрее с навыком Исследователя и летом). Случайные награды — иногда Кристаллы 💎!',
+btn_fish:'🎣 Рыбачить',btn_mine:'⛏️ Добывать',
+gather_status:'🎣 Рыбалка: {fish} • ⛏️ Добыча: {mine} • Всего: {fc}× рыбалка, {mc}× добыча',
+ready_now:'готово!',wait_for:'жди {t}',
+no_buildings:'Зданий пока нет.',build_btn:'Построить — {price} 🪙',
+upgrade_build_btn:'⬆️ Улучшить ({price} 🪙)',start_prod_btn:'⚙️ Начать производство',collect_job_btn:'🧺 Забрать',
+build_level:'Ур. {lv} • {cap} заданий',build_min:'Мин. ур. {n}',
+materials_label:'Материалы в инвентаре:',
+my_guild_t:'🤝 Моя гильдия',
+no_guild:'Ты пока не в гильдии. Создай свою или вступи в гильдию из списка ниже.',
+create_guild_t:'🏰 Создать гильдию',create_guild_desc:'Стоимость 1 000 монет. Название 3–20 символов.',
+guild_name_ph:'Название гильдии, например: Зелёная долина',btn_create_guild:'🏰 Создать гильдию (1 000 🪙)',
+guild_list_t:'🔍 Список гильдий',no_guilds:'Гильдий пока нет. Стань первым!',
+btn_join:'Вступить',btn_leave:'🚪 Покинуть гильдию',btn_claim_guild:'🎁 Забрать +{n} 💎',
+goal_t:'Цель недели: <b>{a} / {b}</b> очков сезона участников',
+goal_reached:'Цель достигнута! Забери награду 🎉',goal_claimed:'Награда этой недели уже забрана ✅',
+goal_hint:'Копите очки сезона вместе — урожай, продажи, рыбалка, производство!',
+members_label:'{n}/20 участников',
+daily_t:'🎁 Ежедневный бонус',
+daily_desc:'Серия <b>{n}</b> дн. • Забирай 1 раз в день, не прерывай! 7 дней подряд = +2 💎',
+btn_claim_daily:'🎁 Забрать бонус',season_t:'🌸 Сезон и еженедельный турнир',
+season_points_me:'Мои очки сезона: <b>{n}</b> • Награда 1 раз за сезон (мин. 50 очков): 🥇 50 💎 • 🥈🥉 30 💎 • Топ-10: 15 💎 • остальные: 5 💎',
+season_top_t:'Топ турнира этой недели',btn_claim_season:'🏆 Забрать приз турнира',
+no_season_top:'Очков сезона на этой неделе пока нет.',
+skill_t:'⭐ Дерево навыков',
+skill_desc:'1 очко навыка за каждый уровень. Эффект сразу действует на ферму, производство и рынок.',
+skill_points_left:'Доступно очков: <b>{n}</b> • 1 очко за каждый уровень.',
+skill_up_btn:'Улучшить (1 ⭐)',
+skill_desc_bertani:'−5% времени роста и +1 к урожаю за 2 уровня',
+skill_desc_produksi:'−10% времени производства за уровень',
+skill_desc_dagang:'+5% к цене продажи на рынке NPC за уровень',
+skill_desc_jelajah:'−10% перезарядки и +10% к наградам рыбалки/добычи за уровень',
+missions_t:'🎯 Ежедневные задания',no_missions:'Заданий на сегодня пока нет.',
+ach_t:'🏆 Достижения',stats_t:'Статистика',no_ach:'Достижений пока нет.',
+claim_btn:'🎁 Забрать {reward} 🪙',claimed_btn:'✅ Уже забрано',
+reward_label:'Награда: {coins} 🪙{gems}',done_label:' • Выполнено!',
+stat_level:'Текущий уровень',stat_xp:'Всего опыта',stat_streak:'Серия входов',stat_grid:'Размер фермы',
+stat_animals:'Животных',stat_double:'Двойной урожай активен',stat_double_yes:'✖️2 Да',stat_double_no:'Нет',
+wallet_t:'👛 Кошелёк',wallet_coins:'Баланс монет',wallet_level:'Уровень',wallet_doge:'Эквивалент в DOGE',wallet_streak:'Серия входов',
+wallet_info:'💱 <b>Курс: 200 000 монет = 0,01 DOGE</b><br>✅ Мин. вывод: <b>200 000 монет</b> &nbsp;•&nbsp; Мин. уровень: <b>5</b><br>⏳ Макс. <b>1 раз в 7 дней</b> &nbsp;•&nbsp; Выплата на FaucetPay (email / имя).<br>💎 Кристаллы урожая: <b>{gems}</b> • Курс обмена: <b>1 💎 = 500 монет</b> (макс. 50 💎/день)',
+convert_t:'💎 Обменять кристаллы → монеты',convert_l:'Количество кристаллов (макс. 50/день)',convert_btn:'💱 Обменять кристаллы',
+wd_t:'💸 Вывести DOGE',wd_coins_l:'Количество монет (мин. 200 000)',wd_dest_l:'Email / имя FaucetPay',
+wd_btn:'💸 Запросить вывод',wd_hist_t:'📜 История выводов',no_wd:'История выводов пуста.',
+wd_dest_ph:'например: you@email.com',convert_preview:'≈ {n} монет',wd_preview:'≈ {n} DOGE',
+ref_t:'🎁 Рефералка — пригласи друзей',
+ref_desc:'Поделись своей реферальной ссылкой. Друг, пришедший по ней, получит <b>+200 монет</b>, а когда он достигнет <b>3-го уровня</b>, ты получишь <b>+500 монет и 2 💎 кристалла</b>!',
+ref_link_l:'Твоя реферальная ссылка',btn_copy:'📋 Копировать',btn_share:'✈️ Поделиться в Telegram',
+ref_stats_t:'📊 Статистика рефералов',ref_invited:'Приглашено друзей',ref_rewarded:'Наград получено',
+ref_earned:'Всего монет получено',ref_earned_gems:'Всего кристаллов получено',ref_rules_t:'📜 Как получить награду',
+ref_rule1:'<b>Поделись реферальной ссылкой</b> с друзьями (Telegram, WhatsApp, соцсети).',
+ref_rule2:'Друг <b>регистрируется по твоей ссылке</b> и сразу получает <b>+200 монет</b>.',
+ref_rule3:'Когда друг достигнет <b>3-го уровня</b>, ты получишь <b>+500 монет и 2 💎</b> — один раз за друга.',
+ref_rule4:'Играй честно: <b>нельзя пригласить самого себя</b>, один друг засчитывается только одному пригласившему, мультиаккаунты запрещены.',
+ref_list_t:'👥 Приглашённые друзья',
+ref_none:'Друзей пока не приглашено. Поделись реферальной ссылкой!',
+ref_copied:'📋 Реферальная ссылка скопирована!',ref_level:'Уровень {n}',
+ref_rewarded_badge:'✅ Награда получена',ref_pending:'⏳ Ждём 3-й уровень',
+ref_share_text:'🌾 Играй в Harvest Farm — игра-ферма в Telegram! Сажай, собирай урожай, продавай и меняй монеты на DOGE. Присоединяйся по моей ссылке и получи +200 монет!',
+lb_t:'🏆 Рейтинг — лучшие фермеры',btn_refresh_lb:'🔄 Обновить',no_lb:'Рейтинга пока нет.',
+lb_fail:'Не удалось загрузить рейтинг. Сервер недоступен?',
+conn_err:'⚠️ <b>Сервер недоступен</b> — проверь API_URL. Открой с <code>?api=https://...railway.app</code> или задай <code>window.HARVESTFARM_API_URL</code>. Ниже — последние сохранённые данные.',
+toast_welcome:'🌾 Приятной игры на ферме!',loading_lb:'Загрузка рейтинга…',
+empty_inventory:'— Инвентарь пуст —',loading_market:'Цены рынка недоступны.',
+market_updated:'🔄 Цены обновлены',invalid_amount:'Неверное количество.',
+empty_p2p:'Инвентарь пуст — продавать нечего.',
+amount_price_err:'Укажи количество и цену.',
+guild_name_short:'Название гильдии — минимум 3 символа.',gems_range:'Количество кристаллов 1–50.',
+wd_min:'Минимальный вывод — 200 000 монет.',wd_dest_empty:'Сначала укажи email / имя FaucetPay.',
+wd_submitted:'💸 Запрос на вывод отправлен!',wd_status:'Статус: {s}',
+ad_not_ready:'📺 Реклама пока не активна — укажи Block ID AdGram',
+ad_not_done:'Реклама не досмотрена — награды нет.',ad_reward_in:'🎉 Награда за рекламу получена!',
+no_growing:'Сейчас ничего не растёт.',success_default:'Готово! ✅',
+err_fallback:'Ошибка: {code}',
+level_label:'Уровень {n}',xp_label:'Опыт {a} / {b}',xp_max:'Опыт {a} (МАКС)',
+streak_pill:'🔥 Серия: {n} дн.',skill_points_hud:'⭐ {n} очков навыков',tourney_points:'🏆 {n} очков',
+mission_progress:'{a} / {b} • Награда: {c} 🪙',
+weather_change:'смена погоды:',event_ends:'завершится:',season_change:'смена сезона:',ready_label:'Готово! ✅',
+plot_empty_backend:'Сервер недоступен — проверь API_URL.',
+plot_empty_hint:'Открой файл с ?api=https://адрес-твоего-бэкенда',
+confirm_leave:'Точно покинуть гильдию?'
+},
+es:{
+tagline:'Planta • Cosecha • Vende • Cambia por DOGE 🐶',btn_guide:'❓ Guía',lang_pick:'🌐 Idioma',
+hud_coins:'Monedas',hud_gems:'Gemas',hud_energy:'Energía',hud_regen:'regen 1 / 2 min',hud_season:'Temporada',hud_skill_note:'Habilidades (pestaña Misiones)',hud_tourney:'Torneo Semanal',
+nav_kebun:'Granja',nav_hewan:'Animales',nav_produksi:'Fábrica',nav_pasar:'Mercado',nav_guild:'Gremio',nav_misi:'Misiones',nav_dompet:'Billetera',nav_peringkat:'Ranking',nav_referral:'Referidos',
+intro_what_t:'🌱 ¿Qué es Harvest Farm?',
+intro_what_x:'Un juego de granja en Telegram: empieza con un huerto pequeño, planta semillas, cuida los cultivos, cría animales, convierte tu cosecha en productos y véndelos en el mercado. Gana <b>Monedas 🪙</b> y <b>Gemas de Cosecha 💎</b> — las monedas se pueden cambiar por <b>DOGE</b> con FaucetPay. ¡Cuanto más juegues, más grande será tu granja!',
+intro_how_t:'🎮 Cómo jugar',
+step1:'<b>🌱 Planta semillas</b> en una parcela vacía (usa 1 de Energía ⚡).',
+step2:'<b>💧 Riega y 🧪 abona</b> para que los cultivos crezcan más rápido. ¡Ahuyenta las <b>🐛 plagas</b> rápido antes de que reduzcan tu cosecha!',
+step3:'<b>🧺 Cosecha</b> cuando los cultivos estén listos — ¡a veces aparece la rara mutación <b>Melón Dorado 🍈</b>!',
+step4:'<b>💰 Vende</b> tu cosecha en el Mercado NPC cuando los precios estén altos, o publica tus productos en el Mercado de Jugadores.',
+step5:'<b>🚀 Haz crecer tu granja:</b> compra animales 🐔, construye la Panadería / Lechería / Cocina de Salsas 🏭, pesca 🎣 y mina ⛏️, sube de nivel, mejora habilidades y únete a un gremio 🤝.',
+intro_cur_t:'💰 Monedas',coins_name:'🪙 Monedas',
+coins_desc:'La moneda principal. Para semillas, animales, edificios y mejoras. Se gana con cosechas, ventas, misiones y bonos diarios.',
+gems_name:'💎 Gemas de Cosecha',
+gems_desc:'Moneda premium — <b>solo se gana jugando</b>: logros, torneos, gremios y mutaciones. 1 💎 = 500 monedas (máx. 50 💎/día).',
+intro_doge_t:'🐶 Cómo ganar DOGE',
+intro_doge_x:'Junta <b>200.000 monedas → cámbialas por 0,01 DOGE</b> con FaucetPay (pestaña 👛 Billetera). Requisitos: <b>niv. mín. 5</b>, máx. <b>1× cada 7 días</b>, y cada retiro necesita <b>aprobación del admin</b>. Con sinceridad: esto <b>no es una promesa de ganancias</b> — las recompensas dependen del saldo y de la aprobación, y <b>nunca necesitas depositar nada</b> para jugar.',
+intro_rules_t:'📜 Reglas',
+rule1:'✅ Juega limpio — bots, trampas y cuentas múltiples están prohibidos.',
+rule2:'📺 Los anuncios de AdGram son <b>opcionales</b> para bonos (Energía, aceleración, cosecha doble) — nunca obligatorios.',
+rule3:'🌦️ El clima cambia cada hora y las temporadas cada semana — ¡aprovecha los bonos!',
+rule4:'🎁 Reclama tu bono diario para no romper la racha (7 días = +2 💎).',
+btn_start:'🌾 Empezar a cultivar',btn_skip:'Saltar ➜',
+garden_t:'🌱 Mi Granja',
+garden_hint:'Toca una parcela vacía para plantar, un cultivo en crecimiento para regar / abonar, uno listo para cosechar. ¿Plagas? ¡Tócalas rápido para ahuyentarlas!',
+btn_upgrade:'⬆️ Ampliar Terreno',btn_ad_energy:'📺 Anuncio: +20 ⚡',
+upgrade_info:'Terreno actual {size}×{size} ({total} parcelas). Ampliar añade más parcelas.',
+ad_t:'📺 Anuncios con Recompensa (AdGram)',ad_desc:'Mira anuncios y gana recompensas. Solo cuentan si ves el anuncio completo.',
+ad_today:'Anuncios hoy: {n} recompensas reclamadas',seed_pick_t:'🌱 Elige una Semilla — Parcela {n}',
+btn_plant:'🌱 Plantar',btn_cancel:'Cancelar',empty_plot:'Parcela {n}',tap_plant:'Toca para plantar',
+ready_harvest:'✅ ¡Listo para cosechar!',pest_alert:'🐛 ¡PLAGA! ¡Toca rápido!',
+loading_garden:'Cargando granja…',no_plots:'Aún no hay parcelas. Intenta actualizar.',
+growing_wait:'🌿 El cultivo aún está creciendo — espera un poco.',choose_seed:'Elige una semilla primero 🌱',
+confirm_fert:'Ya está regado. ¿Añadir abono para crecer más rápido?',
+stock_label:'Stock: {n}',
+animals_t:'🐔 Animales de Granja',
+animals_desc:'Los animales necesitan comida para seguir produciendo. Con hambre, se detienen.',
+buy_feed:'Comprar Comida (+10)',buy_animal_t:'🛒 Comprar Animales',
+no_animals:'Aún no tienes animales. ¡Compra uno abajo!',
+animal_hungry:'🍽️ Hambriento — ¡alimenta primero!',animal_fed:'😋 Ya alimentado',animal_ready:'✅ <b>¡Listo para recoger!</b>',
+feed_btn:'🌾 Alimentar',collect_btn:'🧺 Recoger',buy_btn:'Comprar',
+animal_shop_note:'Los precios vienen del servidor (revisa el mensaje de error si un botón falla).',
+produce_in:'Próximo {name} en:',
+seed_shop_t:'🌱 Tienda de Semillas',fert_shop_t:'🧪 Abono y Comida',btn_buy_fert:'🧪 Comprar Abono (+5)',
+npc_t:'🏪 Mercado NPC — Vende tu Cosecha',npc_desc:'Los precios cambian. ¡Si están altos, vende ahora!',
+btn_refresh:'🔄 Actualizar Precios',sell_qty_l:'Vender {name} — cantidad',sell_confirm:'💰 Vender Ahora',
+p2p_t:'🤝 Mercado de Jugadores (P2P)',p2p_item_l:'Producto del inventario',p2p_qty_l:'Cantidad',p2p_price_l:'Precio / unidad (monedas)',
+btn_list:'📢 Publicar Venta',listings_t:'Últimas Ofertas',
+no_listings:'Aún no hay ofertas de jugadores. ¡Sé el primer vendedor!',
+buy_listing:'🛒 Comprar',
+melon_note:'🍈 Las semillas de Melón Dorado no se venden — se obtienen por mutación al cosechar (4%). Stock: {n}',
+base_price:'Precio base {n}',sell_btn:'Vender',high_price:'🔥 ¡Precio alto, vende ahora!',
+seller_label:'Vendedor: {name} • Total: {total} 🪙',grows_in:'crece en {t}',
+prod_t:'🏭 Edificios de Producción',
+prod_desc:'Convierte cosechas en productos más valiosos. Los edificios requieren Nivel y Monedas.',
+jobs_t:'⚙️ Producción en Curso',
+no_jobs:'No hay producción en curso. Construye un edificio y luego inicia la producción.',
+fish_mine_t:'🎣 Pesca y ⛏️ Minería',
+fish_mine_desc:'Enfriamiento de 30 minutos (más rápido con Explorador y en Verano). Recompensas aleatorias — ¡a veces Gemas 💎!',
+btn_fish:'🎣 Pescar',btn_mine:'⛏️ Minar',
+gather_status:'🎣 Pesca: {fish} • ⛏️ Minería: {mine} • Total: {fc}× pesca, {mc}× minería',
+ready_now:'¡listo!',wait_for:'espera {t}',
+no_buildings:'Aún no hay edificios.',build_btn:'Construir — {price} 🪙',
+upgrade_build_btn:'⬆️ Mejorar ({price} 🪙)',start_prod_btn:'⚙️ Iniciar Producción',collect_job_btn:'🧺 Recoger',
+build_level:'Nv {lv} • capacidad {cap} trabajos',build_min:'Niv. mín. {n}',
+materials_label:'Materiales en inventario:',
+my_guild_t:'🤝 Mi Gremio',
+no_guild:'Aún no estás en un gremio. Crea uno o únete desde la lista.',
+create_guild_t:'🏰 Crear Gremio',create_guild_desc:'Cuesta 1.000 monedas. Nombre de 3–20 caracteres.',
+guild_name_ph:'Nombre del gremio, ej.: Valle Verde',btn_create_guild:'🏰 Crear Gremio (1.000 🪙)',
+guild_list_t:'🔍 Lista de Gremios',no_guilds:'Aún no hay gremios. ¡Sé el primero!',
+btn_join:'Unirse',btn_leave:'🚪 Salir del Gremio',btn_claim_guild:'🎁 Reclamar +{n} 💎',
+goal_t:'Meta semanal: <b>{a} / {b}</b> puntos de temporada de los miembros',
+goal_reached:'¡Meta alcanzada! Reclama tu recompensa 🎉',goal_claimed:'La recompensa de esta semana ya se reclamó ✅',
+goal_hint:'¡Ganen puntos de temporada juntos: cosechen, vendan, pesquen, produzcan!',
+members_label:'{n}/20 miembros',
+daily_t:'🎁 Bono Diario',
+daily_desc:'Racha de <b>{n}</b> días • Reclama 1× al día, ¡no la rompas! 7 días = +2 💎',
+btn_claim_daily:'🎁 Reclamar Bono Diario',season_t:'🌸 Temporada y Torneo Semanal',
+season_points_me:'Mis puntos de temporada: <b>{n}</b> • Recompensa 1×/temporada (mín. 50 puntos): 🥇 50 💎 • 🥈🥉 30 💎 • Top 10: 15 💎 • resto: 5 💎',
+season_top_t:'Top del Torneo de Esta Semana',btn_claim_season:'🏆 Reclamar Premio del Torneo',
+no_season_top:'Aún no hay puntos esta semana.',
+skill_t:'⭐ Árbol de Habilidades',
+skill_desc:'Gana 1 punto de habilidad por nivel. Los efectos se notan al instante en granja, producción y mercado.',
+skill_points_left:'Puntos disponibles: <b>{n}</b> • Gana 1 punto por nivel.',
+skill_up_btn:'Subir (1 ⭐)',
+skill_desc_bertani:'−5% de crecimiento y +1 de cosecha cada 2 niveles',
+skill_desc_produksi:'−10% de tiempo de producción por nivel',
+skill_desc_dagang:'+5% de precio de venta en el Mercado NPC por nivel',
+skill_desc_jelajah:'−10% de enfriamiento y +10% de recompensas de pesca/minería por nivel',
+missions_t:'🎯 Misiones Diarias',no_missions:'Aún no hay misiones hoy.',
+ach_t:'🏆 Logros',stats_t:'Estadísticas',no_ach:'Aún no hay logros.',
+claim_btn:'🎁 Reclamar {reward} 🪙',claimed_btn:'✅ Ya reclamado',
+reward_label:'Recompensa: {coins} 🪙{gems}',done_label:' • ¡Hecho!',
+stat_level:'Nivel Actual',stat_xp:'XP Total',stat_streak:'Racha de Inicio',stat_grid:'Tamaño de Granja',
+stat_animals:'Animales',stat_double:'Cosecha Doble Activa',stat_double_yes:'✖️2 Sí',stat_double_no:'No',
+wallet_t:'👛 Billetera',wallet_coins:'Saldo de Monedas',wallet_level:'Nivel',wallet_doge:'Equivalente en DOGE',wallet_streak:'Racha de Inicio',
+wallet_info:'💱 <b>Tasa: 200.000 monedas = 0,01 DOGE</b><br>✅ Retiro mín.: <b>200.000 monedas</b> &nbsp;•&nbsp; Niv. mín.: <b>5</b><br>⏳ Máx. <b>1× cada 7 días</b> &nbsp;•&nbsp; Se paga a FaucetPay (email / usuario).<br>💎 Gemas de Cosecha: <b>{gems}</b> • Tasa de cambio: <b>1 💎 = 500 monedas</b> (máx. 50 💎/día)',
+convert_t:'💎 Cambiar Gemas → Monedas',convert_l:'Cantidad de Gemas (máx. 50/día)',convert_btn:'💱 Cambiar Gemas',
+wd_t:'💸 Retirar DOGE',wd_coins_l:'Cantidad de Monedas (mín. 200.000)',wd_dest_l:'Email / Usuario de FaucetPay',
+wd_btn:'💸 Solicitar Retiro',wd_hist_t:'📜 Historial de Retiros',no_wd:'Aún no hay historial de retiros.',
+wd_dest_ph:'ej.: tu@email.com',convert_preview:'≈ {n} monedas',wd_preview:'≈ {n} DOGE',
+ref_t:'🎁 Referidos — Invita Amigos',
+ref_desc:'Comparte tu enlace de referidos. Los amigos que entren por él reciben <b>+200 monedas</b> — y cuando lleguen al <b>Nivel 3</b>, tú recibes <b>+500 monedas y 2 💎 Gemas</b>.',
+ref_link_l:'Tu enlace de referidos',btn_copy:'📋 Copiar',btn_share:'✈️ Compartir en Telegram',
+ref_stats_t:'📊 Estadísticas de Referidos',ref_invited:'Amigos Invitados',ref_rewarded:'Recompensas Ganadas',
+ref_earned:'Total de Monedas Ganadas',ref_earned_gems:'Total de Gemas Ganadas',ref_rules_t:'📜 Cómo Ganar Recompensas',
+ref_rule1:'<b>Comparte tu enlace de referidos</b> con amigos (Telegram, WhatsApp, redes sociales).',
+ref_rule2:'Tu amigo <b>se registra con tu enlace</b> y recibe al instante <b>+200 monedas</b> de bienvenida.',
+ref_rule3:'Cuando tu amigo llegue al <b>Nivel 3</b>, recibirás <b>+500 monedas y 2 💎</b> — una vez por amigo.',
+ref_rule4:'Juega limpio: <b>no puedes invitarte a ti mismo</b>, cada amigo cuenta solo para un invitador, y las cuentas duplicadas están prohibidas.',
+ref_list_t:'👥 Amigos que Invitaste',
+ref_none:'Aún no invitaste amigos. ¡Comparte tu enlace de referidos!',
+ref_copied:'📋 ¡Enlace de referidos copiado!',ref_level:'Nivel {n}',
+ref_rewarded_badge:'✅ Recompensa recibida',ref_pending:'⏳ Esperando Nivel 3',
+ref_share_text:'🌾 ¡Ven a jugar Harvest Farm, el juego de granja en Telegram! Planta, cosecha, vende y cambia Monedas por DOGE. ¡Entra con mi enlace y recibe +200 monedas!',
+lb_t:'🏆 Ranking — Mejores Granjeros',btn_refresh_lb:'🔄 Actualizar',no_lb:'Aún no hay ranking.',
+lb_fail:'No se pudo cargar el ranking. ¿Servidor no conectado?',
+conn_err:'⚠️ <b>Servidor no conectado</b> — revisa API_URL. Abre con <code>?api=https://...railway.app</code> o define <code>window.HARVESTFARM_API_URL</code>. Los datos son la última copia guardada.',
+toast_welcome:'🌾 ¡Feliz cosecha!',loading_lb:'Cargando ranking…',
+empty_inventory:'— Inventario vacío —',loading_market:'Precios no disponibles.',
+market_updated:'🔄 Precios actualizados',invalid_amount:'Cantidad no válida.',
+empty_p2p:'Inventario vacío — no hay nada que vender.',
+amount_price_err:'Cantidad y precio obligatorios.',
+guild_name_short:'El nombre del gremio necesita 3 caracteres mínimo.',gems_range:'Cantidad de Gemas 1–50.',
+wd_min:'El retiro mínimo es de 200.000 monedas.',wd_dest_empty:'Escribe primero tu email / usuario de FaucetPay.',
+wd_submitted:'💸 ¡Retiro solicitado!',wd_status:'Estado: {s}',
+ad_not_ready:'📺 Los anuncios aún no están activos — configura el Block ID de AdGram',
+ad_not_done:'Anuncio sin terminar — sin recompensa.',ad_reward_in:'🎁 ¡Recompensa del anuncio recibida!',
+no_growing:'No hay cultivos creciendo ahora.',success_default:'¡Listo! ✅',
+err_fallback:'Ocurrió un error: {code}',
+level_label:'Nivel {n}',xp_label:'XP {a} / {b}',xp_max:'XP {a} (MÁX)',
+streak_pill:'🔥 Racha: {n} días',skill_points_hud:'⭐ {n} puntos de habilidad',tourney_points:'🏆 {n} puntos',
+mission_progress:'{a} / {b} • Recompensa: {c} 🪙',
+weather_change:'cambio de clima:',event_ends:'termina en:',season_change:'cambio de temporada:',ready_label:'¡Listo! ✅',
+plot_empty_backend:'Servidor no conectado — revisa API_URL.',
+plot_empty_hint:'Abre este archivo con ?api=https://tu-backend-railway',
+confirm_leave:'¿Seguro que quieres salir del gremio?'
+},
+pt:{
+tagline:'Plante • Colha • Venda • Troque por DOGE 🐶',btn_guide:'❓ Guia',lang_pick:'🌐 Idioma',
+hud_coins:'Moedas',hud_gems:'Gemas',hud_energy:'Energia',hud_regen:'regen 1 / 2 min',hud_season:'Temporada',hud_skill_note:'Habilidades (aba Missões)',hud_tourney:'Torneio Semanal',
+nav_kebun:'Fazenda',nav_hewan:'Animais',nav_produksi:'Fábrica',nav_pasar:'Mercado',nav_guild:'Guilda',nav_misi:'Missões',nav_dompet:'Carteira',nav_peringkat:'Ranking',nav_referral:'Indicação',
+intro_what_t:'🌱 O que é Harvest Farm?',
+intro_what_x:'Um jogo de fazenda no Telegram: comece com uma horta pequena, plante sementes, cuide das plantas, crie animais, transforme sua colheita em produtos e venda no mercado. Ganhe <b>Moedas 🪙</b> e <b>Gemas da Colheita 💎</b> — as moedas podem ser trocadas por <b>DOGE</b> via FaucetPay. Quanto mais você jogar, maior fica sua fazenda!',
+intro_how_t:'🎮 Como jogar',
+step1:'<b>🌱 Plante sementes</b> em um canteiro vazio (usa 1 de Energia ⚡).',
+step2:'<b>💧 Regue e 🧪 adube</b> para as plantas crescerem mais rápido. Afaste as <b>🐛 pragas</b> rápido antes que reduzam sua colheita!',
+step3:'<b>🧺 Colha</b> quando as plantas estiverem prontas — às vezes surge a rara mutação <b>Melão Dourado 🍈</b>!',
+step4:'<b>💰 Venda</b> sua colheita no Mercado NPC quando os preços estiverem altos, ou anuncie seus produtos no Mercado de Jogadores.',
+step5:'<b>🚀 Expanda sua fazenda:</b> compre animais 🐔, construa a Padaria / Laticínio / Cozinha de Molhos 🏭, pesque 🎣 e minere ⛏️, suba de nível, evolua habilidades e entre para uma guilda 🤝.',
+intro_cur_t:'💰 Moedas',coins_name:'🪙 Moedas',
+coins_desc:'A moeda principal. Para sementes, animais, construções e melhorias. Ganha-se com colheitas, vendas, missões e bônus diários.',
+gems_name:'💎 Gemas da Colheita',
+gems_desc:'Moeda premium — <b>só se ganha jogando</b>: conquistas, torneios, guildas e mutações. 1 💎 = 500 moedas (máx. 50 💎/dia).',
+intro_doge_t:'🐶 Como ganhar DOGE',
+intro_doge_x:'Junte <b>200.000 moedas → troque por 0,01 DOGE</b> via FaucetPay (aba 👛 Carteira). Requisitos: <b>nív. mín. 5</b>, máx. <b>1× a cada 7 dias</b>, e cada saque precisa de <b>aprovação do admin</b>. Sinceramente: isto <b>não é promessa de lucro</b> — as recompensas dependem do saldo e da aprovação, e você <b>nunca precisa depositar nada</b> para jogar.',
+intro_rules_t:'📜 Regras',
+rule1:'✅ Jogue limpo — bots, trapaças e contas múltiplas são proibidos.',
+rule2:'📺 Anúncios AdGram são <b>opcionais</b> para bônus (Energia, aceleração, colheita dupla) — nunca obrigatórios.',
+rule3:'🌦️ O clima muda a cada hora e as estações toda semana — aproveite os bônus!',
+rule4:'🎁 Resgate seu bônus diário para não quebrar a sequência (7 dias = +2 💎).',
+btn_start:'🌾 Começar a cultivar',btn_skip:'Pular ➜',
+garden_t:'🌱 Minha Fazenda',
+garden_hint:'Toque em um canteiro vazio para plantar, numa planta em crescimento para regar / adubar, numa planta pronta para colher. Pragas? Toque rápido para afastá-las!',
+btn_upgrade:'⬆️ Ampliar Terreno',btn_ad_energy:'📺 Anúncio: +20 ⚡',
+upgrade_info:'Terreno atual {size}×{size} ({total} canteiros). Ampliar adiciona mais canteiros.',
+ad_t:'📺 Anúncios com Recompensa (AdGram)',ad_desc:'Assista anúncios e ganhe recompensas. Só conta se assistir ao anúncio até o fim.',
+ad_today:'Anúncios hoje: {n} recompensas resgatadas',seed_pick_t:'🌱 Escolha uma Semente — Canteiro {n}',
+btn_plant:'🌱 Plantar',btn_cancel:'Cancelar',empty_plot:'Canteiro {n}',tap_plant:'Toque para plantar',
+ready_harvest:'✅ Pronto para colher!',pest_alert:'🐛 PRAGA! Toque rápido!',
+loading_garden:'Carregando fazenda…',no_plots:'Ainda não há canteiros. Tente atualizar.',
+growing_wait:'🌿 A planta ainda está crescendo — espere um pouco.',choose_seed:'Escolha uma semente primeiro 🌱',
+confirm_fert:'Já está regado. Adicionar adubo para crescer mais rápido?',
+stock_label:'Estoque: {n}',
+animals_t:'🐔 Animais',
+animals_desc:'Os animais precisam de ração para continuar produzindo. Com fome, a produção para.',
+buy_feed:'Comprar Ração (+10)',buy_animal_t:'🛒 Comprar Animais',
+no_animals:'Ainda não há animais. Compre um abaixo!',
+animal_hungry:'🍽️ Com fome — alimente primeiro!',animal_fed:'😋 Já alimentado',animal_ready:'✅ <b>Pronto para coletar!</b>',
+feed_btn:'🌾 Alimentar',collect_btn:'🧺 Coletar',buy_btn:'Comprar',
+animal_shop_note:'Os preços vêm do servidor (veja a mensagem de erro se um botão falhar).',
+produce_in:'Próximo {name} em:',
+seed_shop_t:'🌱 Loja de Sementes',fert_shop_t:'🧪 Adubo e Ração',btn_buy_fert:'🧪 Comprar Adubo (+5)',
+npc_t:'🏪 Mercado NPC — Venda sua Colheita',npc_desc:'Os preços mudam sempre. Se estiverem altos, venda agora!',
+btn_refresh:'🔄 Atualizar Preços',sell_qty_l:'Vender {name} — quantidade',sell_confirm:'💰 Vender Agora',
+p2p_t:'🤝 Mercado de Jogadores (P2P)',p2p_item_l:'Item do inventário',p2p_qty_l:'Quantidade',p2p_price_l:'Preço / unidade (moedas)',
+btn_list:'📢 Anunciar Venda',listings_t:'Últimos Anúncios',
+no_listings:'Ainda não há anúncios de jogadores. Seja o primeiro vendedor!',
+buy_listing:'🛒 Comprar',
+melon_note:'🍈 Sementes de Melão Dourado não são vendidas — só por mutação na colheita (4%). Estoque: {n}',
+base_price:'Preço base {n}',sell_btn:'Vender',high_price:'🔥 Preço alto, venda agora!',
+seller_label:'Vendedor: {name} • Total: {total} 🪙',grows_in:'cresce em {t}',
+prod_t:'🏭 Edifícios de Produção',
+prod_desc:'Transforme colheitas em produtos mais valiosos. Os edifícios exigem Nível e Moedas.',
+jobs_t:'⚙️ Produção em Andamento',
+no_jobs:'Nenhuma produção em andamento. Construa um edifício e inicie a produção.',
+fish_mine_t:'🎣 Pesca e ⛏️ Mineração',
+fish_mine_desc:'Tempo de espera de 30 minutos (mais rápido com a habilidade Exploração e no Verão). Recompensas aleatórias — às vezes Gemas 💎!',
+btn_fish:'🎣 Pescar',btn_mine:'⛏️ Minerar',
+gather_status:'🎣 Pesca: {fish} • ⛏️ Mineração: {mine} • Total: {fc}× pesca, {mc}× mineração',
+ready_now:'pronto!',wait_for:'espere {t}',
+no_buildings:'Ainda não há edifícios.',build_btn:'Construir — {price} 🪙',
+upgrade_build_btn:'⬆️ Melhorar ({price} 🪙)',start_prod_btn:'⚙️ Iniciar Produção',collect_job_btn:'🧺 Coletar',
+build_level:'Nv {lv} • capacidade {cap} trabalhos',build_min:'Nív. mín. {n}',
+materials_label:'Materiais no inventário:',
+my_guild_t:'🤝 Minha Guilda',
+no_guild:'Você ainda não está em uma guilda. Crie uma ou entre por uma da lista.',
+create_guild_t:'🏰 Criar Guilda',create_guild_desc:'Custa 1.000 moedas. Nome de 3–20 caracteres.',
+guild_name_ph:'Nome da guilda, ex.: Vale Verde',btn_create_guild:'🏰 Criar Guilda (1.000 🪙)',
+guild_list_t:'🔍 Lista de Guildas',no_guilds:'Ainda não há guildas. Seja o primeiro!',
+btn_join:'Entrar',btn_leave:'🚪 Sair da Guilda',btn_claim_guild:'🎁 Resgatar +{n} 💎',
+goal_t:'Meta semanal: <b>{a} / {b}</b> pontos de temporada dos membros',
+goal_reached:'Meta alcançada! Resgate sua recompensa 🎉',goal_claimed:'A recompensa desta semana já foi resgatada ✅',
+goal_hint:'Ganhem pontos de temporada juntos — colham, vendam, pesquem, produzam!',
+members_label:'{n}/20 membros',
+daily_t:'🎁 Bônus Diário',
+daily_desc:'Sequência de <b>{n}</b> dias • Resgate 1× por dia, não quebre! 7 dias = +2 💎',
+btn_claim_daily:'🎁 Resgatar Bônus Diário',season_t:'🌸 Temporada e Torneio Semanal',
+season_points_me:'Meus pontos da temporada: <b>{n}</b> • Recompensa 1×/temporada (mín. 50 pontos): 🥇 50 💎 • 🥈🥉 30 💎 • Top 10: 15 💎 • outros: 5 💎',
+season_top_t:'Top do Torneio desta Semana',btn_claim_season:'🏆 Resgatar Prêmio do Torneio',
+no_season_top:'Ainda não há pontos nesta semana.',
+skill_t:'⭐ Árvore de Habilidades',
+skill_desc:'Ganhe 1 ponto de habilidade por nível. Os efeitos valem na hora na fazenda, produção e mercado.',
+skill_points_left:'Pontos disponíveis: <b>{n}</b> • Ganhe 1 ponto por nível.',
+skill_up_btn:'Subir (1 ⭐)',
+skill_desc_bertani:'−5% de crescimento e +1 de colheita a cada 2 níveis',
+skill_desc_produksi:'−10% de tempo de produção por nível',
+skill_desc_dagang:'+5% de preço de venda no Mercado NPC por nível',
+skill_desc_jelajah:'−10% de espera e +10% de recompensas de pesca/mineração por nível',
+missions_t:'🎯 Missões Diárias',no_missions:'Ainda não há missões hoje.',
+ach_t:'🏆 Conquistas',stats_t:'Estatísticas',no_ach:'Ainda não há conquistas.',
+claim_btn:'🎁 Resgatar {reward} 🪙',claimed_btn:'✅ Já resgatado',
+reward_label:'Recompensa: {coins} 🪙{gems}',done_label:' • Concluído!',
+stat_level:'Nível Atual',stat_xp:'XP Total',stat_streak:'Sequência de Login',stat_grid:'Tamanho da Fazenda',
+stat_animals:'Animais',stat_double:'Colheita Dupla Ativa',stat_double_yes:'✖️2 Sim',stat_double_no:'Não',
+wallet_t:'👛 Carteira',wallet_coins:'Saldo de Moedas',wallet_level:'Nível',wallet_doge:'Equivalente em DOGE',wallet_streak:'Sequência de Login',
+wallet_info:'💱 <b>Taxa: 200.000 moedas = 0,01 DOGE</b><br>✅ Saque mín.: <b>200.000 moedas</b> &nbsp;•&nbsp; Nív. mín.: <b>5</b><br>⏳ Máx. <b>1× a cada 7 dias</b> &nbsp;•&nbsp; Pago via FaucetPay (email / usuário).<br>💎 Gemas da Colheita: <b>{gems}</b> • Taxa de troca: <b>1 💎 = 500 moedas</b> (máx. 50 💎/dia)',
+convert_t:'💎 Trocar Gemas → Moedas',convert_l:'Quantidade de Gemas (máx. 50/dia)',convert_btn:'💱 Trocar Gemas',
+wd_t:'💸 Sacar DOGE',wd_coins_l:'Quantidade de Moedas (mín. 200.000)',wd_dest_l:'Email / Usuário FaucetPay',
+wd_btn:'💸 Solicitar Saque',wd_hist_t:'📜 Histórico de Saques',no_wd:'Ainda não há histórico de saques.',
+wd_dest_ph:'ex.: voce@email.com',convert_preview:'≈ {n} moedas',wd_preview:'≈ {n} DOGE',
+ref_t:'🎁 Indicação — Convide Amigos',
+ref_desc:'Compartilhe seu link de indicação. Amigos que entrarem por ele ganham <b>+200 moedas</b> — e quando chegarem ao <b>Nível 3</b>, você ganha <b>+500 moedas e 2 💎 Gemas</b>!',
+ref_link_l:'Seu link de indicação',btn_copy:'📋 Copiar',btn_share:'✈️ Compartilhar no Telegram',
+ref_stats_t:'📊 Estatísticas de Indicação',ref_invited:'Amigos Convidados',ref_rewarded:'Recompensas Ganhas',
+ref_earned:'Total de Moedas Ganhas',ref_earned_gems:'Total de Gemas Ganhas',ref_rules_t:'📜 Como Ganhar Recompensas',
+ref_rule1:'<b>Compartilhe seu link de indicação</b> com amigos (Telegram, WhatsApp, redes sociais).',
+ref_rule2:'Seu amigo <b>entra pelo seu link</b> e ganha na hora <b>+200 moedas</b> de boas-vindas.',
+ref_rule3:'Quando seu amigo chegar ao <b>Nível 3</b>, você ganha <b>+500 moedas e 2 💎</b> — uma vez por amigo.',
+ref_rule4:'Jogue limpo: <b>você não pode convidar a si mesmo</b>, cada amigo conta para apenas um convidador, e contas duplicadas são proibidas.',
+ref_list_t:'👥 Amigos que Você Convidou',
+ref_none:'Ainda não há amigos convidados. Compartilhe seu link de indicação!',
+ref_copied:'📋 Link de indicação copiado!',ref_level:'Nível {n}',
+ref_rewarded_badge:'✅ Recompensa recebida',ref_pending:'⏳ Aguardando Nível 3',
+ref_share_text:'🌾 Venha jogar Harvest Farm — o jogo de fazenda no Telegram! Plante, colha, venda e troque Moedas por DOGE. Entre pelo meu link e ganhe +200 moedas!',
+lb_t:'🏆 Ranking — Melhores Fazendeiros',btn_refresh_lb:'🔄 Atualizar',no_lb:'Ainda não há ranking.',
+lb_fail:'Falha ao carregar o ranking. Servidor não conectado?',
+conn_err:'⚠️ <b>Servidor não conectado</b> — verifique API_URL. Abra com <code>?api=https://...railway.app</code> ou defina <code>window.HARVESTFARM_API_URL</code>. Os dados abaixo são a última cópia salva.',
+toast_welcome:'🌾 Bom cultivo!',loading_lb:'Carregando ranking…',
+empty_inventory:'— Inventário vazio —',loading_market:'Preços indisponíveis.',
+market_updated:'🔄 Preços atualizados',invalid_amount:'Quantidade inválida.',
+empty_p2p:'Inventário vazio — nada para vender.',
+amount_price_err:'Quantidade e preço obrigatórios.',
+guild_name_short:'O nome da guilda precisa de 3 caracteres no mínimo.',gems_range:'Quantidade de Gemas 1–50.',
+wd_min:'O saque mínimo é de 200.000 moedas.',wd_dest_empty:'Informe primeiro seu email / usuário FaucetPay.',
+wd_submitted:'💸 Saque solicitado!',wd_status:'Status: {s}',
+ad_not_ready:'📺 Anúncios ainda não ativos — configure o Block ID do AdGram',
+ad_not_done:'Anúncio não concluído — sem recompensa.',ad_reward_in:'🎉 Recompensa do anúncio recebida!',
+no_growing:'Nenhuma planta crescendo agora.',success_default:'Pronto! ✅',
+err_fallback:'Ocorreu um erro: {code}',
+level_label:'Nível {n}',xp_label:'XP {a} / {b}',xp_max:'XP {a} (MÁX)',
+streak_pill:'🔥 Sequência: {n} dias',skill_points_hud:'⭐ {n} pontos de habilidade',tourney_points:'🏆 {n} pontos',
+mission_progress:'{a} / {b} • Recompensa: {c} 🪙',
+weather_change:'mudança de clima:',event_ends:'termina em:',season_change:'mudança de temporada:',ready_label:'Pronto! ✅',
+plot_empty_backend:'Servidor não conectado — verifique API_URL.',
+plot_empty_hint:'Abra este arquivo com ?api=https://seu-backend-railway',
+confirm_leave:'Tem certeza que quer sair da guilda?'
+}
 };
-function errText(code){ return ERR_ID[code] || ('Terjadi kesalahan: ' + code); }
+/* Pesan sukses aksi (toast) per bahasa — digabung ke LANGS */
+var TOASTS = {
+id:{toast_pest:'🐛 Hama berhasil diusir!',toast_harvest:'🧺 Panen berhasil!',toast_water:'💧 Tanaman disiram!',toast_fertilize:'🧪 Pupuk diberikan!',toast_planted:'🌱 {name} ditanam!',toast_upgrade:'⬆️ Grid berhasil di-upgrade!',toast_feed_bought:'🌾 Pakan dibeli!',toast_fert_bought:'🧪 Pupuk dibeli!',toast_sold:'💰 Berhasil dijual!',toast_listing:'📢 Jualan dipasang di Pasar Pemain!',toast_daily:'🎁 Bonus harian diklaim!',toast_fish:'🎣 Mancing!',toast_mine:'⛏️ Menambang!',toast_guild_created:'🏰 Guild dibuat!',toast_gems:'💱 Permata ditukar jadi Koin!',toast_seed_bought:'🌱 Benih dibeli!',toast_animal_bought:'🎉 Hewan baru dibeli!',toast_animal_fed:'🌾 Hewan diberi pakan!',toast_animal_collected:'🧺 Hasil dikumpulkan!',toast_mission:'🎉 Hadiah misi diklaim!',toast_building:'🏭 Bangunan dibangun!',toast_building_up:'🏭 Bangunan di-upgrade!',toast_prod_start:'⚙️ Produksi dimulai!',toast_prod_collect:'🏭 Hasil produksi diambil!',toast_skill:'⭐ Skill naik level!',toast_ach:'🏆 Achievement diklaim!',toast_join_guild:'🤝 Berhasil gabung guild!',toast_leave_guild:'Kamu keluar dari guild.',toast_guild_reward:'🎁 Hadiah guild diklaim!',toast_season_reward:'🏆 Hadiah turnamen diklaim!',toast_buy_listing:'🛒 Listing dibeli!'},
+en:{toast_pest:'🐛 Pest chased away!',toast_harvest:'🧺 Harvest successful!',toast_water:'💧 Crop watered!',toast_fertilize:'🧪 Fertilizer applied!',toast_planted:'🌱 {name} planted!',toast_upgrade:'⬆️ Grid upgraded!',toast_feed_bought:'🌾 Feed bought!',toast_fert_bought:'🧪 Fertilizer bought!',toast_sold:'💰 Sold!',toast_listing:'📢 Listed at the Player Market!',toast_daily:'🎁 Daily bonus claimed!',toast_fish:'🎣 Fishing!',toast_mine:'⛏️ Mining!',toast_guild_created:'🏰 Guild created!',toast_gems:'💱 Gems exchanged for Coins!',toast_seed_bought:'🌱 Seeds bought!',toast_animal_bought:'🎉 New animal bought!',toast_animal_fed:'🌾 Animal fed!',toast_animal_collected:'🧺 Produce collected!',toast_mission:'🎉 Quest reward claimed!',toast_building:'🏭 Building constructed!',toast_building_up:'🏭 Building upgraded!',toast_prod_start:'⚙️ Production started!',toast_prod_collect:'🏭 Production collected!',toast_skill:'⭐ Skill leveled up!',toast_ach:'🏆 Achievement claimed!',toast_join_guild:'🤝 Joined the guild!',toast_leave_guild:'You left the guild.',toast_guild_reward:'🎁 Guild reward claimed!',toast_season_reward:'🏆 Tournament prize claimed!',toast_buy_listing:'🛒 Listing bought!'},
+ru:{toast_pest:'🐛 Вредитель прогнан!',toast_harvest:'🧺 Урожай собран!',toast_water:'💧 Растение полито!',toast_fertilize:'🧪 Удобрение внесено!',toast_planted:'🌱 {name} посажено!',toast_upgrade:'⬆️ Поле улучшено!',toast_feed_bought:'🌾 Корм куплен!',toast_fert_bought:'🧪 Удобрение куплено!',toast_sold:'💰 Продано!',toast_listing:'📢 Лот выставлен на рынке игроков!',toast_daily:'🎁 Ежедневный бонус забран!',toast_fish:'🎣 Рыбалка!',toast_mine:'⛏️ Добыча!',toast_guild_created:'🏰 Гильдия создана!',toast_gems:'💱 Кристаллы обменяны на монеты!',toast_seed_bought:'🌱 Семена куплены!',toast_animal_bought:'🎉 Новое животное куплено!',toast_animal_fed:'🌾 Животное накормлено!',toast_animal_collected:'🧺 Продукция собрана!',toast_mission:'🎉 Награда за задание забрана!',toast_building:'🏭 Здание построено!',toast_building_up:'🏭 Здание улучшено!',toast_prod_start:'⚙️ Производство запущено!',toast_prod_collect:'🏭 Продукция забрана!',toast_skill:'⭐ Навык повышен!',toast_ach:'🏆 Достижение забрано!',toast_join_guild:'🤝 Ты вступил в гильдию!',toast_leave_guild:'Ты покинул гильдию.',toast_guild_reward:'🎁 Награда гильдии забрана!',toast_season_reward:'🏆 Приз турнира забран!',toast_buy_listing:'🛒 Лот куплен!'},
+es:{toast_pest:'🐛 ¡Plaga ahuyentada!',toast_harvest:'🧺 ¡Cosecha exitosa!',toast_water:'💧 ¡Cultivo regado!',toast_fertilize:'🧪 ¡Abono aplicado!',toast_planted:'🌱 ¡{name} plantado!',toast_upgrade:'⬆️ ¡Terreno ampliado!',toast_feed_bought:'🌾 ¡Comida comprada!',toast_fert_bought:'🧪 ¡Abono comprado!',toast_sold:'💰 ¡Vendido!',toast_listing:'📢 ¡Venta publicada en el Mercado de Jugadores!',toast_daily:'🎁 ¡Bono diario reclamado!',toast_fish:'🎣 ¡Pesca!',toast_mine:'⛏️ ¡Minería!',toast_guild_created:'🏰 ¡Gremio creado!',toast_gems:'💱 ¡Gemas cambiadas por monedas!',toast_seed_bought:'🌱 ¡Semillas compradas!',toast_animal_bought:'🎉 ¡Nuevo animal comprado!',toast_animal_fed:'🌾 ¡Animal alimentado!',toast_animal_collected:'🧺 ¡Productos recogidos!',toast_mission:'🎉 ¡Recompensa de misión reclamada!',toast_building:'🏭 ¡Edificio construido!',toast_building_up:'🏭 ¡Edificio mejorado!',toast_prod_start:'⚙️ ¡Producción iniciada!',toast_prod_collect:'🏭 ¡Producción recogida!',toast_skill:'⭐ ¡Habilidad mejorada!',toast_ach:'🏆 ¡Logro reclamado!',toast_join_guild:'🤝 ¡Te uniste al gremio!',toast_leave_guild:'Saliste del gremio.',toast_guild_reward:'🎁 ¡Recompensa del gremio reclamada!',toast_season_reward:'🏆 ¡Premio del torneo reclamado!',toast_buy_listing:'🛒 ¡Oferta comprada!'},
+pt:{toast_pest:'🐛 Praga afastada!',toast_harvest:'🧺 Colheita concluída!',toast_water:'💧 Planta regada!',toast_fertilize:'🧪 Adubo aplicado!',toast_planted:'🌱 {name} plantado!',toast_upgrade:'⬆️ Terreno ampliado!',toast_feed_bought:'🌾 Ração comprada!',toast_fert_bought:'🧪 Adubo comprado!',toast_sold:'💰 Vendido!',toast_listing:'📢 Venda anunciada no Mercado de Jogadores!',toast_daily:'🎁 Bônus diário resgatado!',toast_fish:'🎣 Pesca!',toast_mine:'⛏️ Mineração!',toast_guild_created:'🏰 Guilda criada!',toast_gems:'💱 Gemas trocadas por moedas!',toast_seed_bought:'🌱 Sementes compradas!',toast_animal_bought:'🎉 Novo animal comprado!',toast_animal_fed:'🌾 Animal alimentado!',toast_animal_collected:'🧺 Produtos coletados!',toast_mission:'🎉 Recompensa de missão resgatada!',toast_building:'🏭 Edifício construído!',toast_building_up:'🏭 Edifício melhorado!',toast_prod_start:'⚙️ Produção iniciada!',toast_prod_collect:'🏭 Produção coletada!',toast_skill:'⭐ Habilidade evoluída!',toast_ach:'🏆 Conquista resgatada!',toast_join_guild:'🤝 Você entrou para a guilda!',toast_leave_guild:'Você saiu da guilda.',toast_guild_reward:'🎁 Recompensa da guilda resgatada!',toast_season_reward:'🏆 Prêmio do torneio resgatado!',toast_buy_listing:'🛒 Anúncio comprado!'}
+};
+Object.keys(TOASTS).forEach(function(l){ for (var k in TOASTS[l]) LANGS[l][k] = TOASTS[l][k]; });
+/* Kunci tambahan (dipakai render dinamis) */
+var KEYS2 = {
+id:{animal_every:'{name} tiap {t} • butuh pakan',seed_name:'Benih {name}',inv_label:'Stok kamu: {n} • tumbuh {t}',fert_feed_line:'Pupuk: <b>{f}</b> • Pakan: <b>{p}</b>',market_stock:'Stok: {n} • Harga dasar {base}',price_each:'{price} 🪙/buah',points_word:'poin',wallet_level_value:'Level {n} (min 5 untuk WD)',wallet_streak_value:'🔥 {n} hari'},
+en:{animal_every:'{name} every {t} • needs feed',seed_name:'{name} Seeds',inv_label:'Your stock: {n} • grows in {t}',fert_feed_line:'Fertilizer: <b>{f}</b> • Feed: <b>{p}</b>',market_stock:'Stock: {n} • Base price {base}',price_each:'{price} 🪙/unit',points_word:'points',wallet_level_value:'Level {n} (min 5 to withdraw)',wallet_streak_value:'🔥 {n} days'},
+ru:{animal_every:'{name} каждые {t} • нужен корм',seed_name:'Семена: {name}',inv_label:'Твой запас: {n} • растёт {t}',fert_feed_line:'Удобрение: <b>{f}</b> • Корм: <b>{p}</b>',market_stock:'Запас: {n} • Базовая цена {base}',price_each:'{price} 🪙/шт.',points_word:'очков',wallet_level_value:'Уровень {n} (мин. 5 для вывода)',wallet_streak_value:'🔥 {n} дн.'},
+es:{animal_every:'{name} cada {t} • necesita comida',seed_name:'Semillas de {name}',inv_label:'Tu stock: {n} • crece en {t}',fert_feed_line:'Abono: <b>{f}</b> • Comida: <b>{p}</b>',market_stock:'Stock: {n} • Precio base {base}',price_each:'{price} 🪙/ud.',points_word:'puntos',wallet_level_value:'Nivel {n} (mín. 5 para retirar)',wallet_streak_value:'🔥 {n} días'},
+pt:{animal_every:'{name} a cada {t} • precisa de ração',seed_name:'Sementes de {name}',inv_label:'Seu estoque: {n} • cresce em {t}',fert_feed_line:'Adubo: <b>{f}</b> • Ração: <b>{p}</b>',market_stock:'Estoque: {n} • Preço base {base}',price_each:'{price} 🪙/un.',points_word:'pontos',wallet_level_value:'Nível {n} (mín. 5 para sacar)',wallet_streak_value:'🔥 {n} dias'}
+};
+Object.keys(KEYS2).forEach(function(l){ for (var k in KEYS2[l]) LANGS[l][k] = KEYS2[l][k]; });
+/* Kunci tambahan 2 — tombol iklan AdGram */
+var KEYS3 = {
+id:{ad_btn_energy:'⚡ +20 Energi',ad_btn_speed:'⏩ Percepat 1 Petak 50%',ad_btn_double:'✖️2 Panen Berikutnya',ad_btn_seed:'🌱 Benih Gratis 1 Pack',feed_label:'🌾 Pakan:'},
+en:{ad_btn_energy:'⚡ +20 Energy',ad_btn_speed:'⏩ Speed Up 1 Plot 50%',ad_btn_double:'✖️2 Next Harvest',ad_btn_seed:'🌱 Free Seed Pack',feed_label:'🌾 Feed:'},
+ru:{ad_btn_energy:'⚡ +20 энергии',ad_btn_speed:'⏩ Ускорить 1 грядку на 50%',ad_btn_double:'✖️2 Следующий урожай',ad_btn_seed:'🌱 Бесплатный набор семян',feed_label:'🌾 Корм:'},
+es:{ad_btn_energy:'⚡ +20 Energía',ad_btn_speed:'⏩ Acelerar 1 Parcela 50%',ad_btn_double:'✖️2 Próxima Cosecha',ad_btn_seed:'🌱 Pack de Semillas Gratis',feed_label:'🌾 Comida:'},
+pt:{ad_btn_energy:'⚡ +20 Energia',ad_btn_speed:'⏩ Acelerar 1 Canteiro 50%',ad_btn_double:'✖️2 Próxima Colheita',ad_btn_seed:'🌱 Pacote de Sementes Grátis',feed_label:'🌾 Ração:'}
+};
+Object.keys(KEYS3).forEach(function(l){ for (var k in KEYS3[l]) LANGS[l][k] = KEYS3[l][k]; });
+/* Judul misi per jenis (server kirim judul Bahasa Indonesia — diterjemahkan di client) */
+var MISSION_T = {
+panen:{id:'Panen {n} tanaman',en:'Harvest {n} crops',ru:'Собери урожай {n} раз',es:'Cosecha {n} cultivos',pt:'Colha {n} plantações'},
+jual:{id:'Jual {n} hasil panen di Pasar NPC',en:'Sell {n} harvests at the NPC Market',ru:'Продай {n} урожаев на рынке NPC',es:'Vende {n} cosechas en el Mercado NPC',pt:'Venda {n} colheitas no Mercado NPC'},
+hama:{id:'Usir hama {n} kali',en:'Chase away pests {n} times',ru:'Прогнать вредителей {n} раз',es:'Ahuyenta plagas {n} veces',pt:'Afaste pragas {n} vezes'},
+tanam:{id:'Tanam {n} benih',en:'Plant {n} seeds',ru:'Посади {n} семян',es:'Planta {n} semillas',pt:'Plante {n} sementes'},
+siram:{id:'Siram tanaman {n} kali',en:'Water crops {n} times',ru:'Полей растения {n} раз',es:'Riega cultivos {n} veces',pt:'Regue plantas {n} vezes'},
+p2p:{id:'Pasang {n} jualan di Pasar Pemain',en:'List {n} item at the Player Market',ru:'Выстави {n} лот на рынке игроков',es:'Publica {n} venta en el Mercado de Jugadores',pt:'Anuncie {n} venda no Mercado de Jogadores'},
+hewan:{id:'Kumpulkan hasil hewan {n} kali',en:'Collect animal produce {n} times',ru:'Собери продукцию животных {n} раз',es:'Recoge productos de animales {n} veces',pt:'Colete produtos de animais {n} vezes'},
+ikan:{id:'Mancing {n} kali',en:'Fish {n} times',ru:'Порыбачь {n} раз',es:'Pesca {n} veces',pt:'Pesque {n} vezes'},
+tambang:{id:'Menambang {n} kali',en:'Mine {n} times',ru:'Добудь руду {n} раз',es:'Mina {n} veces',pt:'Minere {n} vezes'},
+produksi:{id:'Selesaikan {n} produksi',en:'Complete {n} production',ru:'Заверши производство {n} раз',es:'Completa {n} producciones',pt:'Complete {n} produções'}
+};
+/* Judul & deskripsi achievement v2 per id */
+var ACH_T = {
+1:{t:{id:'🌱 Petani Pemula',en:'🌱 Beginner Farmer',ru:'🌱 Начинающий фермер',es:'🌱 Granjero Principiante',pt:'🌱 Fazendeiro Iniciante'},d:{id:'Capai Level 1',en:'Reach Level 1',ru:'Достигни 1-го уровня',es:'Llega al Nivel 1',pt:'Alcance o Nível 1'}},
+2:{t:{id:'🚜 Petani Andal',en:'🚜 Skilled Farmer',ru:'🚜 Опытный фермер',es:'🚜 Granjero Hábil',pt:'🚜 Fazendeiro Habilidoso'},d:{id:'Capai Level 5',en:'Reach Level 5',ru:'Достигни 5-го уровня',es:'Llega al Nivel 5',pt:'Alcance o Nível 5'}},
+3:{t:{id:'👑 Juragan Kebun',en:'👑 Farm Tycoon',ru:'👑 Владелец фермы',es:'👑 Magnate de la Granja',pt:'👑 Magnata da Fazenda'},d:{id:'Capai Level 10',en:'Reach Level 10',ru:'Достигни 10-го уровня',es:'Llega al Nivel 10',pt:'Alcance o Nível 10'}},
+4:{t:{id:'🌾 Legenda Panen',en:'🌾 Harvest Legend',ru:'🌾 Легенда урожая',es:'🌾 Leyenda de la Cosecha',pt:'🌾 Lenda da Colheita'},d:{id:'Capai Level 20',en:'Reach Level 20',ru:'Достигни 20-го уровня',es:'Llega al Nivel 20',pt:'Alcance o Nível 20'}},
+5:{t:{id:'🏆 Master Tani',en:'🏆 Farming Master',ru:'🏆 Мастер фермерства',es:'🏆 Maestro Granjero',pt:'🏆 Mestre Fazendeiro'},d:{id:'Capai Level 50',en:'Reach Level 50',ru:'Достигни 50-го уровня',es:'Llega al Nivel 50',pt:'Alcance o Nível 50'}},
+6:{t:{id:'👑 Legenda Harvest',en:'👑 Harvest Legend',ru:'👑 Легенда Harvest',es:'👑 Leyenda Harvest',pt:'👑 Lenda Harvest'},d:{id:'Capai Level 100',en:'Reach Level 100',ru:'Достигни 100-го уровня',es:'Llega al Nivel 100',pt:'Alcance o Nível 100'}},
+7:{t:{id:'🧺 Panen 100×',en:'🧺 100 Harvests',ru:'🧺 100 урожаев',es:'🧺 100 Cosechas',pt:'🧺 100 Colheitas'},d:{id:'Total panen 100 kali',en:'Harvest 100 times in total',ru:'Всего 100 сборов урожая',es:'Cosecha 100 veces en total',pt:'Colha 100 vezes no total'}},
+8:{t:{id:'🧺 Panen 1.000×',en:'🧺 1,000 Harvests',ru:'🧺 1000 урожаев',es:'🧺 1.000 Cosechas',pt:'🧺 1.000 Colheitas'},d:{id:'Total panen 1.000 kali',en:'Harvest 1,000 times in total',ru:'Всего 1000 сборов урожая',es:'Cosecha 1.000 veces en total',pt:'Colha 1.000 vezes no total'}},
+9:{t:{id:'💰 Jualan 10.000',en:'💰 10,000 Sold',ru:'💰 Продано 10 000',es:'💰 10.000 Vendidos',pt:'💰 10.000 Vendidos'},d:{id:'Total terjual 10.000',en:'Sell 10,000 items in total',ru:'Всего продано 10 000',es:'Vende 10.000 en total',pt:'Venda 10.000 no total'}},
+10:{t:{id:'🏭 Produksi Pertama',en:'🏭 First Production',ru:'🏭 Первое производство',es:'🏭 Primera Producción',pt:'🏭 Primeira Produção'},d:{id:'Selesaikan 1 produksi',en:'Complete 1 production',ru:'Заверши 1 производство',es:'Completa 1 producción',pt:'Complete 1 produção'}},
+11:{t:{id:'🎣 Pemancing Handal',en:'🎣 Skilled Angler',ru:'🎣 Опытный рыбак',es:'🎣 Pescador Experto',pt:'🎣 Pescador Habilidoso'},d:{id:'Mancing 25 kali',en:'Fish 25 times',ru:'Порыбачь 25 раз',es:'Pesca 25 veces',pt:'Pesque 25 vezes'}},
+12:{t:{id:'⛏️ Penambang Ulung',en:'⛏️ Master Miner',ru:'⛏️ Мастер-шахтёр',es:'⛏️ Minero Experto',pt:'⛏️ Mineiro Mestre'},d:{id:'Menambang 25 kali',en:'Mine 25 times',ru:'Добудь руду 25 раз',es:'Mina 25 veces',pt:'Minere 25 vezes'}},
+13:{t:{id:'🤝 Anggota Guild',en:'🤝 Guild Member',ru:'🤝 Член гильдии',es:'🤝 Miembro del Gremio',pt:'🤝 Membro da Guilda'},d:{id:'Gabung sebuah guild',en:'Join a guild',ru:'Вступи в гильдию',es:'Únete a un gremio',pt:'Entre para uma guilda'}},
+14:{t:{id:'🍈 Melon Emas',en:'🍈 Golden Melon',ru:'🍈 Золотая дыня',es:'🍈 Melón Dorado',pt:'🍈 Melão Dourado'},d:{id:'Panen Melon Emas',en:'Harvest a Golden Melon',ru:'Собери Золотую дыню',es:'Cosecha un Melón Dorado',pt:'Colha um Melão Dourado'}}
+};
+/* Pesan error per bahasa (kode error dari server) */
+var ERRORS = {
+id:{not_enough_coins:'Koin tidak cukup.',not_enough_energy:'Energi habis. Tunggu regen atau tonton iklan +20 Energi.',plot_not_empty:'Petak sudah terisi.',plot_empty:'Petak masih kosong.',no_seed:'Benih habis. Beli dulu di Toko Benih.',not_ready:'Belum siap dipanen.',no_fertilizer:'Pupuk habis.',no_feed:'Pakan habis. Beli pakan dulu.',not_enough_item:'Jumlah item di inventaris tidak cukup.',level_too_low:'Level belum cukup (min. Level 5).',min_withdraw:'Minimal withdraw 200.000 Koin.',cooldown:'Masih cooldown. Tunggu sebentar lagi.',already_claimed:'Sudah diklaim hari ini.',mission_not_done:'Misi belum selesai.',invalid_destination:'Isi email / username FaucetPay yang benar.',ad_limit:'Batas hadiah iklan hari ini sudah habis.',invalid_action:'Aksi tidak dikenal.',unauthorized:'Sesi tidak valid. Buka lagi dari Telegram.',level_locked:'Level belum cukup untuk ini. Naik level dulu ya!',not_for_sale:'Item ini tidak dijual — dapat dari mutasi panen.',no_skill_points:'Tidak ada poin skill. Naik level dulu untuk dapat poin skill.',insufficient_gems:'Permata Panen tidak cukup.',daily_limit:'Batas harian sudah habis. Coba lagi besok.',already_in_guild:'Kamu sudah ada di guild.',guild_full:'Guild sudah penuh (20 anggota).',not_in_guild:'Kamu belum gabung guild.',goal_not_reached:'Tujuan guild minggu ini belum tercapai.',not_enough_points:'Poin musim belum cukup (min 50).',not_owned:'Kamu belum punya bangunan ini.',already_owned:'Bangunan ini sudah kamu miliki.',no_capacity:'Kapasitas produksi penuh — ambil hasil dulu atau upgrade bangunan.',max_level:'Sudah level maksimal.',name_taken:'Nama guild sudah dipakai.',insufficient_coins:'Koin tidak cukup.',insufficient_item:'Jumlah item di inventaris tidak cukup.',invalid_values:'Nilai tidak valid.',invalid_plot:'Petak tidak valid.',already_watered:'Tanaman sudah disiram.',already_fertilized:'Tanaman sudah dipupuk.',no_energy:'Energi habis.',plot_occupied:'Petak sudah terisi.',no_pest:'Tidak ada hama di petak ini.',animal_hungry:'Hewan lapar — beri pakan dulu.',not_found:'Tidak ditemukan.',own_listing:'Tidak bisa membeli jualan sendiri.',listing_not_found:'Listing tidak ditemukan.',max_grid:'Grid sudah maksimal.',mission_not_ready:'Misi belum siap diklaim.',not_done:'Syarat belum terpenuhi.',need_level:'Level belum cukup (min. Level 5).',amount_out_of_range:'Jumlah withdraw tidak valid.',already_pending:'Masih ada withdraw yang menunggu.',account_flagged:'Akun ditandai — hubungi admin.',rate_limited:'Terlalu cepat. Tunggu sebentar.',ad_cooldown:'Iklan masih cooldown. Tunggu sebentar.',ad_daily_limit:'Batas hadiah iklan hari ini sudah habis.',unknown_action:'Aksi tidak dikenal.',server_error:'Server error. Coba lagi.',invalid_init_data:'Sesi tidak valid. Buka lagi dari Telegram.',values_too_large:'Nilai terlalu besar.'},
+en:{not_enough_coins:'Not enough Coins.',not_enough_energy:'Out of Energy. Wait for regen or watch an ad for +20 Energy.',plot_not_empty:'Plot already occupied.',plot_empty:'Plot is still empty.',no_seed:'Out of seeds. Buy some at the Seed Shop first.',not_ready:'Not ready to harvest yet.',no_fertilizer:'Out of fertilizer.',no_feed:'Out of feed. Buy feed first.',not_enough_item:'Not enough items in inventory.',level_too_low:'Level too low (min. Level 5).',min_withdraw:'Minimum withdrawal is 200,000 Coins.',cooldown:'Still on cooldown. Wait a little.',already_claimed:'Already claimed today.',mission_not_done:'Quest not finished yet.',invalid_destination:'Enter a valid FaucetPay email / username.',ad_limit:'Today\'s ad reward limit is reached.',invalid_action:'Unknown action.',unauthorized:'Invalid session. Reopen from Telegram.',level_locked:'Level too low for this. Level up first!',not_for_sale:'This item is not sold — it comes from harvest mutations.',no_skill_points:'No skill points. Level up to earn skill points.',insufficient_gems:'Not enough Harvest Gems.',daily_limit:'Daily limit reached. Try again tomorrow.',already_in_guild:'You are already in a guild.',guild_full:'Guild is full (20 members).',not_in_guild:'You have not joined a guild.',goal_not_reached:'This week\'s guild goal is not reached yet.',not_enough_points:'Not enough season points (min 50).',not_owned:'You do not own this building.',already_owned:'You already own this building.',no_capacity:'Production capacity full — collect results first or upgrade the building.',max_level:'Already at max level.',name_taken:'Guild name is taken.',insufficient_coins:'Not enough Coins.',insufficient_item:'Not enough items in inventory.',invalid_values:'Invalid values.',invalid_plot:'Invalid plot.',already_watered:'Already watered.',already_fertilized:'Already fertilized.',no_energy:'Out of Energy.',plot_occupied:'Plot already occupied.',no_pest:'No pest on this plot.',animal_hungry:'Animal is hungry — feed it first.',not_found:'Not found.',own_listing:'You cannot buy your own listing.',listing_not_found:'Listing not found.',max_grid:'Grid is already at max size.',mission_not_ready:'Quest is not ready to claim.',not_done:'Requirements not met yet.',need_level:'Level too low (min. Level 5).',amount_out_of_range:'Invalid withdrawal amount.',already_pending:'A withdrawal is still pending.',account_flagged:'Account flagged — contact the admin.',rate_limited:'Too fast. Wait a moment.',ad_cooldown:'Ad still on cooldown. Wait a moment.',ad_daily_limit:'Today\'s ad reward limit is reached.',unknown_action:'Unknown action.',server_error:'Server error. Try again.',invalid_init_data:'Invalid session. Reopen from Telegram.',values_too_large:'Value too large.'},
+ru:{not_enough_coins:'Не хватает монет.',not_enough_energy:'Энергия кончилась. Подожди или посмотри рекламу (+20 энергии).',plot_not_empty:'Грядка уже занята.',plot_empty:'Грядка пока пуста.',no_seed:'Семена кончились. Купи в магазине семян.',not_ready:'Ещё не готово к сбору.',no_fertilizer:'Удобрение кончилось.',no_feed:'Корм кончился. Сначала купи корм.',not_enough_item:'В инвентаре не хватает предметов.',level_too_low:'Низкий уровень (мин. 5-й уровень).',min_withdraw:'Минимальный вывод — 200 000 монет.',cooldown:'Ещё перезарядка. Подожди немного.',already_claimed:'Сегодня уже забрано.',mission_not_done:'Задание ещё не выполнено.',invalid_destination:'Укажи правильный email / имя FaucetPay.',ad_limit:'Дневной лимит наград за рекламу исчерпан.',invalid_action:'Неизвестное действие.',unauthorized:'Неверная сессия. Открой игру заново из Telegram.',level_locked:'Низкий уровень для этого. Сначала повысь уровень!',not_for_sale:'Этот предмет не продаётся — только мутации при сборе урожая.',no_skill_points:'Нет очков навыков. Повышай уровень, чтобы их получать.',insufficient_gems:'Не хватает кристаллов.',daily_limit:'Дневной лимит исчерпан. Попробуй завтра.',already_in_guild:'Ты уже состоишь в гильдии.',guild_full:'Гильдия полна (20 участников).',not_in_guild:'Ты не состоишь в гильдии.',goal_not_reached:'Цель гильдии на этой неделе не достигнута.',not_enough_points:'Не хватает очков сезона (мин. 50).',not_owned:'У тебя нет этого здания.',already_owned:'Это здание у тебя уже есть.',no_capacity:'Производство переполнено — забери результат или улучши здание.',max_level:'Уже максимальный уровень.',name_taken:'Название гильдии занято.',insufficient_coins:'Не хватает монет.',insufficient_item:'В инвентаре не хватает предметов.',invalid_values:'Неверные значения.',invalid_plot:'Неверная грядка.',already_watered:'Уже полито.',already_fertilized:'Уже удобрено.',no_energy:'Энергия кончилась.',plot_occupied:'Грядка уже занята.',no_pest:'На этой грядке нет вредителей.',animal_hungry:'Животное голодно — сначала покорми.',not_found:'Не найдено.',own_listing:'Нельзя купить свой же лот.',listing_not_found:'Лот не найден.',max_grid:'Поле уже максимального размера.',mission_not_ready:'Задание ещё нельзя забрать.',not_done:'Условия пока не выполнены.',need_level:'Низкий уровень (мин. 5-й уровень).',amount_out_of_range:'Неверная сумма вывода.',already_pending:'Вывод ещё ожидает решения.',account_flagged:'Аккаунт помечен — обратись к админу.',rate_limited:'Слишком быстро. Подожди немного.',ad_cooldown:'Реклама ещё на перезарядке. Подожди.',ad_daily_limit:'Дневной лимит наград за рекламу исчерпан.',unknown_action:'Неизвестное действие.',server_error:'Ошибка сервера. Попробуй ещё раз.',invalid_init_data:'Неверная сессия. Открой игру заново из Telegram.',values_too_large:'Слишком большое значение.'},
+es:{not_enough_coins:'No tienes suficientes monedas.',not_enough_energy:'Sin Energía. Espera o mira un anuncio para +20 de Energía.',plot_not_empty:'La parcela ya está ocupada.',plot_empty:'La parcela aún está vacía.',no_seed:'Sin semillas. Compra en la Tienda de Semillas.',not_ready:'Aún no está listo para cosechar.',no_fertilizer:'Sin abono.',no_feed:'Sin comida. Compra comida primero.',not_enough_item:'No tienes suficientes productos en el inventario.',level_too_low:'Nivel insuficiente (mín. Nivel 5).',min_withdraw:'El retiro mínimo es de 200.000 monedas.',cooldown:'Aún en enfriamiento. Espera un poco.',already_claimed:'Ya reclamado hoy.',mission_not_done:'Misión sin terminar.',invalid_destination:'Escribe un email / usuario de FaucetPay válido.',ad_limit:'Límite diario de recompensas de anuncios alcanzado.',invalid_action:'Acción desconocida.',unauthorized:'Sesión no válida. Abre de nuevo desde Telegram.',level_locked:'Nivel insuficiente. ¡Sube de nivel primero!',not_for_sale:'Este producto no se vende — se obtiene por mutación al cosechar.',no_skill_points:'Sin puntos de habilidad. Sube de nivel para ganarlos.',insufficient_gems:'No tienes suficientes Gemas.',daily_limit:'Límite diario alcanzado. Intenta mañana.',already_in_guild:'Ya estás en un gremio.',guild_full:'El gremio está lleno (20 miembros).',not_in_guild:'No estás en un gremio.',goal_not_reached:'La meta semanal del gremio aún no se alcanza.',not_enough_points:'Puntos de temporada insuficientes (mín. 50).',not_owned:'No tienes este edificio.',already_owned:'Ya tienes este edificio.',no_capacity:'Capacidad de producción llena — recoge resultados o mejora el edificio.',max_level:'Ya estás en el nivel máximo.',name_taken:'El nombre del gremio ya está en uso.',insufficient_coins:'No tienes suficientes monedas.',insufficient_item:'No tienes suficientes productos en el inventario.',invalid_values:'Valores no válidos.',invalid_plot:'Parcela no válida.',already_watered:'Ya está regado.',already_fertilized:'Ya está abonado.',no_energy:'Sin Energía.',plot_occupied:'La parcela ya está ocupada.',no_pest:'No hay plagas en esta parcela.',animal_hungry:'El animal tiene hambre — aliméntalo primero.',not_found:'No encontrado.',own_listing:'No puedes comprar tu propia oferta.',listing_not_found:'Oferta no encontrada.',max_grid:'El terreno ya está al máximo.',mission_not_ready:'La misión aún no está lista para reclamar.',not_done:'Requisitos sin cumplir.',need_level:'Nivel insuficiente (mín. Nivel 5).',amount_out_of_range:'Cantidad de retiro no válida.',already_pending:'Aún hay un retiro pendiente.',account_flagged:'Cuenta marcada — contacta al admin.',rate_limited:'Demasiado rápido. Espera un momento.',ad_cooldown:'El anuncio aún está en enfriamiento. Espera.',ad_daily_limit:'Límite diario de recompensas de anuncios alcanzado.',unknown_action:'Acción desconocida.',server_error:'Error del servidor. Intenta de nuevo.',invalid_init_data:'Sesión no válida. Abre de nuevo desde Telegram.',values_too_large:'Valor demasiado grande.'},
+pt:{not_enough_coins:'Moedas insuficientes.',not_enough_energy:'Sem Energia. Espere ou assista a um anúncio para +20 de Energia.',plot_not_empty:'O canteiro já está ocupado.',plot_empty:'O canteiro ainda está vazio.',no_seed:'Sem sementes. Compre na Loja de Sementes.',not_ready:'Ainda não está pronto para colher.',no_fertilizer:'Sem adubo.',no_feed:'Sem ração. Compre ração primeiro.',not_enough_item:'Itens insuficientes no inventário.',level_too_low:'Nível insuficiente (mín. Nível 5).',min_withdraw:'O saque mínimo é de 200.000 moedas.',cooldown:'Ainda em espera. Aguarde um pouco.',already_claimed:'Já resgatado hoje.',mission_not_done:'Missão ainda não concluída.',invalid_destination:'Informe um email / usuário FaucetPay válido.',ad_limit:'Limite diário de recompensas de anúncios atingido.',invalid_action:'Ação desconhecida.',unauthorized:'Sessão inválida. Reabra pelo Telegram.',level_locked:'Nível insuficiente. Suba de nível primeiro!',not_for_sale:'Este item não é vendido — vem de mutação na colheita.',no_skill_points:'Sem pontos de habilidade. Suba de nível para ganhar.',insufficient_gems:'Gemas insuficientes.',daily_limit:'Limite diário atingido. Tente amanhã.',already_in_guild:'Você já está em uma guilda.',guild_full:'A guilda está cheia (20 membros).',not_in_guild:'Você não está em uma guilda.',goal_not_reached:'A meta semanal da guilda ainda não foi atingida.',not_enough_points:'Pontos de temporada insuficientes (mín. 50).',not_owned:'Você não tem este edifício.',already_owned:'Você já tem este edifício.',no_capacity:'Capacidade de produção cheia — colete os resultados ou melhore o edifício.',max_level:'Já está no nível máximo.',name_taken:'O nome da guilda já está em uso.',insufficient_coins:'Moedas insuficientes.',insufficient_item:'Itens insuficientes no inventário.',invalid_values:'Valores inválidos.',invalid_plot:'Canteiro inválido.',already_watered:'Já está regado.',already_fertilized:'Já está adubado.',no_energy:'Sem Energia.',plot_occupied:'O canteiro já está ocupado.',no_pest:'Não há pragas neste canteiro.',animal_hungry:'O animal está com fome — alimente primeiro.',not_found:'Não encontrado.',own_listing:'Você não pode comprar seu próprio anúncio.',listing_not_found:'Anúncio não encontrado.',max_grid:'O terreno já está no máximo.',mission_not_ready:'A missão ainda não está pronta para resgatar.',not_done:'Requisitos ainda não cumpridos.',need_level:'Nível insuficiente (mín. Nível 5).',amount_out_of_range:'Valor de saque inválido.',already_pending:'Ainda há um saque pendente.',account_flagged:'Conta sinalizada — fale com o admin.',rate_limited:'Rápido demais. Aguarde um momento.',ad_cooldown:'O anúncio ainda está em espera. Aguarde.',ad_daily_limit:'Limite diário de recompensas de anúncios atingido.',unknown_action:'Ação desconhecida.',server_error:'Erro do servidor. Tente novamente.',invalid_init_data:'Sessão inválida. Reabra pelo Telegram.',values_too_large:'Valor muito grande.'}
+};
+var LANG = 'id';
+var LOCALES = {id:'id-ID', en:'en-US', ru:'ru-RU', es:'es-ES', pt:'pt-BR'};
+function t(k, vars){
+  var d = (LANGS[LANG] && LANGS[LANG][k] != null) ? LANGS[LANG][k] : (LANGS.id[k] != null ? LANGS.id[k] : k);
+  if (vars) for (var key in vars) d = String(d).split('{'+key+'}').join(vars[key]);
+  return d;
+}
+function errText(code){
+  var m = (ERRORS[LANG] && ERRORS[LANG][code]) || ERRORS.id[code];
+  if (m) return m;
+  return t('err_fallback', {code: code});
+}
+function missionTitle(m){
+  var map = MISSION_T[m.kind];
+  if (map) return t2(map, {n: m.target});
+  return m.title || m.id;
+}
+function t2(map, vars){
+  var d = (map && map[LANG]) || (map && map.id) || '';
+  if (vars) for (var key in vars) d = String(d).split('{'+key+'}').join(vars[key]);
+  return d;
+}
+function achTitle(a){
+  var e = ACH_T[a.id];
+  return e ? (e.t[LANG] || e.t.id) : a.title;
+}
+function achDesc(a){
+  var e = ACH_T[a.id];
+  return e ? (e.d[LANG] || e.d.id) : a.desc;
+}
+function detectLang(){
+  try {
+    var stored = localStorage.getItem('hf_lang');
+    if (stored && LANGS[stored]) return stored;
+    var code = '';
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.language_code) code = tg.initDataUnsafe.user.language_code;
+    else if (navigator.language) code = navigator.language;
+    code = String(code).toLowerCase().split('-')[0];
+    if (LANGS[code]) return code;
+  } catch(e){}
+  return 'id';
+}
+function applyLang(){
+  document.documentElement.lang = LANG;
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var k = el.getAttribute('data-i18n');
+    if (el.getAttribute('data-i18n-html')) el.innerHTML = t(k);
+    else el.textContent = t(k);
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(function(el){
+    el.placeholder = t(el.getAttribute('data-i18n-ph'));
+  });
+  var sel = $('lang-select'); if (sel) sel.value = LANG;
+  document.querySelectorAll('#intro-lang [data-lang]').forEach(function(b){
+    b.classList.toggle('active', b.getAttribute('data-lang') === LANG);
+  });
+  if (S) renderAll();
+  updateGemPreview(); updateWdPreview();
+}
+function setLang(l, save){
+  if (!LANGS[l]) l = 'id';
+  LANG = l;
+  try { localStorage.setItem('hf_lang', l); } catch(e){}
+  applyLang();
+  if (save) {
+    apiPost('/api/action', authBody({action:'set_language', lang:l})).then(function(data){
+      if (data && data.state) { S = data.state; saveState(); }
+    }).catch(function(){ /* diam saja — bahasa lokal tetap dipakai */ });
+  }
+}
+
+/* Terjemahan label/deskripsi musim, cuaca & event (server kirim Bahasa Indonesia) */
+var SEASON_T = {
+semi:{label:{id:'Musim Semi',en:'Spring',ru:'Весна',es:'Primavera',pt:'Primavera'},desc:{id:'+10% XP semua aksi.',en:'+10% XP for all actions.',ru:'+10% к опыту за все действия.',es:'+10% de XP en todas las acciones.',pt:'+10% de XP em todas as ações.'}},
+panas:{label:{id:'Musim Panas',en:'Summer',ru:'Лето',es:'Verano',pt:'Verão'},desc:{id:'Cooldown mancing & menambang -25%.',en:'Fishing & mining cooldown -25%.',ru:'Перезарядка рыбалки и добычи -25%.',es:'Enfriamiento de pesca y minería -25%.',pt:'Espera de pesca e mineração -25%.'}},
+panen:{label:{id:'Musim Panen',en:'Harvest Season',ru:'Сезон урожая',es:'Temporada de Cosecha',pt:'Temporada de Colheita'},desc:{id:'+10% hasil panen.',en:'+10% harvest yield.',ru:'+10% к урожаю.',es:'+10% de cosecha.',pt:'+10% de colheita.'}},
+dingin:{label:{id:'Musim Dingin',en:'Winter',ru:'Зима',es:'Invierno',pt:'Inverno'},desc:{id:'+10% harga jual NPC.',en:'+10% NPC sell prices.',ru:'+10% к ценам продажи NPC.',es:'+10% de precio de venta NPC.',pt:'+10% de preço de venda NPC.'}}
+};
+var WEATHER_T = {
+cerah:{label:{id:'Cerah',en:'Sunny',ru:'Солнечно',es:'Soleado',pt:'Ensolarado'},desc:{id:'Tumbuh normal.',en:'Normal growth.',ru:'Обычный рост.',es:'Crecimiento normal.',pt:'Crescimento normal.'}},
+hujan:{label:{id:'Hujan',en:'Rainy',ru:'Дождь',es:'Lluvia',pt:'Chuva'},desc:{id:'Tumbuh +30% lebih cepat, gratis siram!',en:'Grows 30% faster, free watering!',ru:'Рост на 30% быстрее, полив бесплатно!',es:'¡Crece 30% más rápido, riego gratis!',pt:'Cresce 30% mais rápido, rega grátis!'}},
+badai:{label:{id:'Badai',en:'Storm',ru:'Гроза',es:'Tormenta',pt:'Tempestade'},desc:{id:'Tumbuh -20%. Panen cepat sebelum rusak!',en:'Growth -20%. Harvest fast before it spoils!',ru:'Рост -20%. Собирай урожай быстрее, пока не испортился!',es:'Crecimiento -20%. ¡Cosecha rápido antes de que se dañe!',pt:'Crescimento -20%. Colha rápido antes de estragar!'}},
+panas:{label:{id:'Panas',en:'Hot',ru:'Жара',es:'Calor',pt:'Calor'},desc:{id:'Butuh siram 2x supaya tumbuh normal.',en:'Needs watering 2× to grow normally.',ru:'Нужен двойной полив для нормального роста.',es:'Necesita 2 riegos para crecer normal.',pt:'Precisa regar 2× para crescer normalmente.'}}
+};
+var EVENT_T = {
+panen_raya:{label:{id:'Panen Raya',en:'Grand Harvest',ru:'Большой урожай',es:'Gran Cosecha',pt:'Grande Colheita'},desc:{id:'Hasil panen 2x lipat selama 10 menit!',en:'Double harvest for 10 minutes!',ru:'Двойной урожай на 10 минут!',es:'¡Cosecha doble durante 10 minutos!',pt:'Colheita em dobro por 10 minutos!'}},
+tikus:{label:{id:'Tikus Sawah',en:'Field Rats',ru:'Полевые крысы',es:'Ratas de Campo',pt:'Ratos do Campo'},desc:{id:'Hama lebih sering muncul — awasi kebunmu!',en:'Pests appear more often — watch your farm!',ru:'Вредители появляются чаще — следи за фермой!',es:'Las plagas aparecen más — ¡vigila tu granja!',pt:'Pragas aparecem mais — vigie sua fazenda!'}},
+pasar_ramai:{label:{id:'Pasar Ramai',en:'Busy Market',ru:'Оживлённый рынок',es:'Mercado Animado',pt:'Mercado Agitado'},desc:{id:'Harga jual NPC +15% selama 10 menit!',en:'NPC sell prices +15% for 10 minutes!',ru:'Цены продажи NPC +15% на 10 минут!',es:'¡Precios de venta NPC +15% durante 10 minutos!',pt:'Preços de venda NPC +15% por 10 minutos!'}}
+};
+function _loc(map, key, field){
+  var e = map && map[key];
+  if (!e) return null;
+  var v = e[field];
+  return (v && v[LANG]) || (v && v.id) || null;
+}
+function seasonLabel(s){ return (s && _loc(SEASON_T, s.kind, 'label')) || (s && s.label) || ''; }
+function seasonDesc(s){ return (s && _loc(SEASON_T, s.kind, 'desc')) || (s && s.desc) || ''; }
+function weatherLabel(w){ return (w && _loc(WEATHER_T, w.kind, 'label')) || (w && w.label) || ''; }
+function weatherDesc(w){ return (w && _loc(WEATHER_T, w.kind, 'desc')) || (w && w.desc) || ''; }
+function eventLabel(e){ return (e && _loc(EVENT_T, e.id, 'label')) || (e && e.label) || ''; }
+function eventDesc(e){ return (e && _loc(EVENT_T, e.id, 'desc')) || (e && e.desc) || ''; }
 
 /* ================= STATE & AUTH ================= */
 var tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
@@ -486,7 +1388,7 @@ function saveState(){ try { if (S) localStorage.setItem('harvestfarm_state', JSO
 
 /* ================= HELPERS ================= */
 function $(id){ return document.getElementById(id); }
-function fmt(n){ n = Number(n)||0; return n.toLocaleString('id-ID'); }
+function fmt(n){ n = Number(n)||0; return n.toLocaleString(LOCALES[LANG] || 'id-ID'); }
 function fmtSecs(s){
   s = Math.max(0, Math.round(Number(s)||0));
   if (s < 60) return s + ' dtk';
@@ -540,45 +1442,45 @@ async function doAction(action, params, okMsg){
   try {
     var data = await apiPost('/api/action', authBody(Object.assign({action:action}, params || {})));
     if (data && data.state) { S = data.state; saveState(); renderAll(); }
-    toast(okMsg || (data && data.message) || 'Berhasil! ✅');
+    toast(okMsg || (data && data.message) || t('success_default'));
     return true;
   } catch(e){ toast(errText(e.message), true); return false; }
 }
 function setConn(ok){
   var el = $('conn-banner');
   if (ok) { el.innerHTML = ''; return; }
-  el.innerHTML = '<div class="banner" style="background:#ffebee;border:1px solid #ef9a9a">⚠️ <b>Backend belum terhubung</b> — cek API_URL. Buka dengan <code>?api=https://...railway.app</code> atau set <code>window.HARVESTFARM_API_URL</code>. Data di bawah ini data terakhir yang tersimpan.</div>';
+  el.innerHTML = '<div class="banner" style="background:#ffebee;border:1px solid #ef9a9a">' + t('conn_err') + '</div>';
 }
 function renderEmpty(){
-  $('grid').innerHTML = '<div class="empty"><div class="big">🌱</div>Backend belum terhubung — cek API_URL.<br><span class="muted">Buka file ini dengan ?api=https://alamat-backend-railway-kamu</span></div>';
+  $('grid').innerHTML = '<div class="empty"><div class="big">🌱</div>' + t('plot_empty_backend') + '<br><span class="muted">' + t('plot_empty_hint') + '</span></div>';
 }
 
 /* ================= RENDER ================= */
 function renderAll(){
   if (!S) return;
   renderHUD(); renderWeather(); renderGrid(); renderAnimals(); renderMarket(); renderMissions(); renderWallet(); renderSeedPicker();
-  renderProduction(); renderGuild(); renderSeason(); renderSkills(); renderAchievementsV2();
+  renderProduction(); renderGuild(); renderSeason(); renderSkills(); renderAchievementsV2(); renderReferral();
 }
 function renderHUD(){
   var u = S.user || {};
   $('hud-coins').textContent = '🪙 ' + fmt(u.coins);
-  $('hud-gems').textContent = '💎 ' + fmt(u.gems || 0) + ' Permata';
-  $('hud-level').textContent = 'Level ' + (u.level || 1) + (u.max_level ? '/' + u.max_level : '');
-  $('hud-xp').textContent = 'XP ' + fmt(u.xp || 0) + (u.xp_next ? ' / ' + fmt(u.xp_next) : ' (MAX)');
+  $('hud-gems').textContent = '💎 ' + fmt(u.gems || 0) + ' ' + t('hud_gems');
+  $('hud-level').textContent = t('level_label', {n: (u.level || 1)}) + (u.max_level ? '/' + u.max_level : '');
+  $('hud-xp').textContent = u.xp_next ? t('xp_label', {a: fmt(u.xp || 0), b: fmt(u.xp_next)}) : t('xp_max', {a: fmt(u.xp || 0)});
   $('hud-energy').textContent = '⚡ ' + (u.energy != null ? u.energy : '—') + '/' + (u.energy_max || 50);
-  $('streak-pill').textContent = '🔥 Streak: ' + (u.login_streak || 0) + ' hari';
-  $('ad-status').textContent = 'Iklan hari ini: ' + (u.ad_rewards_today != null ? u.ad_rewards_today : '—') + ' hadiah diklaim';
+  $('streak-pill').textContent = t('streak_pill', {n: (u.login_streak || 0)});
+  $('ad-status').textContent = t('ad_today', {n: (u.ad_rewards_today != null ? u.ad_rewards_today : '—')});
   if (S.season) {
-    $('hud-season').textContent = (S.season.emoji || '') + ' ' + S.season.label;
-    $('hud-season-bonus').textContent = S.season.desc || '';
+    $('hud-season').textContent = (S.season.emoji || '') + ' ' + seasonLabel(S.season);
+    $('hud-season-bonus').textContent = seasonDesc(S.season);
   }
-  $('hud-skill').textContent = '⭐ ' + (u.skill_points || 0) + ' poin skill';
-  $('hud-tourney').textContent = '🏆 ' + fmt(u.season_points || 0) + ' poin';
+  $('hud-skill').textContent = t('skill_points_hud', {n: (u.skill_points || 0)});
+  $('hud-tourney').textContent = t('tourney_points', {n: fmt(u.season_points || 0)});
 }
 function renderWeather(){
   var w = S.weather, ev = S.event;
-  $('weather-banner').innerHTML = w ? '<div class="banner weather">' + (w.emoji||'☀️') + ' <b>' + (w.label||w.kind||'Cerah') + '</b> — ' + (w.desc||'') + ' <span class="muted">• ganti cuaca: <b class="cd" data-secs="' + (w.ends_in||0) + '">' + fmtSecs(w.ends_in||0) + '</b></span></div>' : '';
-  $('event-banner').innerHTML = ev ? '<div class="banner event">' + (ev.emoji||'🎉') + ' <b>' + (ev.label||ev.id||'Acara Spesial') + '</b> — ' + (ev.desc||'') + ' <span class="muted">• berakhir: <b class="cd" data-secs="' + (ev.ends_in||0) + '">' + fmtSecs(ev.ends_in||0) + '</b></span></div>' : '';
+  $('weather-banner').innerHTML = w ? '<div class="banner weather">' + (w.emoji||'☀️') + ' <b>' + weatherLabel(w) + '</b> — ' + weatherDesc(w) + ' <span class="muted">• ' + t('weather_change') + ' <b class="cd" data-secs="' + (w.ends_in||0) + '">' + fmtSecs(w.ends_in||0) + '</b></span></div>' : '';
+  $('event-banner').innerHTML = ev ? '<div class="banner event">' + (ev.emoji||'🎉') + ' <b>' + eventLabel(ev) + '</b> — ' + eventDesc(ev) + ' <span class="muted">• ' + t('event_ends') + ' <b class="cd" data-secs="' + (ev.ends_in||0) + '">' + fmtSecs(ev.ends_in||0) + '</b></span></div>' : '';
 }
 function plotRemaining(p){
   if (p.ready) return 0;
@@ -593,12 +1495,12 @@ function renderGrid(){
   var size = u.grid_size || 3;
   var grid = $('grid'); grid.className = 'grid g' + size;
   var plots = S.plots || [];
-  if (!plots.length) { grid.innerHTML = '<div class="empty"><div class="big">🌱</div>Belum ada petak. Coba refresh.</div>'; return; }
+  if (!plots.length) { grid.innerHTML = '<div class="empty"><div class="big">🌱</div>' + t('no_plots') + '</div>'; return; }
   var html = '';
   plots.forEach(function(p){
     var idx = p.idx;
     if (!p.crop) {
-      html += '<div class="plot empty" data-plot="' + idx + '"><span class="emoji">➕</span><span class="nm">Petak ' + (idx+1) + '</span><span class="tm">Ketuk untuk tanam</span></div>';
+      html += '<div class="plot empty" data-plot="' + idx + '"><span class="emoji">➕</span><span class="nm">' + t('empty_plot', {n: idx+1}) + '</span><span class="tm">' + t('tap_plant') + '</span></div>';
       return;
     }
     var meta = cropMeta(p.crop);
@@ -609,8 +1511,8 @@ function renderGrid(){
     var stage = p.ready ? '🧺' : growStage(prog);
     var pestBadge = p.pest ? '<span class="badge">🐛</span>' : '';
     var extra = '';
-    if (p.pest) extra = '<span class="tm">🐛 HAMA! Ketuk cepat!</span>';
-    else if (p.ready) extra = '<span class="tm">✅ Siap panen!</span>';
+    if (p.pest) extra = '<span class="tm">' + t('pest_alert') + '</span>';
+    else if (p.ready) extra = '<span class="tm">' + t('ready_harvest') + '</span>';
     else extra = '<span class="tm cd" data-secs="' + Math.round(rem) + '">' + fmtSecs(rem) + '</span>';
     var flags = [];
     if (p.watered) flags.push('💧');
@@ -625,24 +1527,24 @@ function renderGrid(){
     el.addEventListener('click', function(){ onPlotClick(parseInt(el.getAttribute('data-plot'), 10)); });
   });
   var total = size * size;
-  $('upgrade-info').textContent = 'Grid saat ini ' + size + '×' + size + ' (' + total + ' petak). Upgrade menambah petak tanam.';
+  $('upgrade-info').textContent = t('upgrade_info', {size: size, total: total});
 }
 function onPlotClick(idx){
   var p = (S.plots || []).find(function(x){ return x.idx === idx; });
   if (!p) return;
-  if (p.pest) { doAction('pest', {plot: idx}, '🐛 Hama berhasil diusir!'); return; }
-  if (!p.crop) { selectedPlot = idx; selectedCrop = null; $('seed-picker-card').style.display = 'block'; $('seed-plot-no').textContent = idx + 1; renderSeedPicker(); $('seed-picker-card').scrollIntoView({behavior:'smooth', block:'center'}); return; }
+  if (p.pest) { doAction('pest', {plot: idx}, t('toast_pest')); return; }
+  if (!p.crop) { selectedPlot = idx; selectedCrop = null; $('seed-picker-card').style.display = 'block'; $('seed-picker-title').textContent = t('seed_pick_t', {n: idx + 1}); renderSeedPicker(); $('seed-picker-card').scrollIntoView({behavior:'smooth', block:'center'}); return; }
   if (p.ready) {
-    doAction('harvest', {plot: idx}, '🧺 Panen berhasil!').then(function(ok){ if (ok) maybeInterstitial(); });
+    doAction('harvest', {plot: idx}, t('toast_harvest')).then(function(ok){ if (ok) maybeInterstitial(); });
     return;
   }
   // tanaman tumbuh: siram dulu, kalau sudah disiram tawarkan pupuk
-  if (!p.watered) { doAction('water', {plot: idx}, '💧 Tanaman disiram!'); return; }
+  if (!p.watered) { doAction('water', {plot: idx}, t('toast_water')); return; }
   if (!p.fertilized) {
-    if (confirm('Tanaman sudah disiram. Beri pupuk supaya tumbuh lebih cepat?')) doAction('fertilize', {plot: idx}, '🧪 Pupuk diberikan!');
+    if (confirm(t('confirm_fert'))) doAction('fertilize', {plot: idx}, t('toast_fertilize'));
     return;
   }
-  toast('🌿 Tanaman sedang tumbuh — tunggu sebentar ya.');
+  toast(t('growing_wait'));
 }
 function renderSeedPicker(){
   var row = $('seed-row'); if (!row) return;
@@ -661,46 +1563,46 @@ function renderAnimals(){
   var list = $('animal-list');
   var animals = S.animals || [];
   $('feed-count').textContent = (S.user && S.user.feed != null) ? S.user.feed : '—';
-  $('feed-count2').textContent = $('feed-count').textContent;
-  if (!animals.length) { list.innerHTML = '<div class="empty"><div class="big">🐔</div>Belum punya hewan. Beli di bawah yuk!</div>'; }
+  var fc2 = $('feed-count2'); if (fc2) fc2.textContent = $('feed-count').textContent;
+  if (!animals.length) { list.innerHTML = '<div class="empty"><div class="big">🐔</div>' + t('no_animals') + '</div>'; }
   else {
     list.innerHTML = animals.map(function(a){
       var meta = ANIMALS[a.kind] || {name:a.kind, emoji:'🐾', produceName:a.produce_name || a.produce || ''};
-      var status = a.ready ? '✅ <b>Siap dikumpulkan!</b>' : (a.fed ? '😋 Sudah diberi pakan' : '🍽️ Lapar — beri pakan dulu!');
-      var cd = a.ready ? '' : '<div class="muted">Hasil (' + (a.produce_name || meta.produceName) + ') dalam: <b class="cd" data-secs="' + (a.produce_in||0) + '">' + fmtSecs(a.produce_in||0) + '</b></div>';
+      var status = a.ready ? t('animal_ready') : (a.fed ? t('animal_fed') : t('animal_hungry'));
+      var cd = a.ready ? '' : '<div class="muted">' + t('produce_in', {name: (a.produce_name || meta.produceName)}) + ' <b class="cd" data-secs="' + (a.produce_in||0) + '">' + fmtSecs(a.produce_in||0) + '</b></div>';
       return '<div class="animal"><div class="row between"><b>' + (a.emoji || meta.emoji) + ' ' + (a.name || meta.name) + '</b><span class="pill">' + (a.produce_name || meta.produceName || '') + '</span></div>' +
         '<div style="font-size:13px;margin:6px 0">' + status + '</div>' + cd +
-        '<div class="row" style="margin-top:8px"><button class="btn small" data-feed="' + a.id + '">🌾 Beri Pakan</button>' +
-        '<button class="btn gold small" data-collect="' + a.id + '"' + (a.ready ? '' : ' disabled') + '>🧺 Kumpulkan</button></div></div>';
+        '<div class="row" style="margin-top:8px"><button class="btn small" data-feed="' + a.id + '">' + t('feed_btn') + '</button>' +
+        '<button class="btn gold small" data-collect="' + a.id + '"' + (a.ready ? '' : ' disabled') + '>' + t('collect_btn') + '</button></div></div>';
     }).join('');
-    list.querySelectorAll('[data-feed]').forEach(function(b){ b.addEventListener('click', function(){ doAction('feed_animal', {animal_id: b.getAttribute('data-feed')}, '🌾 Hewan diberi pakan!'); }); });
-    list.querySelectorAll('[data-collect]').forEach(function(b){ b.addEventListener('click', function(){ doAction('collect_animal', {animal_id: b.getAttribute('data-collect')}, '🧺 Hasil dikumpulkan!'); }); });
+    list.querySelectorAll('[data-feed]').forEach(function(b){ b.addEventListener('click', function(){ doAction('feed_animal', {animal_id: b.getAttribute('data-feed')}, t('toast_animal_fed')); }); });
+    list.querySelectorAll('[data-collect]').forEach(function(b){ b.addEventListener('click', function(){ doAction('collect_animal', {animal_id: b.getAttribute('data-collect')}, t('toast_animal_collected')); }); });
   }
   var shop = $('animal-shop');
   shop.innerHTML = Object.keys(ANIMALS).map(function(k){
     var a = ANIMALS[k];
-    return '<div class="price-row"><div><b>' + a.emoji + ' ' + a.name + '</b><div class="muted">' + a.produceName + ' tiap ' + fmtSecs(a.every) + ' • butuh pakan</div></div>' +
-      '<button class="btn small" data-buy-animal="' + k + '">Beli</button></div>';
-  }).join('') + '<p class="muted">Harga beli hewan mengikuti harga dari backend (tanya bot kalau tombol gagal — cek pesan error).</p>';
-  shop.querySelectorAll('[data-buy-animal]').forEach(function(b){ b.addEventListener('click', function(){ doAction('buy_animal', {kind: b.getAttribute('data-buy-animal')}, '🎉 Hewan baru dibeli!'); }); });
+    return '<div class="price-row"><div><b>' + a.emoji + ' ' + a.name + '</b><div class="muted">' + t('animal_every', {name: a.produceName, t: fmtSecs(a.every)}) + '</div></div>' +
+      '<button class="btn small" data-buy-animal="' + k + '">' + t('buy_btn') + '</button></div>';
+  }).join('') + '<p class="muted">' + t('animal_shop_note') + '</p>';
+  shop.querySelectorAll('[data-buy-animal]').forEach(function(b){ b.addEventListener('click', function(){ doAction('buy_animal', {kind: b.getAttribute('data-buy-animal')}, t('toast_animal_bought')); }); });
 }
 function renderMarket(){
   // Toko benih (harga dari market? benih tidak ada di market — tampilkan stok + tombol beli, harga dari backend lewat pesan error/sukses)
   var seeds = S.seeds || {};
   $('seed-shop').innerHTML = Object.keys(CROPS).filter(function(k){ return CROPS[k].shop !== false; }).map(function(k){
     var c = CROPS[k];
-    return '<div class="price-row"><div><b>' + c.emoji + ' Benih ' + c.name + '</b><div class="muted">Stok kamu: ' + (seeds[k] || 0) + ' • tumbuh ' + fmtSecs(c.grow) + '</div></div>' +
+    return '<div class="price-row"><div><b>' + c.emoji + ' ' + t('seed_name', {name: c.name}) + '</b><div class="muted">' + t('inv_label', {n: (seeds[k] || 0), t: fmtSecs(c.grow)}) + '</div></div>' +
       '<span><button class="btn small" data-buy-seed="' + k + '" data-qty="1">+1</button> <button class="btn gold small" data-buy-seed="' + k + '" data-qty="5">+5</button></span></div>';
-  }).join('') + '<p class="muted">🍈 Benih Melon Emas tidak dijual — dapat dari mutasi saat panen (peluang 4%). Stok Melon: ' + (seeds.melon || 0) + '</p>';
+  }).join('') + '<p class="muted">' + t('melon_note', {n: (seeds.melon || 0)}) + '</p>';
   $('seed-shop').querySelectorAll('[data-buy-seed]').forEach(function(b){
-    b.addEventListener('click', function(){ doAction('buy_seed', {crop: b.getAttribute('data-buy-seed'), qty: parseInt(b.getAttribute('data-qty'),10)}, '🌱 Benih dibeli!'); });
+    b.addEventListener('click', function(){ doAction('buy_seed', {crop: b.getAttribute('data-buy-seed'), qty: parseInt(b.getAttribute('data-qty'),10)}, t('toast_seed_bought')); });
   });
-  $('fert-count').textContent = (S.user && S.user.fertilizer != null) ? S.user.fertilizer : '—';
+  $('fert-feed-line').innerHTML = t('fert_feed_line', {f: (S.user && S.user.fertilizer != null) ? S.user.fertilizer : '—', p: (S.user && S.user.feed != null) ? S.user.feed : '—'});
   // Pasar NPC
   var market = S.market || {};
   var inv = S.inventory || {};
   var keys = Object.keys(market);
-  if (!keys.length) { $('npc-market').innerHTML = '<div class="empty">Harga pasar belum tersedia.</div>'; }
+  if (!keys.length) { $('npc-market').innerHTML = '<div class="empty">' + t('loading_market') + '</div>'; }
   else {
     $('npc-market').innerHTML = keys.map(function(k){
       var m = market[k]; var meta = itemMeta(k);
@@ -708,18 +1610,18 @@ function renderMarket(){
       var arrow = trend === 'naik' ? '📈' : (trend === 'turun' ? '📉' : '➡️');
       var cls = trend === 'naik' ? 'trend-up' : (trend === 'turun' ? 'trend-down' : 'trend-stabil');
       var pct = Math.abs(m.change_pct || 0);
-      var hot = (trend === 'naik' && (m.change_pct||0) >= 15) ? '<div class="hot">🔥 Harga lagi tinggi, jual sekarang!</div>' : '';
+      var hot = (trend === 'naik' && (m.change_pct||0) >= 15) ? '<div class="hot">' + t('high_price') + '</div>' : '';
       var barW = Math.min(100, pct * 4);
       return '<div class="price-row"><div style="flex:1"><b>' + meta.emoji + ' ' + (meta.name) + '</b>' +
-        '<div class="muted">Stok: ' + (inv[k] || 0) + ' • Harga dasar ' + fmt(m.base != null ? m.base : m.price) + '</div>' +
+        '<div class="muted">' + t('market_stock', {n: (inv[k] || 0), base: fmt(m.base != null ? m.base : m.price)}) + '</div>' +
         '<div class="mini-bar"><i style="width:' + barW + '%"></i></div>' + hot + '</div>' +
         '<div style="text-align:right"><b>' + fmt(m.price) + ' 🪙</b><br><span class="' + cls + '">' + arrow + ' ' + (trend === 'naik' ? '+' : trend === 'turun' ? '−' : '') + pct + '%</span><br>' +
-        '<button class="btn gold small" data-sell="' + k + '"' + ((inv[k]||0) > 0 ? '' : ' disabled') + '>Jual</button></div></div>';
+        '<button class="btn gold small" data-sell="' + k + '"' + ((inv[k]||0) > 0 ? '' : ' disabled') + '>' + t('sell_btn') + '</button></div></div>';
     }).join('');
     $('npc-market').querySelectorAll('[data-sell]').forEach(function(b){
       b.addEventListener('click', function(){
         sellItem = b.getAttribute('data-sell');
-        $('sell-item-name').textContent = itemMeta(sellItem).emoji + ' ' + itemMeta(sellItem).name + ' (stok ' + ((S.inventory||{})[sellItem]||0) + ')';
+        $('sell-label').textContent = t('sell_qty_l', {name: itemMeta(sellItem).emoji + ' ' + itemMeta(sellItem).name}) + ' (' + t('stock_label', {n: (S.inventory||{})[sellItem]||0}) + ')';
         $('sell-qty').value = 1; $('sell-qty').max = (S.inventory||{})[sellItem] || 1;
         $('sell-panel').style.display = 'block';
         $('sell-panel').scrollIntoView({behavior:'smooth', block:'center'});
@@ -729,43 +1631,41 @@ function renderMarket(){
   // P2P
   var sel = $('p2p-item');
   var invKeys = Object.keys(inv).filter(function(k){ return (inv[k]||0) > 0; });
-  sel.innerHTML = invKeys.length ? invKeys.map(function(k){ return '<option value="' + k + '">' + itemMeta(k).emoji + ' ' + itemMeta(k).name + ' (stok ' + inv[k] + ')</option>'; }).join('') : '<option value="">— Inventaris kosong —</option>';
+  sel.innerHTML = invKeys.length ? invKeys.map(function(k){ return '<option value="' + k + '">' + itemMeta(k).emoji + ' ' + itemMeta(k).name + ' (' + t('stock_label', {n: inv[k]}) + ')</option>'; }).join('') : '<option value="">' + t('empty_inventory') + '</option>';
   var listings = S.listings || [];
   $('p2p-list').innerHTML = listings.length ? listings.map(function(l){
     var meta = itemMeta(l.item);
-    return '<div class="listing"><div class="row between"><b>' + (meta.emoji||'') + ' ' + (l.item_name || meta.name) + ' × ' + l.qty + '</b><b>' + fmt(l.price_each) + ' 🪙/buah</b></div>' +
-      '<div class="muted">Penjual: ' + (l.seller_name || '—') + ' • Total: ' + fmt(l.total != null ? l.total : (l.price_each||0)*(l.qty||0)) + ' 🪙</div>' +
-      '<button class="btn small" style="margin-top:6px" data-buy-listing="' + l.id + '">🛒 Beli</button></div>';
-  }).join('') : '<div class="empty">Belum ada listing pemain. Jadilah penjual pertama!</div>';
+    return '<div class="listing"><div class="row between"><b>' + (meta.emoji||'') + ' ' + (l.item_name || meta.name) + ' × ' + l.qty + '</b><b>' + t('price_each', {price: fmt(l.price_each)}) + '</b></div>' +
+      '<div class="muted">' + t('seller_label', {name: (l.seller_name || '—'), total: fmt(l.total != null ? l.total : (l.price_each||0)*(l.qty||0))}) + '</div>' +
+      '<button class="btn small" style="margin-top:6px" data-buy-listing="' + l.id + '">' + t('buy_listing') + '</button></div>';
+  }).join('') : '<div class="empty">' + t('no_listings') + '</div>';
   $('p2p-list').querySelectorAll('[data-buy-listing]').forEach(function(b){
-    b.addEventListener('click', function(){ doAction('buy_listing', {listing_id: b.getAttribute('data-buy-listing')}, '🛒 Listing dibeli!'); });
+    b.addEventListener('click', function(){ doAction('buy_listing', {listing_id: b.getAttribute('data-buy-listing')}, t('toast_buy_listing')); });
   });
 }
 function renderMissions(){
   var u = S.user || {};
-  $('streak-text').textContent = u.login_streak || 0;
+  $('daily-desc').innerHTML = t('daily_desc', {n: u.login_streak || 0});
   var ms = S.missions || [];
   $('mission-list').innerHTML = ms.length ? ms.map(function(m){
     var pct = m.target ? Math.min(100, Math.round((m.progress||0)/m.target*100)) : 0;
-    var btn = m.claimed ? '<button class="btn small" disabled>✅ Sudah diklaim</button>'
-      : m.done ? '<button class="btn gold small" data-claim="' + m.id + '">🎁 Klaim ' + fmt(m.reward||0) + ' 🪙</button>'
+    var btn = m.claimed ? '<button class="btn small" disabled>' + t('claimed_btn') + '</button>'
+      : m.done ? '<button class="btn gold small" data-claim="' + m.id + '">' + t('claim_btn', {reward: fmt(m.reward||0)}) + '</button>'
       : '<button class="btn small" disabled>' + (m.progress||0) + '/' + m.target + '</button>';
-    return '<div class="mission"><div class="row between"><b>' + (m.title||m.id) + '</b>' + btn + '</div>' +
+    return '<div class="mission"><div class="row between"><b>' + missionTitle(m) + '</b>' + btn + '</div>' +
       '<div class="pbar" style="margin-top:6px"><i style="width:' + pct + '%"></i></div>' +
-      '<div class="muted">' + (m.progress||0) + ' / ' + m.target + ' • Hadiah: ' + fmt(m.reward||0) + ' 🪙' + (m.done ? ' • Selesai!' : '') + '</div></div>';
-  }).join('') : '<div class="empty">Belum ada misi hari ini.</div>';
+      '<div class="muted">' + t('mission_progress', {a: (m.progress||0), b: m.target, c: fmt(m.reward||0)}) + (m.done ? t('done_label') : '') + '</div></div>';
+  }).join('') : '<div class="empty">' + t('no_missions') + '</div>';
   $('mission-list').querySelectorAll('[data-claim]').forEach(function(b){
-    b.addEventListener('click', function(){ doAction('claim_mission', {mission_id: b.getAttribute('data-claim')}, '🎉 Hadiah misi diklaim!'); });
+    b.addEventListener('click', function(){ doAction('claim_mission', {mission_id: b.getAttribute('data-claim')}, t('toast_mission')); });
   });
-  var totalPanen = 0;
-  (S.plots||[]).forEach(function(p){ if (p.yield_qty) totalPanen += 0; });
   $('achievements').innerHTML =
-    '<div>Level Saat Ini<b>Level ' + (u.level||1) + '</b></div>' +
-    '<div>Total XP<b>' + fmt(u.xp||0) + ' XP</b></div>' +
-    '<div>Streak Login<b>🔥 ' + (u.login_streak||0) + ' hari</b></div>' +
-    '<div>Ukuran Kebun<b>' + (u.grid_size||3) + '×' + (u.grid_size||3) + '</b></div>' +
-    '<div>Hewan Dimiliki<b>' + ((S.animals||[]).length) + ' ekor</b></div>' +
-    '<div>Panen Ganda Aktif<b>' + (u.double_next ? '✖️2 Ya' : 'Tidak') + '</b></div>';
+    '<div>' + t('stat_level') + '<b>' + t('level_label', {n: (u.level||1)}) + '</b></div>' +
+    '<div>' + t('stat_xp') + '<b>' + fmt(u.xp||0) + ' XP</b></div>' +
+    '<div>' + t('stat_streak') + '<b>🔥 ' + (u.login_streak||0) + '</b></div>' +
+    '<div>' + t('stat_grid') + '<b>' + (u.grid_size||3) + '×' + (u.grid_size||3) + '</b></div>' +
+    '<div>' + t('stat_animals') + '<b>' + ((S.animals||[]).length) + '</b></div>' +
+    '<div>' + t('stat_double') + '<b>' + (u.double_next ? t('stat_double_yes') : t('stat_double_no')) + '</b></div>';
 }
 /* ================= v2: PRODUKSI / GUILD / MUSIM / SKILL ================= */
 function renderProduction(){
@@ -780,31 +1680,32 @@ function renderProduction(){
     var canBuild = (u.level || 1) >= d.min_level;
     var btn = '';
     if (!has) {
-      btn = '<button class="btn small" data-build="' + k + '"' + (canBuild ? '' : ' disabled') + '>Bangun — ' + fmt(d.price) + ' 🪙</button>';
+      btn = '<button class="btn small" data-build="' + k + '"' + (canBuild ? '' : ' disabled') + '>' + t('build_btn', {price: fmt(d.price)}) + '</button>';
     } else {
       var cap = has.level;
-      btn = '<span class="pill">Lv ' + cap + ' • kapasitas ' + cap + ' job</span> ' +
-        (cap < 3 ? '<button class="btn gold small" data-upgrade-build="' + k + '">⬆️ Upgrade (' + fmt(Math.floor(d.price/2)) + ' 🪙)</button>' : '<span class="pill">MAX</span>');
+      btn = '<span class="pill">' + t('build_level', {lv: cap, cap: cap}) + '</span> ' +
+        (cap < 3 ? '<button class="btn gold small" data-upgrade-build="' + k + '">' + t('upgrade_build_btn', {price: fmt(Math.floor(d.price/2))}) + '</button>' : '<span class="pill">MAX</span>');
     }
     return '<div class="price-row"><div><b>' + d.emoji + ' ' + d.name + '</b>' +
       '<div class="muted">' + recipeTxt + ' → ' + d.output_qty + 'x ' + d.output_emoji + ' ' + d.output_name +
-      ' • ' + fmtSecs(d.time) + ' • Min Lv ' + d.min_level + '</div>' +
-      '<div class="muted">Bahan di inventaris: ' + Object.keys(d.recipe).map(function(it){ return (inv[it]||0) + '/' + d.recipe[it] + ' ' + itemMeta(it).name; }).join(', ') + '</div></div>' +
-      '<div style="text-align:right">' + btn + (has ? '<br><button class="btn small" style="margin-top:6px" data-start-prod="' + k + '">⚙️ Mulai Produksi</button>' : '') + '</div></div>';
+      ' • ' + fmtSecs(d.time) + ' • ' + t('build_min', {n: d.min_level}) + '</div>' +
+      '<div class="muted">' + t('materials_label') + ' ' + Object.keys(d.recipe).map(function(it){ return (inv[it]||0) + '/' + d.recipe[it] + ' ' + itemMeta(it).name; }).join(', ') + '</div></div>' +
+      '<div style="text-align:right">' + btn + (has ? '<br><button class="btn small" style="margin-top:6px" data-start-prod="' + k + '">' + t('start_prod_btn') + '</button>' : '') + '</div></div>';
   }).join('');
-  $('building-list').innerHTML = html || '<div class="empty">Belum ada bangunan.</div>';
-  $('building-list').querySelectorAll('[data-build]').forEach(function(b){ b.addEventListener('click', function(){ doAction('buy_building', {kind: b.getAttribute('data-build')}, '🏭 Bangunan dibangun!'); }); });
-  $('building-list').querySelectorAll('[data-upgrade-build]').forEach(function(b){ b.addEventListener('click', function(){ doAction('upgrade_building', {kind: b.getAttribute('data-upgrade-build')}, '🏭 Bangunan di-upgrade!'); }); });
-  $('building-list').querySelectorAll('[data-start-prod]').forEach(function(b){ b.addEventListener('click', function(){ doAction('start_production', {kind: b.getAttribute('data-start-prod')}, '⚙️ Produksi dimulai!'); }); });
+  $('building-list').innerHTML = html || '<div class="empty">' + t('no_buildings') + '</div>';
+  $('building-list').querySelectorAll('[data-build]').forEach(function(b){ b.addEventListener('click', function(){ doAction('buy_building', {kind: b.getAttribute('data-build')}, t('toast_building')); }); });
+  $('building-list').querySelectorAll('[data-upgrade-build]').forEach(function(b){ b.addEventListener('click', function(){ doAction('upgrade_building', {kind: b.getAttribute('data-upgrade-build')}, t('toast_building_up')); }); });
+  $('building-list').querySelectorAll('[data-start-prod]').forEach(function(b){ b.addEventListener('click', function(){ doAction('start_production', {kind: b.getAttribute('data-start-prod')}, t('toast_prod_start')); }); });
   var jobs = S.production_jobs || [];
   $('job-list').innerHTML = jobs.length ? jobs.map(function(j){
     return '<div class="listing"><div class="row between"><b>' + j.building_name + ' → ' + j.qty + 'x ' + j.output_emoji + ' ' + j.output + '</b>' +
-      (j.ready ? '<button class="btn gold small" data-collect-job="' + j.id + '">🧺 Ambil Hasil</button>' : '<span class="pill cd" data-secs="' + j.ready_in + '">' + fmtSecs(j.ready_in) + '</span>') + '</div></div>';
-  }).join('') : '<div class="empty">Tidak ada produksi berjalan. Bangun bangunan dulu, lalu mulai produksi.</div>';
-  $('job-list').querySelectorAll('[data-collect-job]').forEach(function(b){ b.addEventListener('click', function(){ doAction('collect_production', {job_id: b.getAttribute('data-collect-job')}, '🏭 Hasil produksi diambil!'); }); });
-  $('gather-status').textContent = '🎣 Mancing: ' + ((u.fish_cooldown_in || 0) > 0 ? 'tunggu ' + fmtSecs(u.fish_cooldown_in) : 'siap!') +
-    ' • ⛏️ Menambang: ' + ((u.mine_cooldown_in || 0) > 0 ? 'tunggu ' + fmtSecs(u.mine_cooldown_in) : 'siap!') +
-    ' • Total: ' + (u.fish_count || 0) + '× mancing, ' + (u.mine_count || 0) + '× menambang';
+      (j.ready ? '<button class="btn gold small" data-collect-job="' + j.id + '">' + t('collect_job_btn') + '</button>' : '<span class="pill cd" data-secs="' + j.ready_in + '">' + fmtSecs(j.ready_in) + '</span>') + '</div></div>';
+  }).join('') : '<div class="empty">' + t('no_jobs') + '</div>';
+  $('job-list').querySelectorAll('[data-collect-job]').forEach(function(b){ b.addEventListener('click', function(){ doAction('collect_production', {job_id: b.getAttribute('data-collect-job')}, t('toast_prod_collect')); }); });
+  $('gather-status').textContent = t('gather_status', {
+    fish: ((u.fish_cooldown_in || 0) > 0 ? t('wait_for', {t: fmtSecs(u.fish_cooldown_in)}) : t('ready_now')),
+    mine: ((u.mine_cooldown_in || 0) > 0 ? t('wait_for', {t: fmtSecs(u.mine_cooldown_in)}) : t('ready_now')),
+    fc: (u.fish_count || 0), mc: (u.mine_count || 0)});
   $('btn-fish').disabled = (u.fish_cooldown_in || 0) > 0;
   $('btn-mine').disabled = (u.mine_cooldown_in || 0) > 0;
 }
@@ -812,25 +1713,25 @@ function renderGuild(){
   var g = S.guild;
   var el = $('my-guild');
   if (!g) {
-    el.innerHTML = '<div class="empty"><div class="big">🤝</div>Belum gabung guild. Buat guild sendiri atau gabung dari daftar di bawah.</div>';
+    el.innerHTML = '<div class="empty"><div class="big">🤝</div>' + t('no_guild') + '</div>';
   } else {
-    var members = (g.members || []).map(function(m){ return m.name + ' (' + m.season_points + ' poin)'; }).join('<br>');
-    el.innerHTML = '<b>🏰 ' + g.name + '</b> <span class="pill">' + g.member_count + '/20 anggota</span>' +
-      '<div class="muted" style="margin:6px 0">Tujuan mingguan: <b>' + g.goal_progress + ' / ' + g.goal + '</b> poin musim anggota</div>' +
+    var members = (g.members || []).map(function(m){ return m.name + ' (' + m.season_points + ' ' + t('points_word') + ')'; }).join('<br>');
+    el.innerHTML = '<b>🏰 ' + g.name + '</b> <span class="pill">' + t('members_label', {n: g.member_count}) + '</span>' +
+      '<div class="muted" style="margin:6px 0">' + t('goal_t', {a: g.goal_progress, b: g.goal}) + '</div>' +
       '<div class="mini-bar"><i style="width:' + Math.min(100, Math.round(g.goal_progress/g.goal*100)) + '%"></i></div>' +
       '<div style="font-size:13px;margin:8px 0">' + members + '</div>' +
-      '<div class="row"><button class="btn gold small" id="btn-claim-guild" ' + ((g.goal_reached && !g.reward_claimed_this_week) ? '' : 'disabled') + '>🎁 Klaim +' + g.reward_gems + ' 💎</button>' +
-      '<button class="btn ghost small" id="btn-leave-guild">🚪 Keluar Guild</button></div>' +
-      (g.goal_reached ? (g.reward_claimed_this_week ? '<p class="muted">Hadiah minggu ini sudah diklaim ✅</p>' : '<p class="muted">Tujuan tercapai! Klaim hadiahmu 🎉</p>') : '<p class="muted">Kumpulkan poin musim bersama — panen, jual, mancing, produksi!</p>');
-    var cb = $('btn-claim-guild'); if (cb) cb.addEventListener('click', function(){ doAction('claim_guild_reward', {}, '🎁 Hadiah guild diklaim!'); });
-    var lb = $('btn-leave-guild'); if (lb) lb.addEventListener('click', function(){ if (confirm('Yakin keluar dari guild?')) doAction('leave_guild', {}, 'Kamu keluar dari guild.'); });
+      '<div class="row"><button class="btn gold small" id="btn-claim-guild" ' + ((g.goal_reached && !g.reward_claimed_this_week) ? '' : 'disabled') + '>' + t('btn_claim_guild', {n: g.reward_gems}) + '</button>' +
+      '<button class="btn ghost small" id="btn-leave-guild">' + t('btn_leave') + '</button></div>' +
+      (g.goal_reached ? (g.reward_claimed_this_week ? '<p class="muted">' + t('goal_claimed') + '</p>' : '<p class="muted">' + t('goal_reached') + '</p>') : '<p class="muted">' + t('goal_hint') + '</p>');
+    var cb = $('btn-claim-guild'); if (cb) cb.addEventListener('click', function(){ doAction('claim_guild_reward', {}, t('toast_guild_reward')); });
+    var lb = $('btn-leave-guild'); if (lb) lb.addEventListener('click', function(){ if (confirm(t('confirm_leave'))) doAction('leave_guild', {}, t('toast_leave_guild')); });
   }
   var list = S.guilds || [];
   $('guild-list').innerHTML = list.length ? list.map(function(x){
-    return '<div class="price-row"><div><b>🏰 ' + x.name + '</b><div class="muted">' + x.members + '/20 anggota</div></div>' +
-      '<button class="btn small" data-join-guild="' + x.id + '"' + (g ? ' disabled' : '') + '>Gabung</button></div>';
-  }).join('') : '<div class="empty">Belum ada guild. Jadilah yang pertama!</div>';
-  $('guild-list').querySelectorAll('[data-join-guild]').forEach(function(b){ b.addEventListener('click', function(){ doAction('join_guild', {guild_id: b.getAttribute('data-join-guild')}, '🤝 Berhasil gabung guild!'); }); });
+    return '<div class="price-row"><div><b>🏰 ' + x.name + '</b><div class="muted">' + t('members_label', {n: x.members}) + '</div></div>' +
+      '<button class="btn small" data-join-guild="' + x.id + '"' + (g ? ' disabled' : '') + '>' + t('btn_join') + '</button></div>';
+  }).join('') : '<div class="empty">' + t('no_guilds') + '</div>';
+  $('guild-list').querySelectorAll('[data-join-guild]').forEach(function(b){ b.addEventListener('click', function(){ doAction('join_guild', {guild_id: b.getAttribute('data-join-guild')}, t('toast_join_guild')); }); });
 }
 function renderSeason(){
   var s = S.season; if (!s) return;
@@ -839,16 +1740,16 @@ function renderSeason(){
   var myRank = null;
   top.forEach(function(t, i){ if (t.name === (u.first_name || u.username)) myRank = i + 1; });
   $('season-card').innerHTML =
-    '<div class="banner weather" style="margin:0 0 8px">' + s.emoji + ' <b>' + s.label + '</b> — ' + s.desc +
-    ' <span class="muted">• ganti musim: <b class="cd" data-secs="' + s.ends_in + '">' + fmtSecs(s.ends_in) + '</b></span></div>' +
-    '<p style="font-size:13px">Poin musimku: <b>' + fmt(u.season_points || 0) + '</b> • Hadiah klaim 1×/musim (min 50 poin): 🥇 50 💎 • 🥈🥉 30 💎 • Top 10: 15 💎 • lainnya: 5 💎</p>' +
-    '<button class="btn gold block" id="btn-claim-season" ' + (((u.season_points || 0) >= 50) ? '' : 'disabled') + '>🏆 Klaim Hadiah Turnamen</button>' +
-    '<h3>Top Turnamen Minggu Ini</h3>' +
+    '<div class="banner weather" style="margin:0 0 8px">' + s.emoji + ' <b>' + seasonLabel(s) + '</b> — ' + seasonDesc(s) +
+    ' <span class="muted">• ' + t('season_change') + ' <b class="cd" data-secs="' + s.ends_in + '">' + fmtSecs(s.ends_in) + '</b></span></div>' +
+    '<p style="font-size:13px">' + t('season_points_me', {n: fmt(u.season_points || 0)}) + '</p>' +
+    '<button class="btn gold block" id="btn-claim-season" ' + (((u.season_points || 0) >= 50) ? '' : 'disabled') + '>' + t('btn_claim_season') + '</button>' +
+    '<h3>' + t('season_top_t') + '</h3>' +
     (top.length ? top.map(function(t){
       var medal = t.rank === 1 ? '🥇' : t.rank === 2 ? '🥈' : t.rank === 3 ? '🥉' : ('#' + t.rank);
-      return '<div class="lb-row"><span>' + medal + ' <b>' + t.name + '</b></span><span>' + fmt(t.season_points) + ' poin</span></div>';
-    }).join('') : '<div class="empty">Belum ada poin musim minggu ini.</div>');
-  var b = $('btn-claim-season'); if (b) b.addEventListener('click', function(){ doAction('claim_season_reward', {}, '🏆 Hadiah turnamen diklaim!'); });
+      return '<div class="lb-row"><span>' + medal + ' <b>' + t.name + '</b></span><span>' + fmt(t.season_points) + ' ' + t('points_word') + '</span></div>';
+    }).join('') : '<div class="empty">' + t('no_season_top') + '</div>');
+  var b = $('btn-claim-season'); if (b) b.addEventListener('click', function(){ doAction('claim_season_reward', {}, t('toast_season_reward')); });
 }
 function renderSkills(){
   var u = S.user || {};
@@ -856,29 +1757,57 @@ function renderSkills(){
   var branches = cfg.skill_branches || {};
   var skills = u.skills || {};
   var desc = {
-    bertani: '−5% waktu tumbuh & +1 hasil panen per 2 level',
-    produksi: '−10% waktu proses produksi per level',
-    dagang: '+5% harga jual Pasar NPC per level',
-    jelajah: '−10% cooldown & +10% hadiah mancing/menambang per level'
+    bertani: t('skill_desc_bertani'),
+    produksi: t('skill_desc_produksi'),
+    dagang: t('skill_desc_dagang'),
+    jelajah: t('skill_desc_jelajah')
   };
   $('skill-list').innerHTML = Object.keys(branches).map(function(k){
     var b = branches[k];
     var lv = skills[k] || 0;
-    return '<div class="price-row"><div><b>' + b.emoji + ' ' + b.name + ' — Lv ' + lv + '/' + b.max + '</b><div class="muted">' + (desc[k] || '') + '</div></div>' +
-      '<button class="btn small" data-skill="' + k + '"' + ((u.skill_points || 0) > 0 && lv < b.max ? '' : ' disabled') + '>Naik (1 ⭐)</button></div>';
-  }).join('') + '<p class="muted">Poin skill tersedia: <b>' + (u.skill_points || 0) + '</b> • Dapat 1 poin tiap naik level.</p>';
-  $('skill-list').querySelectorAll('[data-skill]').forEach(function(b){ b.addEventListener('click', function(){ doAction('learn_skill', {branch: b.getAttribute('data-skill')}, '⭐ Skill naik level!'); }); });
+    return '<div class="price-row"><div><b>' + b.emoji + ' ' + b.name + ' — ' + t('level_label', {n: lv}) + '/' + b.max + '</b><div class="muted">' + (desc[k] || '') + '</div></div>' +
+      '<button class="btn small" data-skill="' + k + '"' + ((u.skill_points || 0) > 0 && lv < b.max ? '' : ' disabled') + '>' + t('skill_up_btn') + '</button></div>';
+  }).join('') + '<p class="muted">' + t('skill_points_left', {n: (u.skill_points || 0)}) + '</p>';
+  $('skill-list').querySelectorAll('[data-skill]').forEach(function(b){ b.addEventListener('click', function(){ doAction('learn_skill', {branch: b.getAttribute('data-skill')}, t('toast_skill')); }); });
 }
 function renderAchievementsV2(){
   var list = S.achievements_v2 || [];
   $('achievements-v2').innerHTML = list.length ? list.map(function(a){
-    var btn = a.claimed ? '<button class="btn small" disabled>✅ Diklaim</button>'
-      : a.done ? '<button class="btn gold small" data-claim-ach="' + a.id + '">🎁 Klaim</button>'
+    var btn = a.claimed ? '<button class="btn small" disabled>' + t('claimed_btn') + '</button>'
+      : a.done ? '<button class="btn gold small" data-claim-ach="' + a.id + '">' + t('claim_btn', {reward: fmt(a.reward_coins)}) + '</button>'
       : '<button class="btn small" disabled>' + a.progress + '/' + a.target + '</button>';
-    return '<div class="mission"><div class="row between"><b>' + a.title + '</b>' + btn + '</div>' +
-      '<div class="muted">' + a.desc + ' • ' + a.progress + '/' + a.target + ' • Hadiah: ' + fmt(a.reward_coins) + ' 🪙' + (a.reward_gems ? ' + ' + a.reward_gems + ' 💎' : '') + '</div></div>';
-  }).join('') : '<div class="empty">Belum ada achievement.</div>';
-  $('achievements-v2').querySelectorAll('[data-claim-ach]').forEach(function(b){ b.addEventListener('click', function(){ doAction('claim_achievement', {ach_id: b.getAttribute('data-claim-ach')}, '🏆 Achievement diklaim!'); }); });
+    return '<div class="mission"><div class="row between"><b>' + achTitle(a) + '</b>' + btn + '</div>' +
+      '<div class="muted">' + achDesc(a) + ' • ' + a.progress + '/' + a.target + ' • ' + t('reward_label', {coins: fmt(a.reward_coins), gems: (a.reward_gems ? ' + ' + a.reward_gems + ' 💎' : '')}) + '</div></div>';
+  }).join('') : '<div class="empty">' + t('no_ach') + '</div>';
+  $('achievements-v2').querySelectorAll('[data-claim-ach]').forEach(function(b){ b.addEventListener('click', function(){ doAction('claim_achievement', {ach_id: b.getAttribute('data-claim-ach')}, t('toast_ach')); }); });
+}
+
+/* ================= v3: REFERRAL ================= */
+function renderReferral(){
+  var r = (S && S.referral) || null;
+  if (!r) {
+    $('ref-list').innerHTML = '<div class="empty">' + t('ref_none') + '</div>';
+    return;
+  }
+  $('ref-link').value = r.link;
+  $('ref-stats').innerHTML =
+    '<div>' + t('ref_invited') + '<b>' + r.invited_count + '</b></div>' +
+    '<div>' + t('ref_rewarded') + '<b>' + r.rewarded_count + '</b></div>' +
+    '<div>' + t('ref_earned') + '<b>+' + fmt(r.total_coins) + ' 🪙</b></div>' +
+    '<div>' + t('ref_earned_gems') + '<b>+' + fmt(r.total_gems) + ' 💎</b></div>';
+  $('ref-rules').innerHTML = [1,2,3,4].map(function(i){
+    return '<li><span class="num">' + i + '</span><span>' + t('ref_rule' + i) + '</span></li>';
+  }).join('');
+  $('ref-list').innerHTML = r.invitees.length ? r.invitees.map(function(v){
+    return '<div class="lb-row"><span><b>' + v.name + '</b> • ' + t('ref_level', {n: v.level}) + '</span><span>' + (v.rewarded ? t('ref_rewarded_badge') : t('ref_pending')) + '</span></div>';
+  }).join('') : '<div class="empty"><div class="big">🎁</div>' + t('ref_none') + '</div>';
+}
+function fallbackCopy(text){
+  var ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); } catch(e){}
+  document.body.removeChild(ta);
 }
 
 function renderWallet(){
@@ -888,13 +1817,14 @@ function renderWallet(){
   var dogePerUnit = cfg.doge_per_unit || 0.01;
   $('wallet-coins').textContent = fmt(u.coins||0) + ' 🪙';
   $('wallet-gems').textContent = fmt(u.gems||0) + ' 💎';
-  $('wallet-level').textContent = 'Level ' + (u.level||1) + ' (min 5 untuk WD)';
-  $('wallet-doge').textContent = '≈ ' + (((u.coins||0)/coinsPerUnit)*dogePerUnit).toFixed(4) + ' DOGE';
-  $('wallet-streak').textContent = '🔥 ' + (u.login_streak||0) + ' hari';
+  $('wallet-level').textContent = t('wallet_level_value', {n: (u.level||1)});
+  $('wallet-doge').textContent = t('wd_preview', {n: (((u.coins||0)/coinsPerUnit)*dogePerUnit).toFixed(4)});
+  $('wallet-streak').textContent = t('wallet_streak_value', {n: (u.login_streak||0)});
+  $('wallet-info').innerHTML = t('wallet_info', {gems: fmt(u.gems||0)});
   var wd = S.withdrawals || [];
   $('wd-history').innerHTML = wd.length ? wd.map(function(w){
     return '<div class="price-row"><div><b>' + fmt(w.coins) + ' 🪙 → ' + (w.doge != null ? w.doge : '') + ' DOGE</b><div class="muted">' + (w.destination||'') + ' • ' + (w.created_at||'') + '</div></div><span class="pill">' + (w.status||'pending') + '</span></div>';
-  }).join('') : '<div class="empty">Belum ada riwayat withdraw.</div>';
+  }).join('') : '<div class="empty">' + t('no_wd') + '</div>';
   updateWdPreview();
 }
 function updateWdPreview(){
@@ -902,7 +1832,7 @@ function updateWdPreview(){
   var coinsPerUnit = cfg.coins_per_unit || 200000;
   var dogePerUnit = cfg.doge_per_unit || 0.01;
   var c = parseInt($('wd-coins').value, 10) || 0;
-  $('wd-preview').textContent = '≈ ' + ((c/coinsPerUnit)*dogePerUnit).toFixed(4) + ' DOGE';
+  $('wd-preview').textContent = t('wd_preview', {n: ((c/coinsPerUnit)*dogePerUnit).toFixed(4)});
 }
 async function loadLeaderboard(){
   try {
@@ -912,8 +1842,8 @@ async function loadLeaderboard(){
     $('leaderboard').innerHTML = top.length ? top.map(function(t){
       var medal = t.rank === 1 ? '🥇' : t.rank === 2 ? '🥈' : t.rank === 3 ? '🥉' : ('#' + t.rank);
       return '<div class="lb-row"><span>' + medal + ' <b>' + (t.name||'—') + '</b></span><span>' + fmt(t.coins) + ' 🪙 • Lv ' + t.level + '</span></div>';
-    }).join('') : '<div class="empty">Belum ada peringkat.</div>';
-  } catch(e){ $('leaderboard').innerHTML = '<div class="empty">Gagal memuat peringkat. Backend belum terhubung?</div>'; }
+    }).join('') : '<div class="empty">' + t('no_lb') + '</div>';
+  } catch(e){ $('leaderboard').innerHTML = '<div class="empty">' + t('lb_fail') + '</div>'; }
 }
 
 /* ================= ADGRAM ================= */
@@ -927,7 +1857,7 @@ try {
   if (adsReady()) { adController = window.Adsgram.init({blockId: ADSGRAM_BLOCK_ID}); }
 } catch(e){ adController = null; }
 function adNotReadyMsg(){
-  toast('📺 Iklan belum aktif — isi Block ID AdGram dulu', true);
+  toast(t('ad_not_ready'), true);
 }
 async function watchRewardedAd(type, plotId){
   if (!adsReady() || !adController) { adNotReadyMsg(); return; }
@@ -936,9 +1866,9 @@ async function watchRewardedAd(type, plotId){
     if (result && result.done) {
       var data = await apiPost('/api/ad-reward', authBody({type: type, plot_id: plotId || null}));
       if (data && data.state) { S = data.state; saveState(); renderAll(); }
-      toast('🎉 Hadiah iklan masuk! +' + (data && data.reward ? JSON.stringify(data.reward) : '') + ' ✅');
+      toast(t('ad_reward_in'));
     } else {
-      toast('Iklan belum selesai — hadiah tidak masuk.', true);
+      toast(t('ad_not_done'), true);
     }
   } catch(e){ toast(errText(e.message), true); }
 }
@@ -967,14 +1897,33 @@ document.querySelectorAll('nav button').forEach(function(b){
     window.scrollTo({top:0, behavior:'smooth'});
   });
 });
+/* ================= v3: PEMILIH BAHASA & REFERRAL ================= */
+document.querySelectorAll('#intro-lang [data-lang]').forEach(function(b){
+  b.addEventListener('click', function(){ setLang(b.getAttribute('data-lang'), false); });
+});
+$('lang-select').addEventListener('change', function(){ setLang($('lang-select').value, true); });
+$('btn-copy-ref').addEventListener('click', function(){
+  var link = $('ref-link').value || '';
+  if (!link) return;
+  function done(){ toast(t('ref_copied')); }
+  if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(link).then(done, function(){ fallbackCopy(link); done(); }); }
+  else { fallbackCopy(link); done(); }
+});
+$('btn-share-ref').addEventListener('click', function(){
+  var link = $('ref-link').value || '';
+  if (!link) return;
+  var url = 'https://t.me/share/url?url=' + encodeURIComponent(link) + '&text=' + encodeURIComponent(t('ref_share_text'));
+  if (tg) { try { tg.openTelegramLink(url); return; } catch(e){} }
+  window.open(url, '_blank');
+});
 $('btn-plant').addEventListener('click', function(){
-  if (selectedPlot == null || !selectedCrop) { toast('Pilih benih dulu ya 🌱', true); return; }
-  doAction('plant', {plot: selectedPlot, crop: selectedCrop}, '🌱 ' + cropMeta(selectedCrop).name + ' ditanam!').then(function(ok){
+  if (selectedPlot == null || !selectedCrop) { toast(t('choose_seed'), true); return; }
+  doAction('plant', {plot: selectedPlot, crop: selectedCrop}, t('toast_planted', {name: cropMeta(selectedCrop).name})).then(function(ok){
     if (ok) { $('seed-picker-card').style.display = 'none'; selectedPlot = null; selectedCrop = null; }
   });
 });
 $('btn-cancel-seed').addEventListener('click', function(){ $('seed-picker-card').style.display = 'none'; selectedPlot = null; selectedCrop = null; });
-$('btn-upgrade').addEventListener('click', function(){ doAction('upgrade_grid', {}, '⬆️ Grid berhasil di-upgrade!'); });
+$('btn-upgrade').addEventListener('click', function(){ doAction('upgrade_grid', {}, t('toast_upgrade')); });
 $('btn-ad-energy').addEventListener('click', function(){ watchRewardedAd('energy'); });
 document.querySelectorAll('[data-ad]').forEach(function(b){
   b.addEventListener('click', function(){
@@ -988,57 +1937,57 @@ document.querySelectorAll('[data-ad]').forEach(function(b){
     watchRewardedAd(type, plotId);
   });
 });
-$('btn-buy-feed').addEventListener('click', function(){ doAction('buy_feed', {qty:10}, '🌾 Pakan dibeli!'); });
-$('btn-buy-feed2').addEventListener('click', function(){ doAction('buy_feed', {qty:10}, '🌾 Pakan dibeli!'); });
-$('btn-buy-fert').addEventListener('click', function(){ doAction('buy_fertilizer', {qty:5}, '🧪 Pupuk dibeli!'); });
+$('btn-buy-feed').addEventListener('click', function(){ doAction('buy_feed', {qty:10}, t('toast_feed_bought')); });
+$('btn-buy-feed2').addEventListener('click', function(){ doAction('buy_feed', {qty:10}, t('toast_feed_bought')); });
+$('btn-buy-fert').addEventListener('click', function(){ doAction('buy_fertilizer', {qty:5}, t('toast_fert_bought')); });
 $('btn-sell-confirm').addEventListener('click', function(){
   var qty = parseInt($('sell-qty').value, 10) || 0;
-  if (!sellItem || qty < 1) { toast('Jumlah tidak valid.', true); return; }
-  doAction('sell', {item: sellItem, qty: qty}, '💰 Berhasil dijual!').then(function(ok){ if (ok) $('sell-panel').style.display = 'none'; });
+  if (!sellItem || qty < 1) { toast(t('invalid_amount'), true); return; }
+  doAction('sell', {item: sellItem, qty: qty}, t('toast_sold')).then(function(ok){ if (ok) $('sell-panel').style.display = 'none'; });
 });
 $('btn-sell-cancel').addEventListener('click', function(){ $('sell-panel').style.display = 'none'; });
 $('btn-refresh-market').addEventListener('click', function(){ refreshMarket(); });
 async function refreshMarket(){
   try {
     var data = await apiPost('/api/market', authBody());
-    if (data) { if (data.market) S.market = data.market; if (data.listings) S.listings = data.listings; saveState(); renderMarket(); toast('🔄 Harga pasar diperbarui'); }
+    if (data) { if (data.market) S.market = data.market; if (data.listings) S.listings = data.listings; saveState(); renderMarket(); toast(t('market_updated')); }
   } catch(e){ toast(errText(e.message), true); }
 }
 $('btn-create-listing').addEventListener('click', function(){
   var item = $('p2p-item').value;
   var qty = parseInt($('p2p-qty').value, 10) || 0;
   var price = parseInt($('p2p-price').value, 10) || 0;
-  if (!item) { toast('Inventaris kosong — tidak ada yang bisa dijual.', true); return; }
-  if (qty < 1 || price < 1) { toast('Jumlah dan harga harus diisi.', true); return; }
-  doAction('create_listing', {item: item, qty: qty, price_each: price}, '📢 Jualan dipasang di Pasar Pemain!');
+  if (!item) { toast(t('empty_p2p'), true); return; }
+  if (qty < 1 || price < 1) { toast(t('amount_price_err'), true); return; }
+  doAction('create_listing', {item: item, qty: qty, price_each: price}, t('toast_listing'));
 });
-$('btn-claim-daily').addEventListener('click', function(){ doAction('claim_daily', {}, '🎁 Bonus harian diklaim!'); });
-$('btn-fish').addEventListener('click', function(){ doAction('fish', {}, '🎣 Mancing!'); });
-$('btn-mine').addEventListener('click', function(){ doAction('mine', {}, '⛏️ Menambang!'); });
+$('btn-claim-daily').addEventListener('click', function(){ doAction('claim_daily', {}, t('toast_daily')); });
+$('btn-fish').addEventListener('click', function(){ doAction('fish', {}, t('toast_fish')); });
+$('btn-mine').addEventListener('click', function(){ doAction('mine', {}, t('toast_mine')); });
 $('btn-create-guild').addEventListener('click', function(){
   var name = $('guild-name').value.trim();
-  if (name.length < 3) { toast('Nama guild minimal 3 karakter.', true); return; }
-  doAction('create_guild', {name: name}, '🏰 Guild dibuat!');
+  if (name.length < 3) { toast(t('guild_name_short'), true); return; }
+  doAction('create_guild', {name: name}, t('toast_guild_created'));
 });
 function updateGemPreview(){
   var n = parseInt($('gem-qty').value, 10) || 0;
-  $('gem-preview').textContent = '≈ ' + fmt(n * 500) + ' Koin';
+  $('gem-preview').textContent = t('convert_preview', {n: fmt(n * 500)});
 }
 $('gem-qty').addEventListener('input', updateGemPreview);
 $('btn-convert-gems').addEventListener('click', function(){
   var n = parseInt($('gem-qty').value, 10) || 0;
-  if (n < 1 || n > 50) { toast('Jumlah Permata 1–50.', true); return; }
-  doAction('convert_gems', {gems: n}, '💱 Permata ditukar jadi Koin!');
+  if (n < 1 || n > 50) { toast(t('gems_range'), true); return; }
+  doAction('convert_gems', {gems: n}, t('toast_gems'));
 });
 $('wd-coins').addEventListener('input', updateWdPreview);
 $('btn-withdraw').addEventListener('click', async function(){
   var coins = parseInt($('wd-coins').value, 10) || 0;
   var dest = $('wd-dest').value.trim();
-  if (coins < 200000) { toast('Minimal withdraw 200.000 Koin.', true); return; }
-  if (!dest) { toast('Isi email / username FaucetPay dulu.', true); return; }
+  if (coins < 200000) { toast(t('wd_min'), true); return; }
+  if (!dest) { toast(t('wd_dest_empty'), true); return; }
   try {
     var data = await apiPost('/api/withdraw', authBody({coins: coins, destination: dest}));
-    toast('💸 Withdraw diajukan! ' + (data.doge != null ? data.doge + ' DOGE' : '') + ' • Status: ' + (data.status || 'pending'));
+    toast(t('wd_submitted') + ' ' + (data.doge != null ? data.doge + ' DOGE' : '') + ' • ' + t('wd_status', {s: (data.status || 'pending')}));
     loadState(false);
   } catch(e){ toast(errText(e.message), true); }
 });
@@ -1069,15 +2018,26 @@ function hideIntro(){
   document.body.style.overflow = '';
   try { localStorage.setItem(INTRO_KEY, '1'); } catch(e){}
 }
-$('btn-intro-start').addEventListener('click', function(){ hideIntro(); toast('🌾 Selamat bertani!'); });
+$('btn-intro-start').addEventListener('click', function(){ hideIntro(); toast(t('toast_welcome')); });
 $('btn-intro-skip').addEventListener('click', function(){ hideIntro(); });
 $('btn-guide').addEventListener('click', function(){ showIntro(); });
 // Tampil saat pertama kali dibuka di perangkat ini; pemain lama langsung masuk game
 try { if (localStorage.getItem(INTRO_KEY) !== '1') showIntro(); } catch(e){ showIntro(); }
 
 /* ================= INIT ================= */
+LANG = detectLang();
+applyLang();
 if (S) { renderAll(); setConn(false); }
-loadState(true).then(function(ok){ if (ok) loadLeaderboard(); });
+loadState(true).then(function(ok){
+  if (ok) {
+    loadLeaderboard();
+    // v3: simpan bahasa pilihan ke profil server (sekali, kalau berbeda)
+    try {
+      var srvLang = (S.user && S.user.language) || 'id';
+      if (srvLang !== LANG) setLang(LANG, true);
+    } catch(e){}
+  }
+});
 if (tg && tg.initData === '') {
   // dibuka di browser biasa: mode demo, user_id acak tersimpan di localStorage
   console.log('Harvest Farm: mode demo (tanpa initData Telegram), user_id = ' + getUserId());
