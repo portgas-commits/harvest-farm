@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🌾 Harvest Farm — Kebun Kripto</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  :root{--green:#2e7d32;--green2:#43a047;--light:#e8f5e9;--gold:#f9a825;--gold2:#ffca28;--cream:#fffdf5;--ink:#1b2a1b;--muted:#6b7c6b;--red:#e53935;--blue:#1e88e5}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:linear-gradient(180deg,#dcedc8 0%,#f1f8e9 30%,#fffdf5 100%);color:var(--ink);padding-bottom:86px}
+  header{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff;padding:12px 14px 10px;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+  header h1{margin:0;font-size:20px;line-height:1.2}
+  header p{margin:2px 0 0;font-size:12px;opacity:.9}
+  .hud{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}
+  .hud .chip{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:7px 8px;text-align:center}
+  .hud .chip b{display:block;font-size:15px}
+  .hud .chip span{font-size:11px;opacity:.9}
+  .hud .chip small{display:block;font-size:10px;opacity:.8}
+  .wrap{max-width:560px;margin:0 auto;padding:12px 12px 0}
+  .banner{border-radius:14px;padding:10px 12px;margin:0 0 10px;font-size:13px;line-height:1.45}
+  .banner.weather{background:#e3f2fd;border:1px solid #90caf9}
+  .banner.event{background:linear-gradient(135deg,#fff3e0,#ffe082);border:1px solid var(--gold)}
+  .banner b{font-size:14px}
+  .card{background:#fff;border:1px solid #dcedc8;border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(46,125,50,.08)}
+  .card h2{margin:0 0 8px;font-size:16px}
+  .card h3{margin:14px 0 8px;font-size:14px}
+  .muted{color:var(--muted);font-size:12px}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .row.between{justify-content:space-between}
+  .btn{border:0;border-radius:12px;padding:12px 14px;font-size:14px;font-weight:700;cursor:pointer;background:var(--green);color:#fff;min-height:46px}
+  .btn:active{transform:scale(.97)}
+  .btn.gold{background:var(--gold);color:#3e2700}
+  .btn.blue{background:var(--blue)}
+  .btn.red{background:var(--red)}
+  .btn.ghost{background:#f1f8e9;color:var(--green);border:1px solid #a5d6a7}
+  .btn.small{padding:8px 10px;min-height:38px;font-size:13px}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn.block{width:100%}
+  input,select{width:100%;padding:11px 12px;border:1px solid #c8e6c9;border-radius:12px;font-size:15px;background:#fff;margin:4px 0 8px}
+  label{font-size:12px;font-weight:700;color:var(--muted)}
+  /* Grid kebun */
+  .grid{display:grid;gap:8px;margin-top:8px}
+  .grid.g3{grid-template-columns:repeat(3,1fr)}
+  .grid.g4{grid-template-columns:repeat(4,1fr)}
+  .grid.g5{grid-template-columns:repeat(5,1fr)}
+  .plot{aspect-ratio:1/1.15;border-radius:14px;border:2px solid #a1887f;background:linear-gradient(180deg,#8d6e63,#795548);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;padding:4px;text-align:center;position:relative;overflow:hidden}
+  .plot .emoji{font-size:30px;line-height:1}
+  .plot .nm{font-size:10px;font-weight:700}
+  .plot .tm{font-size:10px;opacity:.95}
+  .plot.empty{background:linear-gradient(180deg,#a1887f,#8d6e63);border-style:dashed}
+  .plot.growing{background:linear-gradient(180deg,#66bb6a,#43a047)}
+  .plot.ready{background:linear-gradient(180deg,#ffd54f,#ffb300);color:#3e2700;animation:pulse 1.2s infinite}
+  .plot.pest{outline:3px solid var(--red)}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+  @keyframes grow{0%{transform:translateY(4px) scale(.9)}50%{transform:translateY(-2px) scale(1.05)}100%{transform:translateY(0) scale(1)}}
+  .plot .emoji{animation:grow 2s ease-in-out infinite}
+  .pbar{width:90%;height:6px;background:rgba(0,0,0,.25);border-radius:99px;overflow:hidden}
+  .pbar i{display:block;height:100%;background:#fff;border-radius:99px}
+  .plot.ready .pbar i{background:#2e7d32}
+  .badge{position:absolute;top:4px;right:4px;font-size:13px}
+  .seedrow{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+  .seed{flex:0 0 auto;min-width:96px;border:2px solid #c8e6c9;border-radius:12px;padding:8px;text-align:center;cursor:pointer;background:#f1f8e9}
+  .seed.sel{border-color:var(--gold);background:#fff8e1;box-shadow:0 0 0 2px var(--gold2)}
+  .seed .e{font-size:26px}
+  .seed b{font-size:12px;display:block}
+  .seed span{font-size:11px;color:var(--muted)}
+  /* Pasar */
+  .price-row{display:flex;justify-content:space-between;align-items:center;padding:10px 4px;border-bottom:1px solid #eee}
+  .price-row:last-child{border-bottom:0}
+  .trend-up{color:#2e7d32;font-weight:700}
+  .trend-down{color:#c62828;font-weight:700}
+  .trend-stabil{color:#757575;font-weight:700}
+  .mini-bar{height:8px;background:#e8f5e9;border-radius:99px;overflow:hidden;margin-top:4px}
+  .mini-bar i{display:block;height:100%;background:var(--green2)}
+  .hot{color:#d84315;font-weight:700;font-size:12px}
+  .listing{border:1px solid #ffe082;background:#fffde7;border-radius:12px;padding:10px;margin-bottom:8px}
+  .animal{border:1px solid #dcedc8;border-radius:14px;padding:12px;margin-bottom:10px;background:#f9fbe7}
+  .mission{margin-bottom:12px}
+  .mission .pbar{width:100%;background:#e0e0e0;height:10px}
+  .mission .pbar i{background:var(--green2)}
+  .tab{display:none}
+  .tab.active{display:block}
+  nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:#fff;border-top:1px solid #dcedc8;display:flex;max-width:560px;margin:0 auto;box-shadow:0 -2px 12px rgba(0,0,0,.08)}
+  nav button{flex:1;border:0;background:none;padding:9px 2px 10px;font-size:11px;color:var(--muted);cursor:pointer}
+  nav button .ic{font-size:20px;display:block;line-height:1.1}
+  nav button.active{color:var(--green);font-weight:800}
+  #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:92px;z-index:50;background:#1b2a1b;color:#fff;padding:11px 16px;border-radius:99px;font-size:13px;max-width:92vw;text-align:center;display:none;box-shadow:0 4px 16px rgba(0,0,0,.3)}
+  #toast.err{background:#b71c1c}
+  .empty{text-align:center;padding:22px 10px;color:var(--muted)}
+  .empty .big{font-size:40px}
+  .loader{text-align:center;padding:30px;color:var(--muted)}
+  .spin{font-size:34px;display:inline-block;animation:spin 1.2s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .pill{display:inline-block;background:#fff8e1;border:1px solid var(--gold);border-radius:99px;padding:3px 9px;font-size:11px;font-weight:700}
+  .kvs{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px}
+  .kvs div{background:#f1f8e9;border-radius:10px;padding:8px}
+  .kvs b{display:block;font-size:15px}
+  .lb-row{display:flex;justify-content:space-between;padding:9px 4px;border-bottom:1px solid #eee;font-size:14px}
+  .ad-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🌾 Harvest Farm — Kebun Kripto</h1>
+  <p>Tanam • Panen • Jual • Tukar jadi DOGE 🐶</p>
+  <div class="hud">
+    <div class="chip"><b id="hud-coins">🪙 —</b><span>Koin Panen</span></div>
+    <div class="chip"><b id="hud-level">Level —</b><span id="hud-xp">XP —</span></div>
+    <div class="chip"><b id="hud-energy">⚡ —/50</b><span>Energi</span><small id="hud-regen">regen 1 / 2 mnt</small></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div id="conn-banner"></div>
+  <div id="weather-banner"></div>
+  <div id="event-banner"></div>
+
+  <!-- ============ KEBUN ============ -->
+  <section class="tab active" id="tab-kebun">
+    <div class="card">
+      <div class="row between">
+        <h2 style="margin:0">🌱 Kebunku</h2>
+        <span class="pill" id="streak-pill">🔥 Streak: — hari</span>
+      </div>
+      <p class="muted" id="garden-hint">Ketuk petak kosong untuk menanam, tanaman tumbuh untuk menyiram / memupuk, tanaman siap untuk memanen. Hama muncul? Ketuk cepat untuk mengusir!</p>
+      <div id="grid" class="grid g3"><div class="loader"><span class="spin">🌱</span><br>Memuat kebun…</div></div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn gold" id="btn-upgrade" style="flex:1">⬆️ Upgrade Grid</button>
+        <button class="btn blue" id="btn-ad-energy" style="flex:1">📺 Iklan: +20 ⚡</button>
+      </div>
+      <p class="muted" id="upgrade-info" style="margin:8px 0 0"></p>
+    </div>
+
+    <div class="card" id="seed-picker-card" style="display:none">
+      <h2>🌱 Pilih Benih — Petak <span id="seed-plot-no">?</span></h2>
+      <div class="seedrow" id="seed-row"></div>
+      <div class="row">
+        <button class="btn block" id="btn-plant" style="flex:1">🌱 Tanam</button>
+        <button class="btn ghost" id="btn-cancel-seed">Batal</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📺 Iklan Berhadiah (AdGram)</h2>
+      <p class="muted">Tonton iklan, dapat hadiah. Hadiah hanya masuk kalau iklan selesai ditonton.</p>
+      <div class="ad-grid">
+        <button class="btn blue small" data-ad="energy">⚡ +20 Energi</button>
+        <button class="btn blue small" data-ad="speed">⏩ Percepat 1 Petak 50%</button>
+        <button class="btn blue small" data-ad="double">✖️2 Panen Berikutnya</button>
+        <button class="btn blue small" data-ad="seed">🌱 Benih Gratis 1 Pack</button>
+      </div>
+      <p class="muted" id="ad-status" style="margin:8px 0 0">Iklan hari ini: —</p>
+    </div>
+  </section>
+
+  <!-- ============ HEWAN ============ -->
+  <section class="tab" id="tab-hewan">
+    <div class="card">
+      <h2>🐔 Hewan Ternak</h2>
+      <p class="muted">Hewan harus diberi pakan supaya terus berproduksi. Kalau lapar, produksi berhenti.</p>
+      <div class="row"><span class="pill">🌾 Pakan: <b id="feed-count">—</b></span>
+      <button class="btn gold small" id="btn-buy-feed">Beli Pakan (+10)</button></div>
+      <div id="animal-list" style="margin-top:12px"></div>
+    </div>
+    <div class="card">
+      <h2>🛒 Beli Hewan</h2>
+      <div id="animal-shop"></div>
+    </div>
+  </section>
+
+  <!-- ============ PASAR ============ -->
+  <section class="tab" id="tab-pasar">
+    <div class="card">
+      <h2>🌱 Toko Benih</h2>
+      <div id="seed-shop"></div>
+      <h3>🧪 Toko Pupuk &amp; Pakan</h3>
+      <div class="row">
+        <button class="btn small" id="btn-buy-fert">🧪 Beli Pupuk (+5)</button>
+        <button class="btn gold small" id="btn-buy-feed2">🌾 Beli Pakan (+10)</button>
+      </div>
+      <p class="muted">Pupuk: <b id="fert-count">—</b> • Pakan: <b id="feed-count2">—</b></p>
+    </div>
+
+    <div class="card">
+      <h2>🏪 Pasar NPC — Jual Hasil Panen</h2>
+      <p class="muted">Harga berubah-ubah. Kalau lagi naik tinggi, jual sekarang!</p>
+      <div id="npc-market"></div>
+      <div id="sell-panel" style="display:none;margin-top:10px;border-top:1px dashed #c8e6c9;padding-top:10px">
+        <label>Jual <b id="sell-item-name">—</b> — jumlah</label>
+        <input type="number" id="sell-qty" min="1" value="1" inputmode="numeric">
+        <div class="row"><button class="btn block" id="btn-sell-confirm" style="flex:1">💰 Jual Sekarang</button>
+        <button class="btn ghost" id="btn-sell-cancel">Batal</button></div>
+      </div>
+      <div class="row" style="margin-top:8px"><button class="btn ghost small" id="btn-refresh-market">🔄 Refresh Harga</button></div>
+    </div>
+
+    <div class="card">
+      <h2>🤝 Pasar Pemain (P2P)</h2>
+      <label>Item dari inventaris</label>
+      <select id="p2p-item"></select>
+      <label>Jumlah</label>
+      <input type="number" id="p2p-qty" min="1" value="1" inputmode="numeric">
+      <label>Harga / buah (Koin)</label>
+      <input type="number" id="p2p-price" min="1" value="100" inputmode="numeric">
+      <button class="btn gold block" id="btn-create-listing">📢 Pasang Jualan</button>
+      <h3>Listing Terbaru</h3>
+      <div id="p2p-list"></div>
+    </div>
+  </section>
+
+  <!-- ============ MISI ============ -->
+  <section class="tab" id="tab-misi">
+    <div class="card">
+      <h2>🎁 Bonus Login Harian</h2>
+      <p class="muted">Streak <b id="streak-text">—</b> hari • Klaim 1x sehari, jangan sampai putus!</p>
+      <button class="btn gold block" id="btn-claim-daily">🎁 Klaim Bonus Harian</button>
+    </div>
+    <div class="card">
+      <h2>🎯 Misi Harian</h2>
+      <div id="mission-list"></div>
+    </div>
+    <div class="card">
+      <h2>🏆 Achievement</h2>
+      <div id="achievements" class="kvs"></div>
+    </div>
+  </section>
+
+  <!-- ============ DOMPET ============ -->
+  <section class="tab" id="tab-dompet">
+    <div class="card">
+      <h2>👛 Dompet</h2>
+      <div class="kvs">
+        <div>Saldo Koin<b id="wallet-coins">—</b></div>
+        <div>Level<b id="wallet-level">—</b></div>
+        <div>Setara DOGE (kurs)<b id="wallet-doge">—</b></div>
+        <div>Streak Login<b id="wallet-streak">—</b></div>
+      </div>
+      <p style="font-size:13px;line-height:1.6;background:#fff8e1;border:1px solid #ffe082;border-radius:12px;padding:10px">
+        💱 <b>Kurs: 200.000 Koin Panen = 0,01 DOGE</b><br>
+        ✅ Min. withdraw: <b>200.000 Koin</b> &nbsp;•&nbsp; Min. Level: <b>5</b><br>
+        ⏳ Maks. <b>1x per 7 hari</b> &nbsp;•&nbsp; Dibayar ke FaucetPay (email / username).
+      </p>
+    </div>
+    <div class="card">
+      <h2>💸 Tarik DOGE</h2>
+      <label>Jumlah Koin (min 200.000)</label>
+      <input type="number" id="wd-coins" min="200000" step="1000" value="200000" inputmode="numeric">
+      <label>Email / Username FaucetPay</label>
+      <input type="text" id="wd-dest" placeholder="contoh: kamu@email.com" autocomplete="off">
+      <p class="muted" id="wd-preview">≈ 0,01 DOGE</p>
+      <button class="btn gold block" id="btn-withdraw">💸 Ajukan Withdraw</button>
+    </div>
+    <div class="card">
+      <h2>📜 Riwayat Withdraw</h2>
+      <div id="wd-history"></div>
+    </div>
+  </section>
+
+  <!-- ============ PERINGKAT ============ -->
+  <section class="tab" id="tab-peringkat">
+    <div class="card">
+      <h2>🏆 Peringkat — Top Petani</h2>
+      <div id="leaderboard"><div class="loader"><span class="spin">🏆</span><br>Memuat peringkat…</div></div>
+      <button class="btn ghost block" id="btn-refresh-lb" style="margin-top:10px">🔄 Refresh</button>
+    </div>
+  </section>
+</div>
+
+<nav>
+  <button data-tab="kebun" class="active"><span class="ic">🌱</span>Kebun</button>
+  <button data-tab="hewan"><span class="ic">🐔</span>Hewan</button>
+  <button data-tab="pasar"><span class="ic">🏪</span>Pasar</button>
+  <button data-tab="misi"><span class="ic">🎯</span>Misi</button>
+  <button data-tab="dompet"><span class="ic">👛</span>Dompet</button>
+  <button data-tab="peringkat"><span class="ic">🏆</span>Peringkat</button>
+</nav>
+
+<div id="toast"></div>
+
+<script>
+"use strict";
+/* ================= KONFIG ================= */
+var API_BASE = (window.HARVESTFARM_API_URL || new URLSearchParams(location.search).get('api') || location.origin).replace(/\/$/, '');
+var ADSGRAM_BLOCK_ID = 'YOUR_ADSGRAM_BLOCK_ID'; // <-- isi Block ID AdGram di sini
+var CROPS = {
+  cabai:    {name:'Cabai',    emoji:'🌶️', grow:120},
+  jagung:   {name:'Jagung',   emoji:'🌽', grow:300},
+  tomat:    {name:'Tomat',    emoji:'🍅', grow:600},
+  wortel:   {name:'Wortel',   emoji:'🥕', grow:900},
+  padi:     {name:'Padi',     emoji:'🌾', grow:1800},
+  labu:     {name:'Labu',     emoji:'🎃', grow:3600},
+  stroberi: {name:'Stroberi', emoji:'🍓', grow:7200},
+  kopi:     {name:'Kopi',     emoji:'☕', grow:14400}
+};
+var ANIMALS = {
+  ayam:    {name:'Ayam',    emoji:'🐔', produce:'telur', produceName:'Telur', every:1800},
+  kambing: {name:'Kambing', emoji:'🐐', produce:'susu',  produceName:'Susu',  every:3600},
+  sapi:    {name:'Sapi',    emoji:'🐄', produce:'susu',  produceName:'Susu',  every:7200}
+};
+var ERR_ID = {
+  not_enough_coins:'Koin tidak cukup.', not_enough_energy:'Energi habis. Tunggu regen atau tonton iklan +20 Energi.',
+  plot_not_empty:'Petak sudah terisi.', plot_empty:'Petak masih kosong.', no_seed:'Benih habis. Beli dulu di Toko Benih.',
+  not_ready:'Belum siap dipanen.', no_fertilizer:'Pupuk habis.', no_feed:'Pakan habis. Beli pakan dulu.',
+  not_enough_item:'Jumlah item di inventaris tidak cukup.', level_too_low:'Level belum cukup (min. Level 5).',
+  min_withdraw:'Minimal withdraw 200.000 Koin.', cooldown:'Withdraw hanya 1x per 7 hari. Coba lagi nanti.',
+  already_claimed:'Sudah diklaim hari ini.', mission_not_done:'Misi belum selesai.', invalid_destination:'Isi email / username FaucetPay yang benar.',
+  ad_limit:'Batas hadiah iklan hari ini sudah habis.', invalid_action:'Aksi tidak dikenal.', unauthorized:'Sesi tidak valid. Buka lagi dari Telegram.'
+};
+function errText(code){ return ERR_ID[code] || ('Terjadi kesalahan: ' + code); }
+
+/* ================= STATE & AUTH ================= */
+var tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+if (tg) { try { tg.ready(); tg.expand(); } catch(e){} }
+function getUserId(){
+  var id = localStorage.getItem('harvestfarm_user_id');
+  if (!id) { id = 'demo-' + Math.random().toString(36).slice(2,10); localStorage.setItem('harvestfarm_user_id', id); }
+  return id;
+}
+function authBody(extra){
+  var b = { initData: (tg && tg.initData) ? tg.initData : '', user_id: getUserId() };
+  if (extra) for (var k in extra) b[k] = extra[k];
+  return b;
+}
+var S = null; // state terakhir dari backend
+var selectedPlot = null, selectedCrop = null, sellItem = null, lastInterstitialAt = 0;
+try { lastInterstitialAt = parseInt(localStorage.getItem('harvestfarm_last_interstitial') || '0', 10) || 0; } catch(e){}
+try { var cached = localStorage.getItem('harvestfarm_state'); if (cached) S = JSON.parse(cached); } catch(e){ S = null; }
+function saveState(){ try { if (S) localStorage.setItem('harvestfarm_state', JSON.stringify(S)); } catch(e){} }
+
+/* ================= HELPERS ================= */
+function $(id){ return document.getElementById(id); }
+function fmt(n){ n = Number(n)||0; return n.toLocaleString('id-ID'); }
+function fmtSecs(s){
+  s = Math.max(0, Math.round(Number(s)||0));
+  if (s < 60) return s + ' dtk';
+  var m = Math.floor(s/60);
+  if (m < 60) return m + ' mnt' + (s%60 ? ' ' + (s%60) + ' dtk' : '');
+  var h = Math.floor(m/60);
+  if (h < 24) return h + ' jam ' + (m%60) + ' mnt';
+  return Math.floor(h/24) + ' hari ' + (h%24) + ' jam';
+}
+function parseTime(v){
+  if (v == null || v === '') return null;
+  if (typeof v === 'number') return v < 1e12 ? v*1000 : v; // detik -> ms
+  var t = Date.parse(v); return isNaN(t) ? null : t;
+}
+function toast(msg, isErr){
+  var el = $('toast'); el.textContent = msg; el.className = isErr ? 'err' : ''; el.style.display = 'block';
+  clearTimeout(el._t); el._t = setTimeout(function(){ el.style.display = 'none'; }, 3200);
+  if (tg && tg.HapticFeedback) { try { tg.HapticFeedback.notificationOccurred(isErr ? 'error' : 'success'); } catch(e){} }
+}
+function cropMeta(key){ return CROPS[key] || {name:key, emoji:'🌱', grow:300}; }
+function itemMeta(key){
+  if (CROPS[key]) return CROPS[key];
+  if (key === 'telur') return {name:'Telur', emoji:'🥚'};
+  if (key === 'susu') return {name:'Susu', emoji:'🥛'};
+  return {name:key, emoji:'📦'};
+}
+function growStage(progress){
+  if (progress < 0.34) return '🌱';
+  if (progress < 0.67) return '🌿';
+  if (progress < 1) return '🌾';
+  return '🧺';
+}
+
+/* ================= API ================= */
+async function apiPost(path, body){
+  var res = await fetch(API_BASE + path, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
+  var data = null; try { data = await res.json(); } catch(e){}
+  if (!res.ok) throw new Error((data && data.error) || ('http_' + res.status));
+  if (data && data.error) throw new Error(data.error);
+  return data;
+}
+async function loadState(showLoading){
+  try {
+    var data = await apiPost('/api/state', authBody());
+    if (data && data.state) { S = data.state; saveState(); renderAll(); setConn(true); return true; }
+  } catch(e){ setConn(false); if (!S && showLoading) renderEmpty(); }
+  return false;
+}
+async function doAction(action, params, okMsg){
+  try {
+    var data = await apiPost('/api/action', authBody(Object.assign({action:action}, params || {})));
+    if (data && data.state) { S = data.state; saveState(); renderAll(); }
+    toast(okMsg || (data && data.message) || 'Berhasil! ✅');
+    return true;
+  } catch(e){ toast(errText(e.message), true); return false; }
+}
+function setConn(ok){
+  var el = $('conn-banner');
+  if (ok) { el.innerHTML = ''; return; }
+  el.innerHTML = '<div class="banner" style="background:#ffebee;border:1px solid #ef9a9a">⚠️ <b>Backend belum terhubung</b> — cek API_URL. Buka dengan <code>?api=https://...railway.app</code> atau set <code>window.HARVESTFARM_API_URL</code>. Data di bawah ini data terakhir yang tersimpan.</div>';
+}
+function renderEmpty(){
+  $('grid').innerHTML = '<div class="empty"><div class="big">🌱</div>Backend belum terhubung — cek API_URL.<br><span class="muted">Buka file ini dengan ?api=https://alamat-backend-railway-kamu</span></div>';
+}
+
+/* ================= RENDER ================= */
+function renderAll(){
+  if (!S) return;
+  renderHUD(); renderWeather(); renderGrid(); renderAnimals(); renderMarket(); renderMissions(); renderWallet(); renderSeedPicker();
+}
+function renderHUD(){
+  var u = S.user || {};
+  $('hud-coins').textContent = '🪙 ' + fmt(u.coins);
+  $('hud-level').textContent = 'Level ' + (u.level || 1);
+  $('hud-xp').textContent = 'XP ' + fmt(u.xp || 0);
+  $('hud-energy').textContent = '⚡ ' + (u.energy != null ? u.energy : '—') + '/' + (u.energy_max || 50);
+  $('streak-pill').textContent = '🔥 Streak: ' + (u.login_streak || 0) + ' hari';
+  $('ad-status').textContent = 'Iklan hari ini: ' + (u.ad_rewards_today != null ? u.ad_rewards_today : '—') + ' hadiah diklaim';
+}
+function renderWeather(){
+  var w = S.weather, ev = S.event;
+  $('weather-banner').innerHTML = w ? '<div class="banner weather">' + (w.emoji||'☀️') + ' <b>' + (w.label||w.kind||'Cerah') + '</b> — ' + (w.desc||'') + ' <span class="muted">• ganti cuaca: <b class="cd" data-secs="' + (w.ends_in||0) + '">' + fmtSecs(w.ends_in||0) + '</b></span></div>' : '';
+  $('event-banner').innerHTML = ev ? '<div class="banner event">' + (ev.emoji||'🎉') + ' <b>' + (ev.label||ev.id||'Acara Spesial') + '</b> — ' + (ev.desc||'') + ' <span class="muted">• berakhir: <b class="cd" data-secs="' + (ev.ends_in||0) + '">' + fmtSecs(ev.ends_in||0) + '</b></span></div>' : '';
+}
+function plotRemaining(p){
+  if (p.ready) return 0;
+  var total = p.grow_secs || (p.crop ? cropMeta(p.crop).grow : 0);
+  if (p.progress != null) return Math.max(0, total * (1 - Number(p.progress)));
+  var planted = parseTime(p.planted_at);
+  if (planted && total) return Math.max(0, total - (Date.now() - planted)/1000);
+  return total;
+}
+function renderGrid(){
+  var u = S.user || {};
+  var size = u.grid_size || 3;
+  var grid = $('grid'); grid.className = 'grid g' + size;
+  var plots = S.plots || [];
+  if (!plots.length) { grid.innerHTML = '<div class="empty"><div class="big">🌱</div>Belum ada petak. Coba refresh.</div>'; return; }
+  var html = '';
+  plots.forEach(function(p){
+    var idx = p.idx;
+    if (!p.crop) {
+      html += '<div class="plot empty" data-plot="' + idx + '"><span class="emoji">➕</span><span class="nm">Petak ' + (idx+1) + '</span><span class="tm">Ketuk untuk tanam</span></div>';
+      return;
+    }
+    var meta = cropMeta(p.crop);
+    var rem = plotRemaining(p);
+    var prog = p.progress != null ? Number(p.progress) : (p.grow_secs ? 1 - rem/(p.grow_secs||1) : 0);
+    prog = Math.max(0, Math.min(1, prog));
+    var cls = p.ready ? 'ready' : 'growing';
+    var stage = p.ready ? '🧺' : growStage(prog);
+    var pestBadge = p.pest ? '<span class="badge">🐛</span>' : '';
+    var extra = '';
+    if (p.pest) extra = '<span class="tm">🐛 HAMA! Ketuk cepat!</span>';
+    else if (p.ready) extra = '<span class="tm">✅ Siap panen!</span>';
+    else extra = '<span class="tm cd" data-secs="' + Math.round(rem) + '">' + fmtSecs(rem) + '</span>';
+    var flags = [];
+    if (p.watered) flags.push('💧');
+    if (p.fertilized) flags.push('🧪');
+    html += '<div class="plot ' + cls + (p.pest ? ' pest' : '') + '" data-plot="' + idx + '">' + pestBadge +
+      '<span class="emoji">' + stage + ' ' + (meta.emoji||'') + '</span>' +
+      '<span class="nm">' + (p.crop_name || meta.name) + ' ' + flags.join('') + '</span>' +
+      '<div class="pbar"><i style="width:' + Math.round(prog*100) + '%"></i></div>' + extra + '</div>';
+  });
+  grid.innerHTML = html;
+  grid.querySelectorAll('.plot').forEach(function(el){
+    el.addEventListener('click', function(){ onPlotClick(parseInt(el.getAttribute('data-plot'), 10)); });
+  });
+  var total = size * size;
+  $('upgrade-info').textContent = 'Grid saat ini ' + size + '×' + size + ' (' + total + ' petak). Upgrade menambah petak tanam.';
+}
+function onPlotClick(idx){
+  var p = (S.plots || []).find(function(x){ return x.idx === idx; });
+  if (!p) return;
+  if (p.pest) { doAction('pest', {plot: idx}, '🐛 Hama berhasil diusir!'); return; }
+  if (!p.crop) { selectedPlot = idx; selectedCrop = null; $('seed-picker-card').style.display = 'block'; $('seed-plot-no').textContent = idx + 1; renderSeedPicker(); $('seed-picker-card').scrollIntoView({behavior:'smooth', block:'center'}); return; }
+  if (p.ready) {
+    doAction('harvest', {plot: idx}, '🧺 Panen berhasil!').then(function(ok){ if (ok) maybeInterstitial(); });
+    return;
+  }
+  // tanaman tumbuh: siram dulu, kalau sudah disiram tawarkan pupuk
+  if (!p.watered) { doAction('water', {plot: idx}, '💧 Tanaman disiram!'); return; }
+  if (!p.fertilized) {
+    if (confirm('Tanaman sudah disiram. Beri pupuk supaya tumbuh lebih cepat?')) doAction('fertilize', {plot: idx}, '🧪 Pupuk diberikan!');
+    return;
+  }
+  toast('🌿 Tanaman sedang tumbuh — tunggu sebentar ya.');
+}
+function renderSeedPicker(){
+  var row = $('seed-row'); if (!row) return;
+  var seeds = (S && S.seeds) || {};
+  var html = '';
+  Object.keys(CROPS).forEach(function(k){
+    var c = CROPS[k];
+    html += '<div class="seed' + (selectedCrop === k ? ' sel' : '') + '" data-crop="' + k + '"><div class="e">' + c.emoji + '</div><b>' + c.name + '</b><span>' + fmtSecs(c.grow) + '<br>Stok: ' + (seeds[k] || 0) + '</span></div>';
+  });
+  row.innerHTML = html;
+  row.querySelectorAll('.seed').forEach(function(el){
+    el.addEventListener('click', function(){ selectedCrop = el.getAttribute('data-crop'); renderSeedPicker(); });
+  });
+}
+function renderAnimals(){
+  var list = $('animal-list');
+  var animals = S.animals || [];
+  $('feed-count').textContent = (S.user && S.user.feed != null) ? S.user.feed : '—';
+  $('feed-count2').textContent = $('feed-count').textContent;
+  if (!animals.length) { list.innerHTML = '<div class="empty"><div class="big">🐔</div>Belum punya hewan. Beli di bawah yuk!</div>'; }
+  else {
+    list.innerHTML = animals.map(function(a){
+      var meta = ANIMALS[a.kind] || {name:a.kind, emoji:'🐾', produceName:a.produce_name || a.produce || ''};
+      var status = a.ready ? '✅ <b>Siap dikumpulkan!</b>' : (a.fed ? '😋 Sudah diberi pakan' : '🍽️ Lapar — beri pakan dulu!');
+      var cd = a.ready ? '' : '<div class="muted">Hasil (' + (a.produce_name || meta.produceName) + ') dalam: <b class="cd" data-secs="' + (a.produce_in||0) + '">' + fmtSecs(a.produce_in||0) + '</b></div>';
+      return '<div class="animal"><div class="row between"><b>' + (a.emoji || meta.emoji) + ' ' + (a.name || meta.name) + '</b><span class="pill">' + (a.produce_name || meta.produceName || '') + '</span></div>' +
+        '<div style="font-size:13px;margin:6px 0">' + status + '</div>' + cd +
+        '<div class="row" style="margin-top:8px"><button class="btn small" data-feed="' + a.id + '">🌾 Beri Pakan</button>' +
+        '<button class="btn gold small" data-collect="' + a.id + '"' + (a.ready ? '' : ' disabled') + '>🧺 Kumpulkan</button></div></div>';
+    }).join('');
+    list.querySelectorAll('[data-feed]').forEach(function(b){ b.addEventListener('click', function(){ doAction('feed_animal', {animal_id: b.getAttribute('data-feed')}, '🌾 Hewan diberi pakan!'); }); });
+    list.querySelectorAll('[data-collect]').forEach(function(b){ b.addEventListener('click', function(){ doAction('collect_animal', {animal_id: b.getAttribute('data-collect')}, '🧺 Hasil dikumpulkan!'); }); });
+  }
+  var shop = $('animal-shop');
+  shop.innerHTML = Object.keys(ANIMALS).map(function(k){
+    var a = ANIMALS[k];
+    return '<div class="price-row"><div><b>' + a.emoji + ' ' + a.name + '</b><div class="muted">' + a.produceName + ' tiap ' + fmtSecs(a.every) + ' • butuh pakan</div></div>' +
+      '<button class="btn small" data-buy-animal="' + k + '">Beli</button></div>';
+  }).join('') + '<p class="muted">Harga beli hewan mengikuti harga dari backend (tanya bot kalau tombol gagal — cek pesan error).</p>';
+  shop.querySelectorAll('[data-buy-animal]').forEach(function(b){ b.addEventListener('click', function(){ doAction('buy_animal', {kind: b.getAttribute('data-buy-animal')}, '🎉 Hewan baru dibeli!'); }); });
+}
+function renderMarket(){
+  // Toko benih (harga dari market? benih tidak ada di market — tampilkan stok + tombol beli, harga dari backend lewat pesan error/sukses)
+  var seeds = S.seeds || {};
+  $('seed-shop').innerHTML = Object.keys(CROPS).map(function(k){
+    var c = CROPS[k];
+    return '<div class="price-row"><div><b>' + c.emoji + ' Benih ' + c.name + '</b><div class="muted">Stok kamu: ' + (seeds[k] || 0) + ' • tumbuh ' + fmtSecs(c.grow) + '</div></div>' +
+      '<span><button class="btn small" data-buy-seed="' + k + '" data-qty="1">+1</button> <button class="btn gold small" data-buy-seed="' + k + '" data-qty="5">+5</button></span></div>';
+  }).join('');
+  $('seed-shop').querySelectorAll('[data-buy-seed]').forEach(function(b){
+    b.addEventListener('click', function(){ doAction('buy_seed', {crop: b.getAttribute('data-buy-seed'), qty: parseInt(b.getAttribute('data-qty'),10)}, '🌱 Benih dibeli!'); });
+  });
+  $('fert-count').textContent = (S.user && S.user.fertilizer != null) ? S.user.fertilizer : '—';
+  // Pasar NPC
+  var market = S.market || {};
+  var inv = S.inventory || {};
+  var keys = Object.keys(market);
+  if (!keys.length) { $('npc-market').innerHTML = '<div class="empty">Harga pasar belum tersedia.</div>'; }
+  else {
+    $('npc-market').innerHTML = keys.map(function(k){
+      var m = market[k]; var meta = itemMeta(k);
+      var trend = m.trend || 'stabil';
+      var arrow = trend === 'naik' ? '📈' : (trend === 'turun' ? '📉' : '➡️');
+      var cls = trend === 'naik' ? 'trend-up' : (trend === 'turun' ? 'trend-down' : 'trend-stabil');
+      var pct = Math.abs(m.change_pct || 0);
+      var hot = (trend === 'naik' && (m.change_pct||0) >= 15) ? '<div class="hot">🔥 Harga lagi tinggi, jual sekarang!</div>' : '';
+      var barW = Math.min(100, pct * 4);
+      return '<div class="price-row"><div style="flex:1"><b>' + meta.emoji + ' ' + (meta.name) + '</b>' +
+        '<div class="muted">Stok: ' + (inv[k] || 0) + ' • Harga dasar ' + fmt(m.base != null ? m.base : m.price) + '</div>' +
+        '<div class="mini-bar"><i style="width:' + barW + '%"></i></div>' + hot + '</div>' +
+        '<div style="text-align:right"><b>' + fmt(m.price) + ' 🪙</b><br><span class="' + cls + '">' + arrow + ' ' + (trend === 'naik' ? '+' : trend === 'turun' ? '−' : '') + pct + '%</span><br>' +
+        '<button class="btn gold small" data-sell="' + k + '"' + ((inv[k]||0) > 0 ? '' : ' disabled') + '>Jual</button></div></div>';
+    }).join('');
+    $('npc-market').querySelectorAll('[data-sell]').forEach(function(b){
+      b.addEventListener('click', function(){
+        sellItem = b.getAttribute('data-sell');
+        $('sell-item-name').textContent = itemMeta(sellItem).emoji + ' ' + itemMeta(sellItem).name + ' (stok ' + ((S.inventory||{})[sellItem]||0) + ')';
+        $('sell-qty').value = 1; $('sell-qty').max = (S.inventory||{})[sellItem] || 1;
+        $('sell-panel').style.display = 'block';
+        $('sell-panel').scrollIntoView({behavior:'smooth', block:'center'});
+      });
+    });
+  }
+  // P2P
+  var sel = $('p2p-item');
+  var invKeys = Object.keys(inv).filter(function(k){ return (inv[k]||0) > 0; });
+  sel.innerHTML = invKeys.length ? invKeys.map(function(k){ return '<option value="' + k + '">' + itemMeta(k).emoji + ' ' + itemMeta(k).name + ' (stok ' + inv[k] + ')</option>'; }).join('') : '<option value="">— Inventaris kosong —</option>';
+  var listings = S.listings || [];
+  $('p2p-list').innerHTML = listings.length ? listings.map(function(l){
+    var meta = itemMeta(l.item);
+    return '<div class="listing"><div class="row between"><b>' + (meta.emoji||'') + ' ' + (l.item_name || meta.name) + ' × ' + l.qty + '</b><b>' + fmt(l.price_each) + ' 🪙/buah</b></div>' +
+      '<div class="muted">Penjual: ' + (l.seller_name || '—') + ' • Total: ' + fmt(l.total != null ? l.total : (l.price_each||0)*(l.qty||0)) + ' 🪙</div>' +
+      '<button class="btn small" style="margin-top:6px" data-buy-listing="' + l.id + '">🛒 Beli</button></div>';
+  }).join('') : '<div class="empty">Belum ada listing pemain. Jadilah penjual pertama!</div>';
+  $('p2p-list').querySelectorAll('[data-buy-listing]').forEach(function(b){
+    b.addEventListener('click', function(){ doAction('buy_listing', {listing_id: b.getAttribute('data-buy-listing')}, '🛒 Listing dibeli!'); });
+  });
+}
+function renderMissions(){
+  var u = S.user || {};
+  $('streak-text').textContent = u.login_streak || 0;
+  var ms = S.missions || [];
+  $('mission-list').innerHTML = ms.length ? ms.map(function(m){
+    var pct = m.target ? Math.min(100, Math.round((m.progress||0)/m.target*100)) : 0;
+    var btn = m.claimed ? '<button class="btn small" disabled>✅ Sudah diklaim</button>'
+      : m.done ? '<button class="btn gold small" data-claim="' + m.id + '">🎁 Klaim ' + fmt(m.reward||0) + ' 🪙</button>'
+      : '<button class="btn small" disabled>' + (m.progress||0) + '/' + m.target + '</button>';
+    return '<div class="mission"><div class="row between"><b>' + (m.title||m.id) + '</b>' + btn + '</div>' +
+      '<div class="pbar" style="margin-top:6px"><i style="width:' + pct + '%"></i></div>' +
+      '<div class="muted">' + (m.progress||0) + ' / ' + m.target + ' • Hadiah: ' + fmt(m.reward||0) + ' 🪙' + (m.done ? ' • Selesai!' : '') + '</div></div>';
+  }).join('') : '<div class="empty">Belum ada misi hari ini.</div>';
+  $('mission-list').querySelectorAll('[data-claim]').forEach(function(b){
+    b.addEventListener('click', function(){ doAction('claim_mission', {mission_id: b.getAttribute('data-claim')}, '🎉 Hadiah misi diklaim!'); });
+  });
+  var totalPanen = 0;
+  (S.plots||[]).forEach(function(p){ if (p.yield_qty) totalPanen += 0; });
+  $('achievements').innerHTML =
+    '<div>Level Saat Ini<b>Level ' + (u.level||1) + '</b></div>' +
+    '<div>Total XP<b>' + fmt(u.xp||0) + ' XP</b></div>' +
+    '<div>Streak Login<b>🔥 ' + (u.login_streak||0) + ' hari</b></div>' +
+    '<div>Ukuran Kebun<b>' + (u.grid_size||3) + '×' + (u.grid_size||3) + '</b></div>' +
+    '<div>Hewan Dimiliki<b>' + ((S.animals||[]).length) + ' ekor</b></div>' +
+    '<div>Panen Ganda Aktif<b>' + (u.double_next ? '✖️2 Ya' : 'Tidak') + '</b></div>';
+}
+function renderWallet(){
+  var u = S.user || {};
+  var cfg = S.config || {};
+  var coinsPerUnit = cfg.coins_per_unit || 200000;
+  var dogePerUnit = cfg.doge_per_unit || 0.01;
+  $('wallet-coins').textContent = fmt(u.coins||0) + ' 🪙';
+  $('wallet-level').textContent = 'Level ' + (u.level||1) + ' (min 5 untuk WD)';
+  $('wallet-doge').textContent = '≈ ' + (((u.coins||0)/coinsPerUnit)*dogePerUnit).toFixed(4) + ' DOGE';
+  $('wallet-streak').textContent = '🔥 ' + (u.login_streak||0) + ' hari';
+  var wd = S.withdrawals || [];
+  $('wd-history').innerHTML = wd.length ? wd.map(function(w){
+    return '<div class="price-row"><div><b>' + fmt(w.coins) + ' 🪙 → ' + (w.doge != null ? w.doge : '') + ' DOGE</b><div class="muted">' + (w.destination||'') + ' • ' + (w.created_at||'') + '</div></div><span class="pill">' + (w.status||'pending') + '</span></div>';
+  }).join('') : '<div class="empty">Belum ada riwayat withdraw.</div>';
+  updateWdPreview();
+}
+function updateWdPreview(){
+  var cfg = (S && S.config) || {};
+  var coinsPerUnit = cfg.coins_per_unit || 200000;
+  var dogePerUnit = cfg.doge_per_unit || 0.01;
+  var c = parseInt($('wd-coins').value, 10) || 0;
+  $('wd-preview').textContent = '≈ ' + ((c/coinsPerUnit)*dogePerUnit).toFixed(4) + ' DOGE';
+}
+async function loadLeaderboard(){
+  try {
+    var res = await fetch(API_BASE + '/api/leaderboard?limit=20');
+    var data = await res.json();
+    var top = (data && data.top) || [];
+    $('leaderboard').innerHTML = top.length ? top.map(function(t){
+      var medal = t.rank === 1 ? '🥇' : t.rank === 2 ? '🥈' : t.rank === 3 ? '🥉' : ('#' + t.rank);
+      return '<div class="lb-row"><span>' + medal + ' <b>' + (t.name||'—') + '</b></span><span>' + fmt(t.coins) + ' 🪙 • Lv ' + t.level + '</span></div>';
+    }).join('') : '<div class="empty">Belum ada peringkat.</div>';
+  } catch(e){ $('leaderboard').innerHTML = '<div class="empty">Gagal memuat peringkat. Backend belum terhubung?</div>'; }
+}
+
+/* ================= ADGRAM ================= */
+var adController = null;
+function adsReady(){
+  if (typeof ADSGRAM_BLOCK_ID === 'undefined' || ADSGRAM_BLOCK_ID === 'YOUR_ADSGRAM_BLOCK_ID') return false;
+  if (!window.Adsgram) return false;
+  return true;
+}
+try {
+  if (adsReady()) { adController = window.Adsgram.init({blockId: ADSGRAM_BLOCK_ID}); }
+} catch(e){ adController = null; }
+function adNotReadyMsg(){
+  toast('📺 Iklan belum aktif — isi Block ID AdGram dulu', true);
+}
+async function watchRewardedAd(type, plotId){
+  if (!adsReady() || !adController) { adNotReadyMsg(); return; }
+  try {
+    var result = await adController.show();
+    if (result && result.done) {
+      var data = await apiPost('/api/ad-reward', authBody({type: type, plot_id: plotId || null}));
+      if (data && data.state) { S = data.state; saveState(); renderAll(); }
+      toast('🎉 Hadiah iklan masuk! +' + (data && data.reward ? JSON.stringify(data.reward) : '') + ' ✅');
+    } else {
+      toast('Iklan belum selesai — hadiah tidak masuk.', true);
+    }
+  } catch(e){ toast(errText(e.message), true); }
+}
+function maybeInterstitial(){
+  // Interstitial setelah panen besar, max 1x per 10 menit. Gagal = diam saja.
+  try {
+    var now = Date.now();
+    if (now - lastInterstitialAt < 10*60*1000) return;
+    if (!adsReady() || !adController) return;
+    lastInterstitialAt = now;
+    localStorage.setItem('harvestfarm_last_interstitial', String(now));
+    adController.show().catch(function(){});
+  } catch(e){ /* diam saja */ }
+}
+
+/* ================= TABS & EVENTS ================= */
+document.querySelectorAll('nav button').forEach(function(b){
+  b.addEventListener('click', function(){
+    document.querySelectorAll('nav button').forEach(function(x){ x.classList.remove('active'); });
+    b.classList.add('active');
+    var tab = b.getAttribute('data-tab');
+    document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+    $('tab-' + tab).classList.add('active');
+    if (tab === 'peringkat') loadLeaderboard();
+    if (tab === 'pasar') refreshMarket();
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+});
+$('btn-plant').addEventListener('click', function(){
+  if (selectedPlot == null || !selectedCrop) { toast('Pilih benih dulu ya 🌱', true); return; }
+  doAction('plant', {plot: selectedPlot, crop: selectedCrop}, '🌱 ' + cropMeta(selectedCrop).name + ' ditanam!').then(function(ok){
+    if (ok) { $('seed-picker-card').style.display = 'none'; selectedPlot = null; selectedCrop = null; }
+  });
+});
+$('btn-cancel-seed').addEventListener('click', function(){ $('seed-picker-card').style.display = 'none'; selectedPlot = null; selectedCrop = null; });
+$('btn-upgrade').addEventListener('click', function(){ doAction('upgrade_grid', {}, '⬆️ Grid berhasil di-upgrade!'); });
+$('btn-ad-energy').addEventListener('click', function(){ watchRewardedAd('energy'); });
+document.querySelectorAll('[data-ad]').forEach(function(b){
+  b.addEventListener('click', function(){
+    var type = b.getAttribute('data-ad');
+    var plotId = null;
+    if (type === 'speed') {
+      var growing = (S.plots||[]).find(function(p){ return p.crop && !p.ready; });
+      if (!growing) { toast('Tidak ada tanaman yang sedang tumbuh.', true); return; }
+      plotId = growing.idx;
+    }
+    watchRewardedAd(type, plotId);
+  });
+});
+$('btn-buy-feed').addEventListener('click', function(){ doAction('buy_feed', {qty:10}, '🌾 Pakan dibeli!'); });
+$('btn-buy-feed2').addEventListener('click', function(){ doAction('buy_feed', {qty:10}, '🌾 Pakan dibeli!'); });
+$('btn-buy-fert').addEventListener('click', function(){ doAction('buy_fertilizer', {qty:5}, '🧪 Pupuk dibeli!'); });
+$('btn-sell-confirm').addEventListener('click', function(){
+  var qty = parseInt($('sell-qty').value, 10) || 0;
+  if (!sellItem || qty < 1) { toast('Jumlah tidak valid.', true); return; }
+  doAction('sell', {item: sellItem, qty: qty}, '💰 Berhasil dijual!').then(function(ok){ if (ok) $('sell-panel').style.display = 'none'; });
+});
+$('btn-sell-cancel').addEventListener('click', function(){ $('sell-panel').style.display = 'none'; });
+$('btn-refresh-market').addEventListener('click', function(){ refreshMarket(); });
+async function refreshMarket(){
+  try {
+    var data = await apiPost('/api/market', authBody());
+    if (data) { if (data.market) S.market = data.market; if (data.listings) S.listings = data.listings; saveState(); renderMarket(); toast('🔄 Harga pasar diperbarui'); }
+  } catch(e){ toast(errText(e.message), true); }
+}
+$('btn-create-listing').addEventListener('click', function(){
+  var item = $('p2p-item').value;
+  var qty = parseInt($('p2p-qty').value, 10) || 0;
+  var price = parseInt($('p2p-price').value, 10) || 0;
+  if (!item) { toast('Inventaris kosong — tidak ada yang bisa dijual.', true); return; }
+  if (qty < 1 || price < 1) { toast('Jumlah dan harga harus diisi.', true); return; }
+  doAction('create_listing', {item: item, qty: qty, price_each: price}, '📢 Jualan dipasang di Pasar Pemain!');
+});
+$('btn-claim-daily').addEventListener('click', function(){ doAction('claim_daily', {}, '🎁 Bonus harian diklaim!'); });
+$('wd-coins').addEventListener('input', updateWdPreview);
+$('btn-withdraw').addEventListener('click', async function(){
+  var coins = parseInt($('wd-coins').value, 10) || 0;
+  var dest = $('wd-dest').value.trim();
+  if (coins < 200000) { toast('Minimal withdraw 200.000 Koin.', true); return; }
+  if (!dest) { toast('Isi email / username FaucetPay dulu.', true); return; }
+  try {
+    var data = await apiPost('/api/withdraw', authBody({coins: coins, destination: dest}));
+    toast('💸 Withdraw diajukan! ' + (data.doge != null ? data.doge + ' DOGE' : '') + ' • Status: ' + (data.status || 'pending'));
+    loadState(false);
+  } catch(e){ toast(errText(e.message), true); }
+});
+$('btn-refresh-lb').addEventListener('click', loadLeaderboard);
+
+/* ================= TIMERS ================= */
+// Countdown 1 detik (tanpa panggil API): hitung mundur dari data-secs
+setInterval(function(){
+  document.querySelectorAll('.cd').forEach(function(el){
+    var s = parseInt(el.getAttribute('data-secs'), 10);
+    if (isNaN(s)) return;
+    if (s > 0) { s -= 1; el.setAttribute('data-secs', String(s)); el.textContent = fmtSecs(s); }
+    else { el.textContent = 'Siap! ✅'; }
+  });
+}, 1000);
+// Sync ke backend tiap 15 detik
+setInterval(function(){ loadState(false); }, 15000);
+
+/* ================= INIT ================= */
+if (S) { renderAll(); setConn(false); }
+loadState(true).then(function(ok){ if (ok) loadLeaderboard(); });
+if (tg && tg.initData === '') {
+  // dibuka di browser biasa: mode demo, user_id acak tersimpan di localStorage
+  console.log('Harvest Farm: mode demo (tanpa initData Telegram), user_id = ' + getUserId());
+}
+</script>
+</body>
+</html>
