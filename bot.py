@@ -62,7 +62,15 @@ WEBAPP_URL = os.environ.get(
 ADSGRAM_BLOCK_ID = os.environ.get("ADSGRAM_BLOCK_ID", "YOUR_ADSGRAM_BLOCK_ID")
 FAUCETPAY_API_KEY = os.environ.get("FAUCETPAY_API_KEY", "")
 WITHDRAW_ADMIN_KEY = os.environ.get("WITHDRAW_ADMIN_KEY", "")
-DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "farm_pay.db")
+# Kunci admin untuk endpoint /api/admin/credit (fallback: WITHDRAW_ADMIN_KEY).
+ADMIN_KEY = os.environ.get("ADMIN_KEY", "")
+# DB_PATH bisa di-override lewat env agar database bertahan di Railway:
+# pasang Volume di /data lalu set DB_PATH=/data/farm_pay.db. Filesystem
+# container Railway itu EPHEMERAL — tanpa Volume, tiap redeploy menghapus
+# database (terbukti 22 Nov 2026: progres pemain hilang setelah redeploy).
+# Tanpa env, tetap memakai file farm_pay.db di folder script (perilaku lokal).
+DB_PATH = os.environ.get("DB_PATH") or os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "farm_pay.db")
 
 # ---------------------------------------------------------------------------
 # CONFIG — ekonomi & aturan (satu tempat)
@@ -2056,6 +2064,100 @@ def _admin_ok(key: str) -> bool:
     return bool(WITHDRAW_ADMIN_KEY) and hmac.compare_digest(key, WITHDRAW_ADMIN_KEY)
 
 
+def _admin_credit_ok(key: str) -> bool:
+    """Kunci endpoint /api/admin/credit: ADMIN_KEY, fallback WITHDRAW_ADMIN_KEY.
+
+    Kalau keduanya kosong -> selalu tolak (tidak ada kunci = tidak ada akses).
+    """
+    admin_key = ADMIN_KEY or WITHDRAW_ADMIN_KEY
+    return bool(admin_key) and hmac.compare_digest(key, admin_key)
+
+
+def _parse_credit_int(body: dict, name: str) -> int | None:
+    """Ambil nilai int dari body; None kalau key tidak ada.
+
+    Melempar ValueError kalau nilainya ada tapi bukan bilangan bulat.
+    """
+    if name not in body or body.get(name) is None:
+        return None
+    try:
+        return int(body.get(name))
+    except (TypeError, ValueError):
+        raise ValueError(name)
+
+
+def admin_credit(body: dict) -> tuple[int, dict]:
+    """Endpoint admin POST /api/admin/credit — restore/set saldo & XP pemain.
+
+    Body: {key, username?, user_id?, set_coins?, set_xp?, add_coins?, add_xp?}
+    set_* = nilai absolut, add_* = ditambahkan ke nilai sekarang.
+    Kembalikan (status_http, payload). Kunci TIDAK PERNAH dikembalikan.
+    """
+    key = str(body.get("key", "") or "")
+    if not _admin_credit_ok(key):
+        return 403, {"error": "forbidden"}
+    try:
+        set_coins = _parse_credit_int(body, "set_coins")
+        set_xp = _parse_credit_int(body, "set_xp")
+        add_coins = _parse_credit_int(body, "add_coins")
+        add_xp = _parse_credit_int(body, "add_xp")
+    except ValueError:
+        return 400, {"error": "invalid_values"}
+    if (set_coins is None and set_xp is None
+            and add_coins is None and add_xp is None):
+        return 400, {"error": "invalid_values"}
+    username = str(body.get("username", "") or "").strip().lstrip("@")
+    user_id = None
+    try:
+        if body.get("user_id") is not None:
+            user_id = int(body.get("user_id"))
+    except (TypeError, ValueError):
+        return 400, {"error": "invalid_values"}
+    conn = db()
+    try:
+        row = None
+        if user_id:
+            row = conn.execute(
+                "SELECT * FROM users WHERE user_id = ?", (user_id,)).fetchone()
+        if row is None and username:
+            row = conn.execute(
+                "SELECT * FROM users WHERE LOWER(username) = LOWER(?)",
+                (username,)).fetchone()
+        if row is None:
+            return 404, {"error": "user_not_found"}
+        uid = int(row["user_id"])
+        new_coins = int(row["coins"])
+        new_xp = int(row["xp"])
+        if set_coins is not None:
+            new_coins = set_coins
+        if set_xp is not None:
+            new_xp = set_xp
+        if add_coins is not None:
+            new_coins += add_coins
+        if add_xp is not None:
+            new_xp += add_xp
+        if new_coins < 0 or new_xp < 0:
+            return 400, {"error": "negative_result"}
+        conn.execute(
+            "UPDATE users SET coins = ?, xp = ? WHERE user_id = ?",
+            (new_coins, new_xp, uid))
+        conn.commit()
+        logger.warning(
+            "admin/credit: user_id=%s username=%s set_coins=%s set_xp=%s "
+            "add_coins=%s add_xp=%s -> coins=%s xp=%s level=%s",
+            uid, row["username"], set_coins, set_xp, add_coins, add_xp,
+            new_coins, new_xp, level_from_xp(new_xp))
+        state = build_state(conn, {"id": uid,
+                                   "username": row["username"],
+                                   "first_name": row["first_name"]})
+        return 200, {"ok": True, "user_id": uid,
+                     "username": row["username"],
+                     "coins": new_coins, "xp": new_xp,
+                     "level": level_from_xp(new_xp), "state": state}
+    finally:
+        conn.close()
+
+
 def list_withdrawals_admin(key: str) -> dict | None:
     if not _admin_ok(key):
         return None
@@ -2299,6 +2401,13 @@ class ApiHandler(BaseHTTPRequestHandler):
                 self._send_json(400, result)
             else:
                 self._send_json(200, result)
+            return
+        if path == "/api/admin/credit":
+            # Endpoint admin (restore/set saldo & XP) — di luar auth Telegram,
+            # dilindungi kunci ADMIN_KEY / WITHDRAW_ADMIN_KEY. Dipasang
+            # SEBELUM auth_user supaya tidak butuh initData.
+            status, result = admin_credit(body)
+            self._send_json(status, result)
             return
         user = auth_user(body)
         if not user:
