@@ -47,7 +47,7 @@ import time
 import urllib.parse
 import urllib.request
 import urllib.error
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, WebAppInfo
@@ -204,6 +204,12 @@ except ValueError:
     REQUIRED_CHANNEL_ID = -1004395345796
 REQUIRED_CHANNEL_LINK = os.environ.get(
     "REQUIRED_CHANNEL_LINK", "https://t.me/flashminer_game")
+# Admin game (Shanks) — satu-satunya yang boleh memakai /dailycode.
+ADMIN_USER_ID = int(os.environ.get("ADMIN_USER_ID", "5361673223") or 5361673223)
+# Kode Harian — default hadiah & batas (bisa diubah per kode via /dailycode).
+DAILY_CODE_DEFAULT_COINS = 500
+DAILY_CODE_DEFAULT_GEMS = 1
+DAILY_CODE_DEFAULT_MAX_USES = 100
 
 MAX_LEVEL = 100
 SKILL_MAX = 5                 # maks level per cabang skill
@@ -544,6 +550,27 @@ def db() -> sqlite3.Connection:
         "  telegram_payment_charge_id TEXT,"
         "  created_at INTEGER NOT NULL DEFAULT 0,"
         "  paid_at INTEGER)"
+    )
+    # --- Kode Harian: kode dibagikan lewat channel, diklaim di game ---
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS redeem_codes ("
+        "  code TEXT PRIMARY KEY,"
+        "  coins INTEGER NOT NULL DEFAULT 0,"
+        "  gems INTEGER NOT NULL DEFAULT 0,"
+        "  energy_full INTEGER NOT NULL DEFAULT 0,"
+        "  max_uses INTEGER,"
+        "  uses INTEGER NOT NULL DEFAULT 0,"
+        "  created_by INTEGER NOT NULL DEFAULT 0,"
+        "  created_at INTEGER NOT NULL DEFAULT 0,"
+        "  expires_at INTEGER NOT NULL DEFAULT 0,"
+        "  active INTEGER NOT NULL DEFAULT 1)"
+    )
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS redeem_claims ("
+        "  code TEXT NOT NULL,"
+        "  user_id INTEGER NOT NULL,"
+        "  claimed_at INTEGER NOT NULL DEFAULT 0,"
+        "  PRIMARY KEY (code, user_id))"
     )
     # --- v2: migrasi kolom users (idempotent, DB v1 tetap jalan) ---
     existing = {r[1] for r in conn.execute("PRAGMA table_info(users)")}
@@ -2236,6 +2263,171 @@ def credit_star_order(conn: sqlite3.Connection, payload: str,
         raise
 
 
+# ---------------------------------------------------------------------------
+# Kode Harian — kode dibagikan HANYA lewat channel, diklaim di game.
+# Tujuannya: pemain harus buka channel setiap hari -> channel aktif dan
+# berpotensi monetisasi (affiliate/iklan butuh audiens yang kembali).
+# ---------------------------------------------------------------------------
+WIB = timezone(timedelta(hours=7))
+# Karakter kode tanpa yang ambigu (tanpa 0/O, 1/I).
+_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+
+
+def _wib_day_bounds(ts: int | None = None) -> tuple[int, int]:
+    """(awal_hari_WIB, akhir_hari_WIB 23:59:59) sebagai epoch, untuk ts WIB."""
+    now = datetime.fromtimestamp(ts if ts is not None else now_ts(), WIB)
+    start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    end = now.replace(hour=23, minute=59, second=59, microsecond=0)
+    return int(start.timestamp()), int(end.timestamp())
+
+
+def _gen_daily_code(conn: sqlite3.Connection) -> str:
+    """Kode unik format PANEN-XXXX (4 karakter acak, tanpa huruf ambigu)."""
+    for _ in range(50):
+        code = "PANEN-" + "".join(
+            secrets.choice(_CODE_ALPHABET) for _ in range(4))
+        if not conn.execute(
+                "SELECT 1 FROM redeem_codes WHERE code = ?",
+                (code,)).fetchone():
+            return code
+    raise RuntimeError("gagal membuat kode unik")
+
+
+def create_daily_code(conn: sqlite3.Connection, admin_id: int,
+                      coins: int = DAILY_CODE_DEFAULT_COINS,
+                      gems: int = DAILY_CODE_DEFAULT_GEMS,
+                      max_uses: int = DAILY_CODE_DEFAULT_MAX_USES,
+                      energy_full: int = 0) -> dict:
+    """Buat kode harian baru; nonaktifkan kode aktif lain supaya hanya ada
+    satu kode harian yang berlaku. Berlaku sampai 23:59 WIB hari ini."""
+    _, day_end = _wib_day_bounds()
+    conn.execute("UPDATE redeem_codes SET active = 0 WHERE active = 1")
+    code = _gen_daily_code(conn)
+    now = now_ts()
+    conn.execute(
+        "INSERT INTO redeem_codes (code, coins, gems, energy_full,"
+        " max_uses, uses, created_by, created_at, expires_at, active)"
+        " VALUES (?, ?, ?, ?, ?, 0, ?, ?, ?, 1)",
+        (code, coins, gems, energy_full, max_uses, admin_id, now, day_end))
+    conn.commit()
+    return {"code": code, "coins": coins, "gems": gems,
+            "energy_full": energy_full, "max_uses": max_uses,
+            "expires_at": day_end}
+
+
+def todays_active_code(conn: sqlite3.Connection) -> dict | None:
+    """Kode harian aktif yang dibuat hari ini (WIB), atau None."""
+    day_start, _ = _wib_day_bounds()
+    row = conn.execute(
+        "SELECT code, coins, gems, energy_full, max_uses, uses,"
+        " expires_at FROM redeem_codes"
+        " WHERE active = 1 AND created_at >= ?"
+        " ORDER BY created_at DESC LIMIT 1",
+        (day_start,)).fetchone()
+    return dict(row) if row else None
+
+
+def daily_code_post_text(code: dict) -> str:
+    """Teks siap copy-paste untuk diposting admin ke channel (Markdown)."""
+    reward = f"+{code['coins']:,} Koin 🪙".replace(",", ".")
+    if code["gems"]:
+        reward += f" + {code['gems']} 💎 Permata Panen"
+    if code["energy_full"]:
+        reward += " + ⚡ Energi Penuh"
+    exp = datetime.fromtimestamp(code["expires_at"], WIB).strftime("%d %b %Y")
+    max_uses = code["max_uses"]
+    limit = (f"Maks. {max_uses} pemain" if max_uses
+             else "Tanpa batas pemain")
+    return (
+        "🎁 *Kode Harian Harvest Farm!*\n\n"
+        f"Kode hari ini:\n`{code['code']}`\n\n"
+        f"🎁 Hadiah: {reward}\n"
+        "📍 Cara klaim: buka game → tab 👛 *Dompet* → 🎁 *Kode Harian*"
+        " → masukkan kode → Klaim\n"
+        f"⏰ Berlaku: hari ini ({exp}) sampai 23:59 WIB\n"
+        f"👥 {limit} • 1x klaim per pemain\n\n"
+        "Ayo klaim sebelum habis! 🌾"
+    )
+
+
+def redeem_code(conn: sqlite3.Connection, user: dict, body: dict) -> dict:
+    """Klaim kode harian. Kembalikan reward + state baru, atau error."""
+    uid = int(user["id"])
+    row = get_or_create_user(conn, user)
+    if row["flagged"]:
+        return {"error": "account_flagged"}
+    # Wajib join channel — konsisten dengan /api/action & endpoint lain
+    # yang mengubah state: dicek SEBELUM validasi kode supaya pemain yang
+    # belum join selalu mendapat pesan yang jelas.
+    if not check_channel_member(uid):
+        return {"error": "need_join_channel",
+                "channel_link": REQUIRED_CHANNEL_LINK}
+    code = str(body.get("code", "") or "").strip().upper()
+    if not code:
+        return {"error": "invalid_code"}
+    now = now_ts()
+    entry = conn.execute(
+        "SELECT * FROM redeem_codes WHERE code = ?", (code,)).fetchone()
+    if not entry or not entry["active"]:
+        return {"error": "invalid_code"}
+    if entry["expires_at"] and now > int(entry["expires_at"]):
+        return {"error": "code_expired"}
+    if (entry["max_uses"] is not None
+            and int(entry["uses"]) >= int(entry["max_uses"])):
+        return {"error": "code_fully_claimed"}
+    if conn.execute(
+            "SELECT 1 FROM redeem_claims WHERE code = ? AND user_id = ?",
+            (code, uid)).fetchone():
+        return {"error": "already_claimed"}
+    # Transaksi: cek ulang batas klaim di dalam BEGIN IMMEDIATE supaya dua
+    # pemain yang klaim bersamaan tidak melebihi max_uses.
+    conn.execute("BEGIN IMMEDIATE")
+    try:
+        entry = conn.execute(
+            "SELECT * FROM redeem_codes WHERE code = ?",
+            (code,)).fetchone()
+        if (entry["max_uses"] is not None
+                and int(entry["uses"]) >= int(entry["max_uses"])):
+            conn.rollback()
+            return {"error": "code_fully_claimed"}
+        if conn.execute(
+                "SELECT 1 FROM redeem_claims WHERE code = ? AND user_id = ?",
+                (code, uid)).fetchone():
+            conn.rollback()
+            return {"error": "already_claimed"}
+        coins, gems = int(entry["coins"]), int(entry["gems"])
+        if coins:
+            conn.execute("UPDATE users SET coins = coins + ?"
+                         " WHERE user_id = ?", (coins, uid))
+        if gems:
+            conn.execute("UPDATE users SET gems = gems + ?"
+                         " WHERE user_id = ?", (gems, uid))
+        if entry["energy_full"]:
+            # Energi langsung penuh — tanpa regen dulu (pola sama seperti
+            # kredit produk Stars "Energi Penuh").
+            conn.execute(
+                "UPDATE users SET energy = ?, energy_at = ?"
+                " WHERE user_id = ?", (ENERGY_MAX, now, uid))
+        conn.execute(
+            "INSERT INTO redeem_claims (code, user_id, claimed_at)"
+            " VALUES (?, ?, ?)", (code, uid, now))
+        conn.execute("UPDATE redeem_codes SET uses = uses + 1"
+                     " WHERE code = ?", (code,))
+        conn.commit()
+    except Exception:
+        try:
+            conn.rollback()
+        except sqlite3.Error:
+            pass
+        raise
+    logger.info("Kode harian %s diklaim user %s (+%s koin, +%s gems)",
+                code, uid, coins, gems)
+    return {"ok": True,
+            "reward": {"code": code, "coins": coins, "gems": gems,
+                       "energy_full": bool(entry["energy_full"])},
+            "state": build_state(conn, user)}
+
+
 def request_withdrawal(conn: sqlite3.Connection, user: dict,
                        body: dict) -> dict:
     uid = int(user["id"])
@@ -2644,7 +2836,7 @@ class ApiHandler(BaseHTTPRequestHandler):
             # di dalam do_action sendiri). Endpoint baca saja (state,
             # market, leaderboard, referral) tetap jalan.
             if path in ("/api/withdraw", "/api/ad-reward",
-                        "/api/stars/invoice"):
+                        "/api/stars/invoice", "/api/redeem"):
                 if not check_channel_member(int(user["id"])):
                     self._send_json(403, {"error": "need_join_channel",
                                           "channel_link":
@@ -2682,6 +2874,9 @@ class ApiHandler(BaseHTTPRequestHandler):
                 self._send_json(200, {"ok": True,
                                       "referral": referral_info(
                                           conn, int(user["id"]))})
+            elif path == "/api/redeem":  # Kode Harian
+                result = redeem_code(conn, user, body)
+                self._send_json(400 if "error" in result else 200, result)
             elif path == "/api/leaderboard":
                 self._send_json(200, top_players(
                     int(body.get("limit", 20) or 20)))
@@ -3113,6 +3308,72 @@ async def saldo_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         parse_mode="Markdown")
 
 
+async def dailycode_cmd(update: Update,
+                        context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Buat Kode Harian — HANYA admin (Shanks).
+
+    /dailycode              -> buat kode hari ini (500 Koin + 1 💎,
+                               maks 100 klaim, s.d. 23:59 WIB); bila sudah
+                               ada kode hari ini, tampilkan kode itu lagi.
+    /dailycode <koin> <gems> -> kode baru dengan hadiah kustom.
+    /dailycode baru [koin] [gems] -> paksa buat kode baru.
+    Balasan = teks siap copy-paste ke channel. Bot TIDAK auto-post ke
+    channel (pengiriman pesan butuh persetujuan Shanks per pesan).
+    """
+    user = update.effective_user
+    if user.id != ADMIN_USER_ID:
+        await update.message.reply_text(
+            "Perintah ini hanya untuk admin game. 🙏\n"
+            "Kode harian dibagikan lewat channel resmi 🌾 Harvest Farm —"
+            " gabung channelnya dulu ya, lalu klaim di dalam game.")
+        return
+    args = [str(a) for a in (context.args or [])]
+    force = False
+    if args and args[0].lower() == "baru":
+        force = True
+        args = args[1:]
+    coins, gems = DAILY_CODE_DEFAULT_COINS, DAILY_CODE_DEFAULT_GEMS
+    if args:
+        try:
+            coins = int(args[0])
+            gems = int(args[1]) if len(args) > 1 else 0
+        except (TypeError, ValueError):
+            await update.message.reply_text(
+                "Format: `/dailycode [koin] [gems]`\n"
+                "Contoh: `/dailycode 1000 2` — atau `/dailycode` saja"
+                " untuk hadiah default (500 Koin + 1 💎).\n"
+                "Paksa kode baru: `/dailycode baru [koin] [gems]`.",
+                parse_mode="Markdown")
+            return
+        if (coins < 0 or gems < 0 or coins > 100_000 or gems > 100
+                or (coins == 0 and gems == 0)):
+            await update.message.reply_text(
+                "Hadiah tidak valid: koin 0–100.000, gems 0–100,"
+                " dan minimal salah satu harus > 0.",
+                parse_mode="Markdown")
+            return
+    conn = db()
+    try:
+        existing = todays_active_code(conn)
+        if existing and not force and not args:
+            # Sudah ada kode hari ini — jangan buat duplikat tanpa sengaja.
+            await update.message.reply_text(
+                "Kode hari ini sudah ada — pakai kode ini saja:\n\n"
+                + daily_code_post_text(existing)
+                + "\n\nMau ganti? Ketik `/dailycode baru` untuk membuat"
+                " kode baru (kode lama jadi tidak aktif).",
+                parse_mode="Markdown")
+            return
+        code = create_daily_code(conn, user.id, coins=coins, gems=gems)
+    finally:
+        conn.close()
+    await update.message.reply_text(
+        "✅ Kode harian baru dibuat! Salin teks di bawah dan posting"
+        " ke channel 🌾 Harvest Farm:\n\n"
+        + daily_code_post_text(code),
+        parse_mode="Markdown")
+
+
 async def howto_callback(update: Update,
                          context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
@@ -3206,6 +3467,7 @@ def main() -> None:
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_cmd))
     app.add_handler(CommandHandler("saldo", saldo_cmd))
+    app.add_handler(CommandHandler("dailycode", dailycode_cmd))
     app.add_handler(CallbackQueryHandler(howto_callback, pattern="^howto$"))
     # Toko Stars: jawab pre-checkout + kredit saat pembayaran berhasil.
     app.add_handler(PreCheckoutQueryHandler(stars_pre_checkout))
