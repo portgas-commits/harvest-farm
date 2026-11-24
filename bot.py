@@ -3248,7 +3248,24 @@ def main_keyboard(lang: str = "id") -> InlineKeyboardMarkup:
     ])
 
 
+def _log_cmd(cmd: str, update: Update) -> None:
+    """Satu baris log diagnostik per perintah masuk (tanpa token/secret)."""
+    user = getattr(update, "effective_user", None)
+    chat = getattr(update, "effective_chat", None)
+    logger.info("CMD %s from user=%s chat=%s username=%s", cmd,
+                getattr(user, "id", None), getattr(chat, "id", None),
+                getattr(user, "username", None))
+
+
+def _log_sent(cmd: str, update: Update) -> None:
+    """Satu baris log bahwa balasan sudah terkirim."""
+    chat = getattr(update, "effective_chat", None)
+    logger.info("REPLY %s sent to chat=%s", cmd,
+                getattr(chat, "id", None))
+
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    _log_cmd("/start", update)
     user = update.effective_user
     lang = norm_lang(getattr(user, "language_code", None))
     # v3: referral — /start ref_<telegram_user_id>
@@ -3277,14 +3294,18 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         text += "\n\n" + bot_text("ref_self", lang)
     await update.message.reply_text(text, reply_markup=main_keyboard(lang),
                                     parse_mode="Markdown")
+    _log_sent("/start", update)
 
 
 async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    _log_cmd("/help", update)
     lang = norm_lang(getattr(update.effective_user, "language_code", None))
     await update.message.reply_text(bot_text("help", lang))
+    _log_sent("/help", update)
 
 
 async def saldo_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    _log_cmd("/saldo", update)
     lang = norm_lang(getattr(update.effective_user, "language_code", None))
     conn = db()
     try:
@@ -3296,6 +3317,7 @@ async def saldo_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         conn.close()
     if not row:
         await update.message.reply_text(bot_text("saldo_none", lang))
+        _log_sent("/saldo (no-account)", update)
         return
     level = level_from_xp(row["xp"])
     await update.message.reply_text(
@@ -3306,6 +3328,7 @@ async def saldo_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                  streak=row["login_streak"], unit=COINS_PER_UNIT,
                  doge=DOGE_PER_UNIT, minlevel=WITHDRAW_MIN_LEVEL),
         parse_mode="Markdown")
+    _log_sent("/saldo", update)
 
 
 async def dailycode_cmd(update: Update,
@@ -3321,7 +3344,10 @@ async def dailycode_cmd(update: Update,
     channel (pengiriman pesan butuh persetujuan Shanks per pesan).
     """
     user = update.effective_user
+    _log_cmd("/dailycode", update)
     if user.id != ADMIN_USER_ID:
+        logger.info("CMD /dailycode rejected non-admin user=%s chat=%s",
+                    user.id, getattr(update.effective_chat, "id", None))
         await update.message.reply_text(
             "Perintah ini hanya untuk admin game. 🙏\n"
             "Kode harian dibagikan lewat channel resmi 🌾 Harvest Farm —"
@@ -3372,16 +3398,19 @@ async def dailycode_cmd(update: Update,
         " ke channel 🌾 Harvest Farm:\n\n"
         + daily_code_post_text(code),
         parse_mode="Markdown")
+    _log_sent("/dailycode (code-created)", update)
 
 
 async def howto_callback(update: Update,
                          context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
+    _log_cmd("callback/howto", update)
     lang = norm_lang(getattr(update.effective_user, "language_code", None))
     await query.answer()
     await query.edit_message_text(
         bot_text("howto", lang),
         reply_markup=main_keyboard(lang), parse_mode="Markdown")
+    _log_sent("callback/howto", update)
 
 
 async def stars_pre_checkout(update: Update,
@@ -3389,6 +3418,8 @@ async def stars_pre_checkout(update: Update,
     """Jawab pre-checkout query: OK hanya bila payload ada di star_orders."""
     query = update.pre_checkout_query
     payload = query.invoice_payload or ""
+    logger.info("STARS pre-checkout from user=%s payload=%s",
+                getattr(update.effective_user, "id", None), payload)
     conn = db()
     try:
         row = conn.execute(
@@ -3410,6 +3441,9 @@ async def stars_successful_payment(update: Update,
     """Kredit item setelah pembayaran Stars berhasil (idempotent)."""
     payment = update.message.successful_payment
     payload = payment.invoice_payload or ""
+    logger.info("STARS payment from user=%s payload=%s amount=%s %s",
+                getattr(update.effective_user, "id", None), payload,
+                payment.total_amount, payment.currency)
     if payment.currency != STAR_CURRENCY:
         logger.warning("Stars: mata uang pembayaran bukan XTR: %s",
                        payment.currency)
@@ -3447,6 +3481,7 @@ async def stars_successful_payment(update: Update,
         text = ("✅ Pembayaran ini sudah diproses sebelumnya — "
                 "item sudah ada di akunmu. 🌾")
     await update.message.reply_text(text, parse_mode="Markdown")
+    _log_sent("stars/successful-payment", update)
 
 
 def main() -> None:
