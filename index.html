@@ -46,6 +46,9 @@
   .grid.g4{grid-template-columns:repeat(4,1fr)}
   .grid.g5{grid-template-columns:repeat(5,1fr)}
   .plot{aspect-ratio:1/1.15;border-radius:14px;border:2px solid #a1887f;background:linear-gradient(180deg,#8d6e63,#795548);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;padding:4px;text-align:center;position:relative;overflow:hidden}
+/* Catatan responsif: animasi `grow` tak berujung di .plot .emoji DIHAPUS —
+   animasi di semua petak sekaligus memberatkan HP spek rendah. Yang
+   tersisa hanya `pulse` di .plot.ready (petak siap panen). */
   .plot .emoji{font-size:30px;line-height:1}
   .plot .nm{font-size:10px;font-weight:700}
   .plot .tm{font-size:10px;opacity:.95}
@@ -54,8 +57,6 @@
   .plot.ready{background:linear-gradient(180deg,#ffd54f,#ffb300);color:#3e2700;animation:pulse 1.2s infinite}
   .plot.pest{outline:3px solid var(--red)}
   @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
-  @keyframes grow{0%{transform:translateY(4px) scale(.9)}50%{transform:translateY(-2px) scale(1.05)}100%{transform:translateY(0) scale(1)}}
-  .plot .emoji{animation:grow 2s ease-in-out infinite}
   .pbar{width:90%;height:6px;background:rgba(0,0,0,.25);border-radius:99px;overflow:hidden}
   .pbar i{display:block;height:100%;background:#fff;border-radius:99px}
   .plot.ready .pbar i{background:#2e7d32}
@@ -404,6 +405,11 @@
       <button class="btn blue block" id="btn-convert-gems" data-i18n="convert_btn">💱 Tukar Permata</button>
     </div>
     <div class="card">
+      <h2 data-i18n="stars_t">⭐ Toko Stars</h2>
+      <p class="muted" data-i18n="stars_desc">Beli Permata Panen &amp; bonus dengan Telegram Stars. Item langsung masuk setelah pembayaran berhasil.</p>
+      <div id="stars-list"><div class="empty" data-i18n="stars_loading">Memuat produk…</div></div>
+    </div>
+    <div class="card">
       <h2 data-i18n="wd_t">💸 Tarik DOGE</h2>
       <label data-i18n="wd_coins_l">Jumlah Koin (min 200.000)</label>
       <input type="number" id="wd-coins" min="200000" step="1000" value="200000" inputmode="numeric">
@@ -602,6 +608,7 @@ convert_t:'💎 Tukar Permata → Koin',convert_l:'Jumlah Permata (maks 50/hari)
 wd_t:'💸 Tarik DOGE',wd_coins_l:'Jumlah Koin (min 200.000)',wd_dest_l:'Email / Username FaucetPay',
 wd_btn:'💸 Ajukan Withdraw',wd_hist_t:'📜 Riwayat Withdraw',no_wd:'Belum ada riwayat withdraw.',
 wd_dest_ph:'contoh: kamu@email.com',convert_preview:'≈ {n} Koin',wd_preview:'≈ {n} DOGE',
+stars_t:'⭐ Toko Stars',stars_desc:'Beli Permata Panen & bonus dengan Telegram Stars. Item langsung masuk setelah pembayaran berhasil.',stars_loading:'Memuat produk…',stars_paid:'Pembayaran berhasil! 🎉 Item sudah masuk.',stars_failed:'Pembayaran gagal. Coba lagi ya.',stars_cancelled:'Pembayaran dibatalkan.',stars_err:'Tidak bisa membuat pembayaran. Coba lagi.',stars_no_tg:'Buka game dari Telegram untuk membeli dengan Stars.',
 ref_t:'🎁 Referral — Ajak Teman',
 ref_desc:'Bagikan link referral kamu. Teman yang masuk lewat linkmu dapat <b>+200 Koin</b> — dan saat dia mencapai <b>Level 3</b>, kamu dapat <b>+500 Koin + 2 💎 Permata Panen</b>!',
 ref_link_l:'Link referral kamu',btn_copy:'📋 Salin',btn_share:'✈️ Bagikan ke Telegram',
@@ -742,6 +749,7 @@ convert_t:'💎 Exchange Gems → Coins',convert_l:'Amount of Gems (max 50/day)'
 wd_t:'💸 Withdraw DOGE',wd_coins_l:'Amount of Coins (min 200,000)',wd_dest_l:'FaucetPay Email / Username',
 wd_btn:'💸 Request Withdrawal',wd_hist_t:'📜 Withdrawal History',no_wd:'No withdrawal history yet.',
 wd_dest_ph:'e.g. you@email.com',convert_preview:'≈ {n} Coins',wd_preview:'≈ {n} DOGE',
+stars_t:'⭐ Stars Shop',stars_desc:'Buy Harvest Gems & bonuses with Telegram Stars. Items are credited right after a successful payment.',stars_loading:'Loading products…',stars_paid:'Payment successful! 🎉 Your items have been credited.',stars_failed:'Payment failed. Please try again.',stars_cancelled:'Payment cancelled.',stars_err:'Could not start the payment. Please try again.',stars_no_tg:'Open the game from Telegram to buy with Stars.',
 ref_t:'🎁 Referral — Invite Friends',
 ref_desc:'Share your referral link. Friends who join through it get <b>+200 Coins</b> — and when they reach <b>Level 3</b>, you get <b>+500 Coins + 2 💎 Harvest Gems</b>!',
 ref_link_l:'Your referral link',btn_copy:'📋 Copy',btn_share:'✈️ Share on Telegram',
@@ -1370,10 +1378,18 @@ function eventDesc(e){ return (e && _loc(EVENT_T, e.id, 'desc')) || (e && e.desc
 /* ================= STATE & AUTH ================= */
 var tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
 if (tg) { try { tg.ready(); tg.expand(); } catch(e){} }
+var _demoId = null; // id demo stabil selama sesi (bila localStorage mati)
 function getUserId(){
-  var id = localStorage.getItem('harvestfarm_user_id');
-  if (!id) { id = 'demo-' + Math.random().toString(36).slice(2,10); localStorage.setItem('harvestfarm_user_id', id); }
-  return id;
+  try {
+    var id = localStorage.getItem('harvestfarm_user_id');
+    if (!id) { id = 'demo-' + Math.random().toString(36).slice(2,10); localStorage.setItem('harvestfarm_user_id', id); }
+    return id;
+  } catch(e){
+    // localStorage bisa melempar di WebView tertentu / mode privat:
+    // jangan biarkan auth gagal total, pakai id sesi saja.
+    if (!_demoId) _demoId = 'demo-' + Math.random().toString(36).slice(2,10);
+    return _demoId;
+  }
 }
 function authBody(extra){
   var b = { initData: (tg && tg.initData) ? tg.initData : '', user_id: getUserId() };
@@ -1381,6 +1397,10 @@ function authBody(extra){
   return b;
 }
 var S = null; // state terakhir dari backend
+var lastInteractAt = 0; // terakhir pemain mengetuk/mengetik (untuk sync ringan)
+['pointerdown','keydown','touchstart'].forEach(function(ev){
+  document.addEventListener(ev, function(){ lastInteractAt = Date.now(); }, {passive:true});
+});
 var selectedPlot = null, selectedCrop = null, sellItem = null, lastInterstitialAt = 0;
 try { lastInterstitialAt = parseInt(localStorage.getItem('harvestfarm_last_interstitial') || '0', 10) || 0; } catch(e){}
 try { var cached = localStorage.getItem('harvestfarm_state'); if (cached) S = JSON.parse(cached); } catch(e){ S = null; }
@@ -1452,13 +1472,33 @@ async function loadState(showLoading){
   }
   return false;
 }
-async function doAction(action, params, okMsg){
+/* Sync ringan (tanpa render ulang penuh): cukup ambil state lalu update
+   HUD saja. Dipakai interval 15 detik saat pemain sedang berinteraksi,
+   supaya ketukan/scroll tidak hilang karena DOM dibangun ulang. */
+var pendingActions = {}; // kunci aksi yang sedang berjalan (anti ketuk ganda)
+async function loadStateLight(){
+  try {
+    var data = await apiPost('/api/state', authBody());
+    if (data && data.state) {
+      S = data.state; saveState();
+      try { renderHUD(); } catch(renderErr){ console.error('renderHUD gagal:', renderErr); }
+    }
+  } catch(e){ /* diam saja — sync berikutnya mencoba lagi */ }
+}
+async function doAction(action, params, okMsg, btn){
+  var key = action + '|' + JSON.stringify(params || {});
+  if (pendingActions[key]) return false; // abaikan ketuk ganda
+  // Tombol yang diklik: dari argumen, atau tombol yang sedang fokus.
+  var btnEl = btn || (document.activeElement && document.activeElement.tagName === 'BUTTON' ? document.activeElement : null);
+  pendingActions[key] = true;
+  if (btnEl) btnEl.disabled = true;
   try {
     var data = await apiPost('/api/action', authBody(Object.assign({action:action}, params || {})));
     if (data && data.state) { S = data.state; saveState(); renderAll(); }
     toast(okMsg || (data && data.message) || t('success_default'));
     return true;
   } catch(e){ toast(errText(e.message), true); return false; }
+  finally { delete pendingActions[key]; if (btnEl) btnEl.disabled = false; }
 }
 function setConn(ok){
   var el = $('conn-banner');
@@ -1538,24 +1578,24 @@ function renderGrid(){
   });
   grid.innerHTML = html;
   grid.querySelectorAll('.plot').forEach(function(el){
-    el.addEventListener('click', function(){ onPlotClick(parseInt(el.getAttribute('data-plot'), 10)); });
+    el.addEventListener('click', function(){ onPlotClick(parseInt(el.getAttribute('data-plot'), 10), el); });
   });
   var total = size * size;
   $('upgrade-info').textContent = t('upgrade_info', {size: size, total: total});
 }
-function onPlotClick(idx){
+function onPlotClick(idx, el){
   var p = (S.plots || []).find(function(x){ return x.idx === idx; });
   if (!p) return;
-  if (p.pest) { doAction('pest', {plot: idx}, t('toast_pest')); return; }
+  if (p.pest) { doAction('pest', {plot: idx}, t('toast_pest'), el); return; }
   if (!p.crop) { selectedPlot = idx; selectedCrop = null; $('seed-picker-card').style.display = 'block'; $('seed-picker-title').textContent = t('seed_pick_t', {n: idx + 1}); renderSeedPicker(); $('seed-picker-card').scrollIntoView({behavior:'smooth', block:'center'}); return; }
   if (p.ready) {
-    doAction('harvest', {plot: idx}, t('toast_harvest')).then(function(ok){ if (ok) maybeInterstitial(); });
+    doAction('harvest', {plot: idx}, t('toast_harvest'), el).then(function(ok){ if (ok) maybeInterstitial(); });
     return;
   }
   // tanaman tumbuh: siram dulu, kalau sudah disiram tawarkan pupuk
-  if (!p.watered) { doAction('water', {plot: idx}, t('toast_water')); return; }
+  if (!p.watered) { doAction('water', {plot: idx}, t('toast_water'), el); return; }
   if (!p.fertilized) {
-    if (confirm(t('confirm_fert'))) doAction('fertilize', {plot: idx}, t('toast_fertilize'));
+    if (confirm(t('confirm_fert'))) doAction('fertilize', {plot: idx}, t('toast_fertilize'), el);
     return;
   }
   toast(t('growing_wait'));
@@ -1589,8 +1629,8 @@ function renderAnimals(){
         '<div class="row" style="margin-top:8px"><button class="btn small" data-feed="' + a.id + '">' + t('feed_btn') + '</button>' +
         '<button class="btn gold small" data-collect="' + a.id + '"' + (a.ready ? '' : ' disabled') + '>' + t('collect_btn') + '</button></div></div>';
     }).join('');
-    list.querySelectorAll('[data-feed]').forEach(function(b){ b.addEventListener('click', function(){ doAction('feed_animal', {animal_id: b.getAttribute('data-feed')}, t('toast_animal_fed')); }); });
-    list.querySelectorAll('[data-collect]').forEach(function(b){ b.addEventListener('click', function(){ doAction('collect_animal', {animal_id: b.getAttribute('data-collect')}, t('toast_animal_collected')); }); });
+    list.querySelectorAll('[data-feed]').forEach(function(b){ b.addEventListener('click', function(){ doAction('feed_animal', {animal_id: b.getAttribute('data-feed')}, t('toast_animal_fed'), b); }); });
+    list.querySelectorAll('[data-collect]').forEach(function(b){ b.addEventListener('click', function(){ doAction('collect_animal', {animal_id: b.getAttribute('data-collect')}, t('toast_animal_collected'), b); }); });
   }
   var shop = $('animal-shop');
   shop.innerHTML = Object.keys(ANIMALS).map(function(k){
@@ -1598,7 +1638,7 @@ function renderAnimals(){
     return '<div class="price-row"><div><b>' + a.emoji + ' ' + a.name + '</b><div class="muted">' + t('animal_every', {name: a.produceName, t: fmtSecs(a.every)}) + '</div></div>' +
       '<button class="btn small" data-buy-animal="' + k + '">' + t('buy_btn') + '</button></div>';
   }).join('') + '<p class="muted">' + t('animal_shop_note') + '</p>';
-  shop.querySelectorAll('[data-buy-animal]').forEach(function(b){ b.addEventListener('click', function(){ doAction('buy_animal', {kind: b.getAttribute('data-buy-animal')}, t('toast_animal_bought')); }); });
+  shop.querySelectorAll('[data-buy-animal]').forEach(function(b){ b.addEventListener('click', function(){ doAction('buy_animal', {kind: b.getAttribute('data-buy-animal')}, t('toast_animal_bought'), b); }); });
 }
 function renderMarket(){
   // Toko benih (harga dari market? benih tidak ada di market — tampilkan stok + tombol beli, harga dari backend lewat pesan error/sukses)
@@ -1609,7 +1649,7 @@ function renderMarket(){
       '<span><button class="btn small" data-buy-seed="' + k + '" data-qty="1">+1</button> <button class="btn gold small" data-buy-seed="' + k + '" data-qty="5">+5</button></span></div>';
   }).join('') + '<p class="muted">' + t('melon_note', {n: (seeds.melon || 0)}) + '</p>';
   $('seed-shop').querySelectorAll('[data-buy-seed]').forEach(function(b){
-    b.addEventListener('click', function(){ doAction('buy_seed', {crop: b.getAttribute('data-buy-seed'), qty: parseInt(b.getAttribute('data-qty'),10)}, t('toast_seed_bought')); });
+    b.addEventListener('click', function(){ doAction('buy_seed', {crop: b.getAttribute('data-buy-seed'), qty: parseInt(b.getAttribute('data-qty'),10)}, t('toast_seed_bought'), b); });
   });
   $('fert-feed-line').innerHTML = t('fert_feed_line', {f: (S.user && S.user.fertilizer != null) ? S.user.fertilizer : '—', p: (S.user && S.user.feed != null) ? S.user.feed : '—'});
   // Pasar NPC
@@ -1654,7 +1694,7 @@ function renderMarket(){
       '<button class="btn small" style="margin-top:6px" data-buy-listing="' + l.id + '">' + t('buy_listing') + '</button></div>';
   }).join('') : '<div class="empty">' + t('no_listings') + '</div>';
   $('p2p-list').querySelectorAll('[data-buy-listing]').forEach(function(b){
-    b.addEventListener('click', function(){ doAction('buy_listing', {listing_id: b.getAttribute('data-buy-listing')}, t('toast_buy_listing')); });
+    b.addEventListener('click', function(){ doAction('buy_listing', {listing_id: b.getAttribute('data-buy-listing')}, t('toast_buy_listing'), b); });
   });
 }
 function renderMissions(){
@@ -1671,7 +1711,7 @@ function renderMissions(){
       '<div class="muted">' + t('mission_progress', {a: (m.progress||0), b: m.target, c: fmt(m.reward||0)}) + (m.done ? t('done_label') : '') + '</div></div>';
   }).join('') : '<div class="empty">' + t('no_missions') + '</div>';
   $('mission-list').querySelectorAll('[data-claim]').forEach(function(b){
-    b.addEventListener('click', function(){ doAction('claim_mission', {mission_id: b.getAttribute('data-claim')}, t('toast_mission')); });
+    b.addEventListener('click', function(){ doAction('claim_mission', {mission_id: b.getAttribute('data-claim')}, t('toast_mission'), b); });
   });
   $('achievements').innerHTML =
     '<div>' + t('stat_level') + '<b>' + t('level_label', {n: (u.level||1)}) + '</b></div>' +
@@ -1707,15 +1747,15 @@ function renderProduction(){
       '<div style="text-align:right">' + btn + (has ? '<br><button class="btn small" style="margin-top:6px" data-start-prod="' + k + '">' + t('start_prod_btn') + '</button>' : '') + '</div></div>';
   }).join('');
   $('building-list').innerHTML = html || '<div class="empty">' + t('no_buildings') + '</div>';
-  $('building-list').querySelectorAll('[data-build]').forEach(function(b){ b.addEventListener('click', function(){ doAction('buy_building', {kind: b.getAttribute('data-build')}, t('toast_building')); }); });
-  $('building-list').querySelectorAll('[data-upgrade-build]').forEach(function(b){ b.addEventListener('click', function(){ doAction('upgrade_building', {kind: b.getAttribute('data-upgrade-build')}, t('toast_building_up')); }); });
-  $('building-list').querySelectorAll('[data-start-prod]').forEach(function(b){ b.addEventListener('click', function(){ doAction('start_production', {kind: b.getAttribute('data-start-prod')}, t('toast_prod_start')); }); });
+  $('building-list').querySelectorAll('[data-build]').forEach(function(b){ b.addEventListener('click', function(){ doAction('buy_building', {kind: b.getAttribute('data-build')}, t('toast_building'), b); }); });
+  $('building-list').querySelectorAll('[data-upgrade-build]').forEach(function(b){ b.addEventListener('click', function(){ doAction('upgrade_building', {kind: b.getAttribute('data-upgrade-build')}, t('toast_building_up'), b); }); });
+  $('building-list').querySelectorAll('[data-start-prod]').forEach(function(b){ b.addEventListener('click', function(){ doAction('start_production', {kind: b.getAttribute('data-start-prod')}, t('toast_prod_start'), b); }); });
   var jobs = S.production_jobs || [];
   $('job-list').innerHTML = jobs.length ? jobs.map(function(j){
     return '<div class="listing"><div class="row between"><b>' + j.building_name + ' → ' + j.qty + 'x ' + j.output_emoji + ' ' + j.output + '</b>' +
       (j.ready ? '<button class="btn gold small" data-collect-job="' + j.id + '">' + t('collect_job_btn') + '</button>' : '<span class="pill cd" data-secs="' + j.ready_in + '">' + fmtSecs(j.ready_in) + '</span>') + '</div></div>';
   }).join('') : '<div class="empty">' + t('no_jobs') + '</div>';
-  $('job-list').querySelectorAll('[data-collect-job]').forEach(function(b){ b.addEventListener('click', function(){ doAction('collect_production', {job_id: b.getAttribute('data-collect-job')}, t('toast_prod_collect')); }); });
+  $('job-list').querySelectorAll('[data-collect-job]').forEach(function(b){ b.addEventListener('click', function(){ doAction('collect_production', {job_id: b.getAttribute('data-collect-job')}, t('toast_prod_collect'), b); }); });
   $('gather-status').textContent = t('gather_status', {
     fish: ((u.fish_cooldown_in || 0) > 0 ? t('wait_for', {t: fmtSecs(u.fish_cooldown_in)}) : t('ready_now')),
     mine: ((u.mine_cooldown_in || 0) > 0 ? t('wait_for', {t: fmtSecs(u.mine_cooldown_in)}) : t('ready_now')),
@@ -1737,15 +1777,15 @@ function renderGuild(){
       '<div class="row"><button class="btn gold small" id="btn-claim-guild" ' + ((g.goal_reached && !g.reward_claimed_this_week) ? '' : 'disabled') + '>' + t('btn_claim_guild', {n: g.reward_gems}) + '</button>' +
       '<button class="btn ghost small" id="btn-leave-guild">' + t('btn_leave') + '</button></div>' +
       (g.goal_reached ? (g.reward_claimed_this_week ? '<p class="muted">' + t('goal_claimed') + '</p>' : '<p class="muted">' + t('goal_reached') + '</p>') : '<p class="muted">' + t('goal_hint') + '</p>');
-    var cb = $('btn-claim-guild'); if (cb) cb.addEventListener('click', function(){ doAction('claim_guild_reward', {}, t('toast_guild_reward')); });
-    var lb = $('btn-leave-guild'); if (lb) lb.addEventListener('click', function(){ if (confirm(t('confirm_leave'))) doAction('leave_guild', {}, t('toast_leave_guild')); });
+    var cb = $('btn-claim-guild'); if (cb) cb.addEventListener('click', function(){ doAction('claim_guild_reward', {}, t('toast_guild_reward'), this); });
+    var lb = $('btn-leave-guild'); if (lb) lb.addEventListener('click', function(){ if (confirm(t('confirm_leave'))) doAction('leave_guild', {}, t('toast_leave_guild'), this); });
   }
   var list = S.guilds || [];
   $('guild-list').innerHTML = list.length ? list.map(function(x){
     return '<div class="price-row"><div><b>🏰 ' + x.name + '</b><div class="muted">' + t('members_label', {n: x.members}) + '</div></div>' +
       '<button class="btn small" data-join-guild="' + x.id + '"' + (g ? ' disabled' : '') + '>' + t('btn_join') + '</button></div>';
   }).join('') : '<div class="empty">' + t('no_guilds') + '</div>';
-  $('guild-list').querySelectorAll('[data-join-guild]').forEach(function(b){ b.addEventListener('click', function(){ doAction('join_guild', {guild_id: b.getAttribute('data-join-guild')}, t('toast_join_guild')); }); });
+  $('guild-list').querySelectorAll('[data-join-guild]').forEach(function(b){ b.addEventListener('click', function(){ doAction('join_guild', {guild_id: b.getAttribute('data-join-guild')}, t('toast_join_guild'), b); }); });
 }
 function renderSeason(){
   var s = S.season; if (!s) return;
@@ -1763,7 +1803,7 @@ function renderSeason(){
       var medal = row.rank === 1 ? '🥇' : row.rank === 2 ? '🥈' : row.rank === 3 ? '🥉' : ('#' + row.rank);
       return '<div class="lb-row"><span>' + medal + ' <b>' + row.name + '</b></span><span>' + fmt(row.season_points) + ' ' + t('points_word') + '</span></div>';
     }).join('') : '<div class="empty">' + t('no_season_top') + '</div>');
-  var b = $('btn-claim-season'); if (b) b.addEventListener('click', function(){ doAction('claim_season_reward', {}, t('toast_season_reward')); });
+  var b = $('btn-claim-season'); if (b) b.addEventListener('click', function(){ doAction('claim_season_reward', {}, t('toast_season_reward'), this); });
 }
 function renderSkills(){
   var u = S.user || {};
@@ -1782,7 +1822,7 @@ function renderSkills(){
     return '<div class="price-row"><div><b>' + b.emoji + ' ' + b.name + ' — ' + t('level_label', {n: lv}) + '/' + b.max + '</b><div class="muted">' + (desc[k] || '') + '</div></div>' +
       '<button class="btn small" data-skill="' + k + '"' + ((u.skill_points || 0) > 0 && lv < b.max ? '' : ' disabled') + '>' + t('skill_up_btn') + '</button></div>';
   }).join('') + '<p class="muted">' + t('skill_points_left', {n: (u.skill_points || 0)}) + '</p>';
-  $('skill-list').querySelectorAll('[data-skill]').forEach(function(b){ b.addEventListener('click', function(){ doAction('learn_skill', {branch: b.getAttribute('data-skill')}, t('toast_skill')); }); });
+  $('skill-list').querySelectorAll('[data-skill]').forEach(function(b){ b.addEventListener('click', function(){ doAction('learn_skill', {branch: b.getAttribute('data-skill')}, t('toast_skill'), b); }); });
 }
 function renderAchievementsV2(){
   var list = S.achievements_v2 || [];
@@ -1793,7 +1833,7 @@ function renderAchievementsV2(){
     return '<div class="mission"><div class="row between"><b>' + achTitle(a) + '</b>' + btn + '</div>' +
       '<div class="muted">' + achDesc(a) + ' • ' + a.progress + '/' + a.target + ' • ' + t('reward_label', {coins: fmt(a.reward_coins), gems: (a.reward_gems ? ' + ' + a.reward_gems + ' 💎' : '')}) + '</div></div>';
   }).join('') : '<div class="empty">' + t('no_ach') + '</div>';
-  $('achievements-v2').querySelectorAll('[data-claim-ach]').forEach(function(b){ b.addEventListener('click', function(){ doAction('claim_achievement', {ach_id: b.getAttribute('data-claim-ach')}, t('toast_ach')); }); });
+  $('achievements-v2').querySelectorAll('[data-claim-ach]').forEach(function(b){ b.addEventListener('click', function(){ doAction('claim_achievement', {ach_id: b.getAttribute('data-claim-ach')}, t('toast_ach'), b); }); });
 }
 
 /* ================= v3: REFERRAL ================= */
@@ -1867,9 +1907,11 @@ async function loadLeaderboard(){
 /* ================= ADGRAM ================= */
 var adController = null;
 function adsReady(){
-  if (typeof ADSGRAM_BLOCK_ID === 'undefined' || ADSGRAM_BLOCK_ID === 'YOUR_ADSGRAM_BLOCK_ID') return false;
-  if (!window.Adsgram) return false;
-  return true;
+  try {
+    if (typeof ADSGRAM_BLOCK_ID === 'undefined' || ADSGRAM_BLOCK_ID === 'YOUR_ADSGRAM_BLOCK_ID') return false;
+    if (!window.Adsgram) return false;
+    return true;
+  } catch(e){ return false; } // SDK iklan gagal dimuat = iklan nonaktif, bukan error game
 }
 try {
   if (adsReady()) { adController = window.Adsgram.init({blockId: ADSGRAM_BLOCK_ID}); }
@@ -1936,12 +1978,12 @@ $('btn-share-ref').addEventListener('click', function(){
 });
 $('btn-plant').addEventListener('click', function(){
   if (selectedPlot == null || !selectedCrop) { toast(t('choose_seed'), true); return; }
-  doAction('plant', {plot: selectedPlot, crop: selectedCrop}, t('toast_planted', {name: cropMeta(selectedCrop).name})).then(function(ok){
+  doAction('plant', {plot: selectedPlot, crop: selectedCrop}, t('toast_planted', {name: cropMeta(selectedCrop).name}), this).then(function(ok){
     if (ok) { $('seed-picker-card').style.display = 'none'; selectedPlot = null; selectedCrop = null; }
   });
 });
 $('btn-cancel-seed').addEventListener('click', function(){ $('seed-picker-card').style.display = 'none'; selectedPlot = null; selectedCrop = null; });
-$('btn-upgrade').addEventListener('click', function(){ doAction('upgrade_grid', {}, t('toast_upgrade')); });
+$('btn-upgrade').addEventListener('click', function(){ doAction('upgrade_grid', {}, t('toast_upgrade'), this); });
 $('btn-ad-energy').addEventListener('click', function(){ watchRewardedAd('energy'); });
 document.querySelectorAll('[data-ad]').forEach(function(b){
   b.addEventListener('click', function(){
@@ -1955,13 +1997,13 @@ document.querySelectorAll('[data-ad]').forEach(function(b){
     watchRewardedAd(type, plotId);
   });
 });
-$('btn-buy-feed').addEventListener('click', function(){ doAction('buy_feed', {qty:10}, t('toast_feed_bought')); });
-$('btn-buy-feed2').addEventListener('click', function(){ doAction('buy_feed', {qty:10}, t('toast_feed_bought')); });
-$('btn-buy-fert').addEventListener('click', function(){ doAction('buy_fertilizer', {qty:5}, t('toast_fert_bought')); });
+$('btn-buy-feed').addEventListener('click', function(){ doAction('buy_feed', {qty:10}, t('toast_feed_bought'), this); });
+$('btn-buy-feed2').addEventListener('click', function(){ doAction('buy_feed', {qty:10}, t('toast_feed_bought'), this); });
+$('btn-buy-fert').addEventListener('click', function(){ doAction('buy_fertilizer', {qty:5}, t('toast_fert_bought'), this); });
 $('btn-sell-confirm').addEventListener('click', function(){
   var qty = parseInt($('sell-qty').value, 10) || 0;
   if (!sellItem || qty < 1) { toast(t('invalid_amount'), true); return; }
-  doAction('sell', {item: sellItem, qty: qty}, t('toast_sold')).then(function(ok){ if (ok) $('sell-panel').style.display = 'none'; });
+  doAction('sell', {item: sellItem, qty: qty}, t('toast_sold'), this).then(function(ok){ if (ok) $('sell-panel').style.display = 'none'; });
 });
 $('btn-sell-cancel').addEventListener('click', function(){ $('sell-panel').style.display = 'none'; });
 $('btn-refresh-market').addEventListener('click', function(){ refreshMarket(); });
@@ -1977,15 +2019,15 @@ $('btn-create-listing').addEventListener('click', function(){
   var price = parseInt($('p2p-price').value, 10) || 0;
   if (!item) { toast(t('empty_p2p'), true); return; }
   if (qty < 1 || price < 1) { toast(t('amount_price_err'), true); return; }
-  doAction('create_listing', {item: item, qty: qty, price_each: price}, t('toast_listing'));
+  doAction('create_listing', {item: item, qty: qty, price_each: price}, t('toast_listing'), this);
 });
-$('btn-claim-daily').addEventListener('click', function(){ doAction('claim_daily', {}, t('toast_daily')); });
-$('btn-fish').addEventListener('click', function(){ doAction('fish', {}, t('toast_fish')); });
-$('btn-mine').addEventListener('click', function(){ doAction('mine', {}, t('toast_mine')); });
+$('btn-claim-daily').addEventListener('click', function(){ doAction('claim_daily', {}, t('toast_daily'), this); });
+$('btn-fish').addEventListener('click', function(){ doAction('fish', {}, t('toast_fish'), this); });
+$('btn-mine').addEventListener('click', function(){ doAction('mine', {}, t('toast_mine'), this); });
 $('btn-create-guild').addEventListener('click', function(){
   var name = $('guild-name').value.trim();
   if (name.length < 3) { toast(t('guild_name_short'), true); return; }
-  doAction('create_guild', {name: name}, t('toast_guild_created'));
+  doAction('create_guild', {name: name}, t('toast_guild_created'), this);
 });
 function updateGemPreview(){
   var n = parseInt($('gem-qty').value, 10) || 0;
@@ -1995,8 +2037,57 @@ $('gem-qty').addEventListener('input', updateGemPreview);
 $('btn-convert-gems').addEventListener('click', function(){
   var n = parseInt($('gem-qty').value, 10) || 0;
   if (n < 1 || n > 50) { toast(t('gems_range'), true); return; }
-  doAction('convert_gems', {gems: n}, t('toast_gems'));
+  doAction('convert_gems', {gems: n}, t('toast_gems'), this);
 });
+/* ================= TOKO STARS ================= */
+// Daftar fallback (harga sama dengan STAR_PRODUCTS di bot.py) — dipakai
+// bila GET /api/stars/products gagal; daftar server selalu diutamakan.
+var STAR_PRODUCTS_FALLBACK = [
+  {id:'gems10', title:'10 Permata Panen', desc:'10 💎 Permata Panen', stars:25},
+  {id:'gems30', title:'30 Permata Panen', desc:'30 💎 Permata Panen', stars:60},
+  {id:'gems100', title:'100 Permata Panen', desc:'100 💎 Permata Panen', stars:150},
+  {id:'starter', title:'Paket Pemula', desc:'5.000 Koin + 5 💎 Permata Panen', stars:50},
+  {id:'energy', title:'Energi Penuh', desc:'Energi penuh (+50)', stars:15},
+];
+var starProducts = STAR_PRODUCTS_FALLBACK.slice();
+async function loadStarsProducts(){
+  try {
+    var res = await fetch(API_BASE + '/api/stars/products');
+    var data = await res.json();
+    if (data && data.products) {
+      starProducts = Object.keys(data.products).map(function(id){
+        var p = data.products[id];
+        return {id: id, title: p.title, desc: p.desc, stars: p.stars};
+      });
+    }
+  } catch(e){ /* pakai daftar fallback di atas */ }
+  renderStars();
+}
+function renderStars(){
+  var el = $('stars-list'); if (!el) return;
+  el.innerHTML = starProducts.map(function(p){
+    return '<div class="price-row"><div><b>' + p.title + '</b><div class="muted">' + p.desc + '</div></div>' +
+      '<button class="btn gold small" data-stars="' + p.id + '">⭐ ' + p.stars + '</button></div>';
+  }).join('');
+  el.querySelectorAll('[data-stars]').forEach(function(b){
+    b.addEventListener('click', function(){ buyStars(b.getAttribute('data-stars'), b); });
+  });
+}
+async function buyStars(productId, btn){
+  if (!tg || !tg.openInvoice) { toast(t('stars_no_tg'), true); return; }
+  if (btn) btn.disabled = true;
+  try {
+    var data = await apiPost('/api/stars/invoice', authBody({product: productId}));
+    if (!data || !data.invoice_link) throw new Error('no_invoice');
+    tg.openInvoice(data.invoice_link, function(status){
+      if (status === 'paid') { toast(t('stars_paid')); loadState(false); }
+      else if (status === 'failed') { toast(t('stars_failed'), true); }
+      else if (status === 'cancelled') { toast(t('stars_cancelled'), true); }
+      // 'pending': biarkan — status akhir dikirim bot setelah bayar
+    });
+  } catch(e){ toast(t('stars_err'), true); }
+  finally { if (btn) btn.disabled = false; }
+}
 $('wd-coins').addEventListener('input', updateWdPreview);
 $('btn-withdraw').addEventListener('click', async function(){
   var coins = parseInt($('wd-coins').value, 10) || 0;
@@ -2021,8 +2112,13 @@ setInterval(function(){
     else { el.textContent = 'Siap! ✅'; }
   });
 }, 1000);
-// Sync ke backend tiap 15 detik
-setInterval(function(){ loadState(false); }, 15000);
+// Sync ke backend tiap 15 detik — RINGAN bila pemain sedang berinteraksi
+// (baru mengetuk/mengetik < 3 detik lalu): hanya update HUD, JANGAN
+// renderAll() penuh yang membangun ulang DOM dan menghilangkan ketukan.
+setInterval(function(){
+  if (Date.now() - lastInteractAt > 3000) { loadState(false); }
+  else { loadStateLight(); }
+}, 15000);
 
 /* ================= INTRO / PANDUAN ================= */
 var INTRO_KEY = 'hf_seen_intro';
@@ -2057,6 +2153,7 @@ loadState(true).then(function(ok){
     } catch(e){}
   }
 });
+loadStarsProducts(); // muat daftar produk Toko Stars (tanpa auth)
 if (tg && tg.initData === '') {
   // dibuka di browser biasa: mode demo, user_id acak tersimpan di localStorage
   console.log('Harvest Farm: mode demo (tanpa initData Telegram), user_id = ' + getUserId());

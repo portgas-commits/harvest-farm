@@ -40,6 +40,7 @@ import logging
 import os
 import random
 import re
+import secrets
 import sqlite3
 import threading
 import time
@@ -50,7 +51,8 @@ from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, WebAppInfo
-from telegram.ext import Application, CommandHandler, ContextTypes
+from telegram.ext import (Application, CommandHandler, ContextTypes,
+                          MessageHandler, PreCheckoutQueryHandler, filters)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("harvestfarm")
@@ -167,6 +169,30 @@ BUILDING_MAX_LEVEL = 3
 # --- v2: Permata Panen, skill, musim, guild, mancing/tambang ---
 GEM_TO_COINS = 500            # kurs tetap: 1 Permata = 500 Koin
 GEM_CONVERT_MAX_DAY = 50      # maks konversi Permata/hari/pemain
+
+# --- Toko Stars: produk digital, dibayar pakai Telegram Stars (XTR) ---
+# Harga dalam Stars. Item dikreditkan server-side HANYA setelah
+# successful_payment terverifikasi (lihat credit_star_order — idempotent).
+# Jangan ubah harga di sini tanpa mengubah daftar di index.html.
+STAR_CURRENCY = "XTR"
+STAR_PRODUCTS = {
+    # id: {stars, title (<=32 karakter), desc, gems, coins, energy}
+    "gems10":  {"stars": 25,  "title": "10 Permata Panen",
+                "desc": "10 Permata Panen untuk kebunmu.",
+                "gems": 10, "coins": 0, "energy": 0},
+    "gems30":  {"stars": 60,  "title": "30 Permata Panen",
+                "desc": "30 Permata Panen untuk kebunmu.",
+                "gems": 30, "coins": 0, "energy": 0},
+    "gems100": {"stars": 150, "title": "100 Permata Panen",
+                "desc": "100 Permata Panen untuk kebunmu.",
+                "gems": 100, "coins": 0, "energy": 0},
+    "starter": {"stars": 50,  "title": "Paket Pemula",
+                "desc": "5.000 Koin Panen + 5 Permata Panen.",
+                "gems": 5, "coins": 5000, "energy": 0},
+    "energy":  {"stars": 15,  "title": "Energi Penuh",
+                "desc": "Isi energi sampai penuh (50).",
+                "gems": 0, "coins": 0, "energy": ENERGY_MAX},
+}
 MAX_LEVEL = 100
 SKILL_MAX = 5                 # maks level per cabang skill
 SKILL_BRANCHES = {
@@ -494,6 +520,18 @@ def db() -> sqlite3.Connection:
         "  gems INTEGER NOT NULL DEFAULT 0,"
         "  created_at INTEGER NOT NULL DEFAULT 0,"
         "  UNIQUE (referee_id, event))"
+    )
+    # --- Toko Stars: pesanan invoice (payload unik = kunci idempotency) ---
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS star_orders ("
+        "  payload TEXT PRIMARY KEY,"
+        "  user_id INTEGER NOT NULL,"
+        "  product TEXT NOT NULL,"
+        "  stars INTEGER NOT NULL,"
+        "  status TEXT NOT NULL DEFAULT 'created',"
+        "  telegram_payment_charge_id TEXT,"
+        "  created_at INTEGER NOT NULL DEFAULT 0,"
+        "  paid_at INTEGER)"
     )
     # --- v2: migrasi kolom users (idempotent, DB v1 tetap jalan) ---
     existing = {r[1] for r in conn.execute("PRAGMA table_info(users)")}
@@ -2017,6 +2055,144 @@ def faucetpay_send(to: str, amount_units: int,
             "detail": str(payload.get("message", payload))[:200]}
 
 
+# ---------------------------------------------------------------------------
+# Toko Stars — invoice Telegram Stars (XTR) + kredit idempotent
+# ---------------------------------------------------------------------------
+def telegram_api(method: str, params: dict) -> dict:
+    """Panggil Bot API lewat HTTPS. Kembalikan dict hasil / {error, ...}."""
+    if not BOT_TOKEN:
+        return {"error": "bot_not_configured"}
+    req = urllib.request.Request(
+        f"https://api.telegram.org/bot{BOT_TOKEN}/{method}",
+        data=json.dumps(params).encode(),
+        method="POST",
+        headers={"Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            payload = json.loads(resp.read().decode() or "{}")
+    except urllib.error.HTTPError as e:
+        try:
+            payload = json.loads(e.read().decode() or "{}")
+        except ValueError:
+            payload = {}
+        return {"error": "telegram_http_%s" % e.code,
+                "detail": str(payload.get("description", payload))[:200]}
+    except (urllib.error.URLError, TimeoutError, ValueError) as e:
+        return {"error": "telegram_unavailable", "detail": str(e)[:200]}
+    if payload.get("ok"):
+        return {"ok": True, "result": payload.get("result")}
+    return {"error": "telegram_api_error",
+            "detail": str(payload.get("description", payload))[:200]}
+
+
+def create_stars_invoice(conn: sqlite3.Connection, user: dict,
+                         body: dict) -> dict:
+    """Buat invoice Stars untuk satu produk. Kembalikan invoice link.
+
+    Tanpa BOT_TOKEN (mode test lokal) mengembalikan error bersih
+    'stars_not_configured' — bukan crash.
+    """
+    if not BOT_TOKEN:
+        return {"error": "stars_not_configured"}
+    product = str(body.get("product", "") or "")
+    item = STAR_PRODUCTS.get(product)
+    if not item:
+        return {"error": "invalid_product"}
+    uid = int(user["id"])
+    # Payload unik per pesanan (<=128 byte, syarat Bot API).
+    payload = "stars_%s_%d_%s" % (product, uid, secrets.token_hex(8))
+    now = now_ts()
+    conn.execute(
+        "INSERT INTO star_orders (payload, user_id, product, stars,"
+        " status, created_at) VALUES (?, ?, ?, ?, 'created', ?)",
+        (payload, uid, product, item["stars"], now))
+    conn.commit()
+    result = telegram_api("createInvoiceLink", {
+        "title": item["title"],
+        "description": item["desc"],
+        "payload": payload,
+        "currency": STAR_CURRENCY,
+        # Produk digital Stars: provider_token dikosongkan (tidak dipakai).
+        "prices": [{"label": item["title"], "amount": item["stars"]}],
+    })
+    if "error" in result:
+        return result
+    return {"ok": True, "invoice_link": result["result"],
+            "product": product, "stars": item["stars"]}
+
+
+def credit_star_order(conn: sqlite3.Connection, payload: str,
+                      charge_id: str, amount: int) -> dict | None:
+    """Kredit item pesanan Stars SEKALI saja (idempotent).
+
+    Kembalikan dict hasil, atau None kalau payload tidak dikenal.
+    Transaksi BEGIN IMMEDIATE + cek rowcount memastikan pembayaran yang
+    sama (mis. successful_payment ganda dari Telegram) tidak dikredit
+    dua kali, dan jumlah Stars yang dibayar harus cocok dengan harga.
+    """
+    conn.execute("BEGIN IMMEDIATE")
+    try:
+        row = conn.execute(
+            "SELECT * FROM star_orders WHERE payload = ?",
+            (payload,)).fetchone()
+        if not row:
+            conn.commit()
+            return None
+        if row["status"] == "paid":
+            conn.commit()
+            return {"already": True, "product": row["product"]}
+        item = STAR_PRODUCTS.get(row["product"])
+        if not item:
+            conn.rollback()
+            return {"error": "invalid_product"}
+        if int(amount) != int(row["stars"]):
+            logger.warning("Stars: jumlah bayar %s != harga %s (payload %s)",
+                           amount, row["stars"], payload)
+            conn.rollback()
+            return {"error": "amount_mismatch"}
+        uid = int(row["user_id"])
+        user_row = conn.execute(
+            "SELECT * FROM users WHERE user_id = ?", (uid,)).fetchone()
+        if not user_row:
+            conn.rollback()
+            return {"error": "user_not_found"}
+        if item["gems"]:
+            conn.execute("UPDATE users SET gems = gems + ? WHERE user_id = ?",
+                         (item["gems"], uid))
+        if item["coins"]:
+            conn.execute("UPDATE users SET coins = coins + ? WHERE user_id = ?",
+                         (item["coins"], uid))
+        if item["energy"]:
+            # Energi langsung penuh — tanpa regen dulu (nilai lama
+            # ditimpa, jadi regen tidak perlu; juga regen_energy
+            # melakukan commit sendiri dan akan memutus transaksi ini).
+            conn.execute(
+                "UPDATE users SET energy = ?, energy_at = ?"
+                " WHERE user_id = ?",
+                (ENERGY_MAX, now_ts(), uid))
+        cur = conn.execute(
+            "UPDATE star_orders SET status = 'paid',"
+            " telegram_payment_charge_id = ?, paid_at = ?"
+            " WHERE payload = ? AND status = 'created'",
+            (charge_id, now_ts(), payload))
+        if cur.rowcount != 1:
+            # Sudah dibayar duluan oleh proses lain — jangan kredit lagi.
+            conn.rollback()
+            return {"already": True, "product": row["product"]}
+        conn.commit()
+        logger.info("Stars: pesanan %s dibayar (user %s, produk %s, %s ⭐)",
+                    payload, uid, row["product"], row["stars"])
+        return {"ok": True, "product": row["product"],
+                "gems": item["gems"], "coins": item["coins"],
+                "energy": item["energy"]}
+    except Exception:
+        try:
+            conn.rollback()
+        except sqlite3.Error:
+            pass
+        raise
+
+
 def request_withdrawal(conn: sqlite3.Connection, user: dict,
                        body: dict) -> dict:
     uid = int(user["id"])
@@ -2350,6 +2526,11 @@ class ApiHandler(BaseHTTPRequestHandler):
                                              for it in items},
                                   "weather": weather_now(),
                                   "event": event_now()})
+        elif path == "/api/stars/products":  # Toko Stars (tanpa auth)
+            self._send_json(200, {"ok": True, "products": {
+                pid: {"stars": v["stars"], "title": v["title"],
+                      "desc": v["desc"]}
+                for pid, v in STAR_PRODUCTS.items()}})
         elif path == "/api/guilds":  # v2
             conn = db()
             try:
@@ -2435,6 +2616,13 @@ class ApiHandler(BaseHTTPRequestHandler):
                 status = 400 if "error" in result else 200
                 if result.get("error") in ("ad_cooldown",):
                     status = 429
+                self._send_json(status, result)
+            elif path == "/api/stars/invoice":  # Toko Stars
+                result = create_stars_invoice(conn, user, body)
+                status = 200
+                if "error" in result:
+                    status = 400 if result["error"] in (
+                        "invalid_product",) else 503
                 self._send_json(status, result)
             elif path == "/api/referral":  # v3
                 self._send_json(200, {"ok": True,
@@ -2881,6 +3069,71 @@ async def howto_callback(update: Update,
         reply_markup=main_keyboard(lang), parse_mode="Markdown")
 
 
+async def stars_pre_checkout(update: Update,
+                             context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Jawab pre-checkout query: OK hanya bila payload ada di star_orders."""
+    query = update.pre_checkout_query
+    payload = query.invoice_payload or ""
+    conn = db()
+    try:
+        row = conn.execute(
+            "SELECT status FROM star_orders WHERE payload = ?",
+            (payload,)).fetchone()
+    finally:
+        conn.close()
+    if row and row["status"] in ("created", "paid"):
+        await query.answer(ok=True)
+    else:
+        logger.warning("Stars: pre-checkout payload tidak dikenal: %s",
+                       payload)
+        await query.answer(ok=False,
+                           error_message="Pesanan tidak ditemukan.")
+
+
+async def stars_successful_payment(update: Update,
+                                   context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Kredit item setelah pembayaran Stars berhasil (idempotent)."""
+    payment = update.message.successful_payment
+    payload = payment.invoice_payload or ""
+    if payment.currency != STAR_CURRENCY:
+        logger.warning("Stars: mata uang pembayaran bukan XTR: %s",
+                       payment.currency)
+        return
+    conn = db()
+    try:
+        result = credit_star_order(
+            conn, payload, payment.telegram_payment_charge_id,
+            payment.total_amount)
+    finally:
+        conn.close()
+    if result is None:
+        logger.warning("Stars: pembayaran payload tidak dikenal: %s", payload)
+        return
+    if result.get("error"):
+        logger.warning("Stars: kredit gagal %s (payload %s)",
+                       result["error"], payload)
+        return
+    lang = norm_lang(getattr(update.effective_user, "language_code", None))
+    item = STAR_PRODUCTS.get(result["product"], {})
+    parts = []
+    if result.get("gems"):
+        parts.append("+%d 💎 Permata" % result["gems"])
+    if result.get("coins"):
+        parts.append("+%d 🪙 Koin" % result["coins"])
+    if result.get("energy"):
+        parts.append("⚡ Energi penuh")
+    text = ("🎉 *Pembayaran Stars berhasil!*\n\n"
+            "Kamu membeli *%s* (%s ⭐).\n%s sudah masuk ke akunmu. "
+            "Selamat bertani! 🌾" % (
+                item.get("title", result["product"]),
+                STAR_PRODUCTS[result["product"]]["stars"],
+                ", ".join(parts) or "Item"))
+    if result.get("already"):
+        text = ("✅ Pembayaran ini sudah diproses sebelumnya — "
+                "item sudah ada di akunmu. 🌾")
+    await update.message.reply_text(text, parse_mode="Markdown")
+
+
 def main() -> None:
     db().close()
     threading.Thread(target=serve_api, daemon=True).start()
@@ -2900,6 +3153,10 @@ def main() -> None:
     app.add_handler(CommandHandler("help", help_cmd))
     app.add_handler(CommandHandler("saldo", saldo_cmd))
     app.add_handler(CallbackQueryHandler(howto_callback, pattern="^howto$"))
+    # Toko Stars: jawab pre-checkout + kredit saat pembayaran berhasil.
+    app.add_handler(PreCheckoutQueryHandler(stars_pre_checkout))
+    app.add_handler(MessageHandler(filters.SUCCESSFUL_PAYMENT,
+                                   stars_successful_payment))
     logger.info("Harvest Farm bot jalan (polling).")
     app.run_polling()
 
