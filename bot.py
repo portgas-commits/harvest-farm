@@ -193,6 +193,18 @@ STAR_PRODUCTS = {
                 "desc": "Isi energi sampai penuh (50).",
                 "gems": 0, "coins": 0, "energy": ENERGY_MAX},
 }
+# --- Wajib join channel: pemain harus join channel Harvest Farm dulu ---
+# Channel: @flashminer_game (judul "🌾 Harvest Farm"), id -1004395345796.
+# Bot @harvestfarm_game_bot sudah admin di channel itu, jadi bisa memeriksa
+# keanggotaan lewat getChatMember. Bisa di-override lewat env.
+try:
+    REQUIRED_CHANNEL_ID = int(
+        os.environ.get("REQUIRED_CHANNEL_ID") or "-1004395345796")
+except ValueError:
+    REQUIRED_CHANNEL_ID = -1004395345796
+REQUIRED_CHANNEL_LINK = os.environ.get(
+    "REQUIRED_CHANNEL_LINK", "https://t.me/flashminer_game")
+
 MAX_LEVEL = 100
 SKILL_MAX = 5                 # maks level per cabang skill
 SKILL_BRANCHES = {
@@ -1115,6 +1127,9 @@ def build_state(conn: sqlite3.Connection, user: dict) -> dict:
             "referrer_id": int(row["referrer_id"] or 0),
         },
         "referral": referral_info(conn, uid),
+        # Wajib join channel — dicek live lewat getChatMember (fail open
+        # bila Bot API error; lihat check_channel_member).
+        "channel_joined": check_channel_member(uid),
         "season": season,
         "season_top": season_leaderboard(conn, 10),
         "achievements_v2": achievements_v2_state(conn, uid, row),
@@ -1186,6 +1201,7 @@ def build_state(conn: sqlite3.Connection, user: dict) -> dict:
             "withdraw_cooldown_days": WITHDRAW_COOLDOWN_SECS // 86400,
             "withdraw_currency": WITHDRAW_CURRENCY,
             "energy_max": ENERGY_MAX,
+            "channel_link": REQUIRED_CHANNEL_LINK,
             "ad_enabled": bool(ADSGRAM_BLOCK_ID
                                and ADSGRAM_BLOCK_ID != "YOUR_ADSGRAM_BLOCK_ID"),
             "grid_prices": GRID_PRICES,
@@ -1212,6 +1228,12 @@ def do_action(conn: sqlite3.Connection, user: dict, body: dict) -> dict:
     row = get_or_create_user(conn, user)
     if row["flagged"]:
         return {"error": "account_flagged"}
+    # Wajib join channel: tolak semua aksi bila belum join. Dicek SEBELUM
+    # rate limit supaya pemain yang belum join selalu mendapat pesan yang
+    # jelas (need_join_channel), bukan rate_limited.
+    if not check_channel_member(uid):
+        return {"error": "need_join_channel",
+                "channel_link": REQUIRED_CHANNEL_LINK}
     now = time.time()
     if now - _last_action.get(uid, 0) < MIN_ACTION_INTERVAL_SECS:
         return {"error": "rate_limited"}
@@ -2085,6 +2107,27 @@ def telegram_api(method: str, params: dict) -> dict:
             "detail": str(payload.get("description", payload))[:200]}
 
 
+def check_channel_member(uid: int) -> bool:
+    """True bila user sudah join channel wajib (REQUIRED_CHANNEL_ID).
+
+    "Joined" = status member/administrator/creator; left/kicked = belum.
+    FAIL OPEN: bila BOT_TOKEN kosong (mode test lokal) atau Bot API error,
+    izinkan main dan catat di log — gangguan Telegram sesaat tidak boleh
+    mengunci semua pemain. Hanya blokir bila API secara positif menjawab
+    left/kicked.
+    """
+    if not BOT_TOKEN:
+        return True
+    result = telegram_api("getChatMember", {
+        "chat_id": REQUIRED_CHANNEL_ID, "user_id": int(uid)})
+    if "error" in result:
+        logger.warning("Channel check gagal (fail open) user %s: %s",
+                       uid, result.get("error"))
+        return True
+    status = (result.get("result") or {}).get("status", "")
+    return status in ("member", "administrator", "creator")
+
+
 def create_stars_invoice(conn: sqlite3.Connection, user: dict,
                          body: dict) -> dict:
     """Buat invoice Stars untuk satu produk. Kembalikan invoice link.
@@ -2596,6 +2639,17 @@ class ApiHandler(BaseHTTPRequestHandler):
             return
         conn = db()
         try:
+            # Wajib join channel untuk endpoint yang mengubah state
+            # (withdraw, hadiah iklan, invoice Stars; /api/action dijaga
+            # di dalam do_action sendiri). Endpoint baca saja (state,
+            # market, leaderboard, referral) tetap jalan.
+            if path in ("/api/withdraw", "/api/ad-reward",
+                        "/api/stars/invoice"):
+                if not check_channel_member(int(user["id"])):
+                    self._send_json(403, {"error": "need_join_channel",
+                                          "channel_link":
+                                          REQUIRED_CHANNEL_LINK})
+                    return
             if path == "/api/state":
                 self._send_json(200, {"ok": True,
                                       "state": build_state(conn, user)})
