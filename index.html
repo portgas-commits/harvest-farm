@@ -37,6 +37,11 @@
   .btn.ghost{background:#f1f8e9;color:var(--green);border:1px solid #a5d6a7}
   .btn.small{padding:8px 10px;min-height:38px;font-size:13px}
   .btn:disabled{opacity:.5;cursor:not-allowed}
+  /* Kunci aksi global: selama satu request aksi berjalan, semua tombol &
+     petak di area game tidak bisa diklik — mencegah request kedua yang
+     pasti ditolak server dengan rate_limited. Dilepas di finally doAction. */
+  body.action-busy .wrap button{opacity:.55}
+  body.action-busy .wrap button,body.action-busy .wrap .plot{pointer-events:none}
   .btn.block{width:100%}
   input,select{width:100%;padding:11px 12px;border:1px solid #c8e6c9;border-radius:12px;font-size:15px;background:#fff;margin:4px 0 8px}
   label{font-size:12px;font-weight:700;color:var(--muted)}
@@ -637,6 +642,7 @@ wd_submitted:'💸 Withdraw diajukan!',wd_status:'Status: {s}',
 ad_not_ready:'📺 Iklan belum aktif — isi Block ID AdGram dulu',
 ad_not_done:'Iklan belum selesai — hadiah tidak masuk.',ad_reward_in:'🎉 Hadiah iklan masuk!',
 no_growing:'Tidak ada tanaman yang sedang tumbuh.',success_default:'Berhasil! ✅',
+action_busy:'⏳ Tunggu sebentar…',
 err_fallback:'Terjadi kesalahan: {code}',
 level_label:'Level {n}',xp_label:'XP {a} / {b}',xp_max:'XP {a} (MAX)',
 streak_pill:'🔥 Streak: {n} hari',skill_points_hud:'⭐ {n} poin skill',tourney_points:'🏆 {n} poin',
@@ -778,6 +784,7 @@ wd_submitted:'💸 Withdrawal submitted!',wd_status:'Status: {s}',
 ad_not_ready:'📺 Ads not active yet — set the AdGram Block ID first',
 ad_not_done:'Ad not finished — no reward.',ad_reward_in:'🎉 Ad reward received!',
 no_growing:'No crops are growing right now.',success_default:'Done! ✅',
+action_busy:'⏳ One moment…',
 err_fallback:'An error occurred: {code}',
 level_label:'Level {n}',xp_label:'XP {a} / {b}',xp_max:'XP {a} (MAX)',
 streak_pill:'🔥 Streak: {n} days',skill_points_hud:'⭐ {n} skill points',tourney_points:'🏆 {n} points',
@@ -1475,7 +1482,14 @@ async function loadState(showLoading){
 /* Sync ringan (tanpa render ulang penuh): cukup ambil state lalu update
    HUD saja. Dipakai interval 15 detik saat pemain sedang berinteraksi,
    supaya ketukan/scroll tidak hilang karena DOM dibangun ulang. */
-var pendingActions = {}; // kunci aksi yang sedang berjalan (anti ketuk ganda)
+/* Kunci GLOBAL anti ketuk-ganda: selama satu request aksi (doAction) masih
+   berjalan, SEMUA ketukan aksi lain ditahan di klien. Kunci per aksi+parameter
+   saja tidak cukup — mengetuk tombol BERBEDA dengan cepat (mis. +1 Cabai
+   lalu +1 Jagung) tetap mengirim dua request dalam 5 detik dan server
+   menolak yang kedua dengan rate_limited → toast merah "Terlalu cepat".
+   Kunci ini dilepas di finally, jadi tidak ada tombol yang terkunci selamanya. */
+var actionBusy = false;
+var actionBusyToastAt = 0; // throttle toast netral (maks 1x/detik)
 async function loadStateLight(){
   try {
     var data = await apiPost('/api/state', authBody());
@@ -1486,11 +1500,16 @@ async function loadStateLight(){
   } catch(e){ /* diam saja — sync berikutnya mencoba lagi */ }
 }
 async function doAction(action, params, okMsg, btn){
-  var key = action + '|' + JSON.stringify(params || {});
-  if (pendingActions[key]) return false; // abaikan ketuk ganda
+  if (actionBusy) {
+    // Jangan kirim request kedua — tahan di klien dengan toast NETRAL
+    // (bukan merah/error), karena ini bukan kesalahan pemain.
+    if (Date.now() - actionBusyToastAt > 1000) { actionBusyToastAt = Date.now(); toast(t('action_busy')); }
+    return false;
+  }
   // Tombol yang diklik: dari argumen, atau tombol yang sedang fokus.
   var btnEl = btn || (document.activeElement && document.activeElement.tagName === 'BUTTON' ? document.activeElement : null);
-  pendingActions[key] = true;
+  actionBusy = true;
+  document.body.classList.add('action-busy');
   if (btnEl) btnEl.disabled = true;
   try {
     var data = await apiPost('/api/action', authBody(Object.assign({action:action}, params || {})));
@@ -1498,7 +1517,7 @@ async function doAction(action, params, okMsg, btn){
     toast(okMsg || (data && data.message) || t('success_default'));
     return true;
   } catch(e){ toast(errText(e.message), true); return false; }
-  finally { delete pendingActions[key]; if (btnEl) btnEl.disabled = false; }
+  finally { actionBusy = false; document.body.classList.remove('action-busy'); if (btnEl) btnEl.disabled = false; }
 }
 function setConn(ok){
   var el = $('conn-banner');
