@@ -1766,6 +1766,12 @@ function renderMarket(){
 function renderMissions(){
   var u = S.user || {};
   $('daily-desc').innerHTML = t('daily_desc', {n: u.login_streak || 0});
+  // v3.3.2: tombol klaim nonaktif setelah bonus hari ini diklaim.
+  var dbtn = $('btn-claim-daily');
+  if (dbtn) {
+    if (u.daily_claimed) { dbtn.disabled = true; dbtn.textContent = t('already_claimed'); }
+    else { dbtn.disabled = false; dbtn.textContent = t('btn_claim_daily'); }
+  }
   var ms = S.missions || [];
   $('mission-list').innerHTML = ms.length ? ms.map(function(m){
     var pct = m.target ? Math.min(100, Math.round((m.progress||0)/m.target*100)) : 0;

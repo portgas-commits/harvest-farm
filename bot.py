@@ -595,6 +595,8 @@ def db() -> sqlite3.Connection:
         "referrer_id INTEGER NOT NULL DEFAULT 0",
         "referred_rewarded INTEGER NOT NULL DEFAULT 0",
         "language TEXT NOT NULL DEFAULT 'id'",
+        # v3.3.2: tanggal terakhir klaim Bonus Harian (1x/hari)
+        "last_daily_claim TEXT NOT NULL DEFAULT ''",
     ):
         col = coldef.split()[0]
         if col not in existing:
@@ -632,7 +634,11 @@ def get_or_create_user(conn: sqlite3.Connection, user: dict) -> sqlite3.Row:
                 (uid, i))
         conn.commit()
         return row
-    # Bonus login harian: streak naik kalau hari baru
+    # Bonus login harian: streak naik kalau hari baru.
+    # v3.3.2: streak naik saat login, tapi bonus HANYA dibayar lewat
+    # tombol "Klaim Bonus Harian" (claim_daily, 1x/hari). Sebelumnya
+    # koin dibayar otomatis di sini DAN lewat tombol = dobel + tombol
+    # bisa diklik berkali-kali.
     if row["last_login"] != today:
         try:
             last = datetime.strptime(row["last_login"], "%Y-%m-%d").date()
@@ -640,11 +646,10 @@ def get_or_create_user(conn: sqlite3.Connection, user: dict) -> sqlite3.Row:
             streak = row["login_streak"] + 1 if (cur - last).days == 1 else 1
         except (ValueError, TypeError):
             streak = 1
-        bonus = min(streak, 7) * 100  # hari ke-7 = 700 koin
         conn.execute(
-            "UPDATE users SET last_login = ?, login_streak = ?,"
-            "  coins = coins + ? WHERE user_id = ?",
-            (today, streak, bonus, uid))
+            "UPDATE users SET last_login = ?, login_streak = ?"
+            " WHERE user_id = ?",
+            (today, streak, uid))
         conn.commit()
         row = conn.execute("SELECT * FROM users WHERE user_id = ?", (uid,)).fetchone()
     return row
@@ -1132,6 +1137,8 @@ def build_state(conn: sqlite3.Connection, user: dict) -> dict:
             "fertilizer": int(row["fertilizer"]), "feed": int(row["feed"]),
             "double_next": bool(row["double_next"]),
             "login_streak": int(row["login_streak"]),
+            # v3.3.2: frontend menonaktifkan tombol klaim bila sudah klaim
+            "daily_claimed": (row["last_daily_claim"] or "") == datetime.now(timezone.utc).strftime("%Y-%m-%d"),
             "total_harvest": int(row["total_harvest"]),
             "total_sold": int(row["total_sold"]),
             "ad_rewards_today": ad_count_today(conn, uid),
@@ -1432,10 +1439,18 @@ def do_action(conn: sqlite3.Connection, user: dict, body: dict) -> dict:
                 "message": f"Beli {lst['qty']}x {lst['item']} (-{total:,} Koin)."}
 
     if action == "claim_daily":
+        # v3.3.2: 1x per hari (UTC). Tanpa cek ini tombol bisa diklik
+        # berkali-kali dan bonus dibayar tiap klik.
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        if (row["last_daily_claim"] or "") == today:
+            return {"error": "already_claimed"}
         streak = int(row["login_streak"])
         bonus = min(streak, 7) * 100
         gems = 2 if streak >= 7 else 0  # v2: streak 7 hari -> +2 Permata
+        conn.execute("UPDATE users SET last_daily_claim = ? WHERE user_id = ?",
+                     (today, uid))
         add_xp_coins(conn, uid, xp=20, coins=bonus, gems=gems)
+        conn.commit()
         msg = f"Bonus login hari ke-{streak}: +{bonus} Koin, +20 XP! 🎁"
         if gems:
             msg += f" +{gems} 💎 Permata Panen!"
