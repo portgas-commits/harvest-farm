@@ -136,6 +136,13 @@
   .lang-picker button.active{background:#fff;color:#1b5e20}
   .lang-select{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.45);border-radius:10px;padding:7px 8px;font-size:13px;font-weight:700;width:auto;margin:0;min-height:38px;cursor:pointer}
   .lang-select option{color:#1b2a1b}
+  /* ============ KEBUN 3D (v3.4, Three.js) ============ */
+  #farm3d-wrap{position:relative;height:340px;border-radius:14px;overflow:hidden;border:2px solid #a5d6a7;margin-top:8px;background:#87ceeb}
+  #farm3d,#farm3d canvas{width:100%;height:100%;display:block}
+  #farm3d canvas{touch-action:none}
+  #farm3d-wrap[hidden]{display:none}
+  #farm3d-bar[hidden]{display:none}
+  @media (max-width:480px){#farm3d-wrap{height:300px}}
 </style>
 </head>
 <body>
@@ -257,6 +264,12 @@
         <span class="pill" id="streak-pill">🔥 Streak: — hari</span>
       </div>
       <p class="muted" id="garden-hint" data-i18n="garden_hint">Ketuk petak kosong untuk menanam, tanaman tumbuh untuk menyiram / memupuk, tanaman siap untuk memanen. Hama muncul? Ketuk cepat untuk mengusir!</p>
+      <div class="row" id="farm3d-bar" hidden>
+        <button class="btn small" id="btn-farm3d-toggle">👁 3D</button>
+        <button class="btn ghost small" id="btn-farm3d-night">🌙 Malam</button>
+        <span class="muted" id="farm3d-hint" data-i18n="farm3d_hint">Seret untuk memutar • Cubit/scroll untuk zoom • Ketuk petak untuk menanam/panen</span>
+      </div>
+      <div id="farm3d-wrap" hidden><div id="farm3d"></div></div>
       <div id="grid" class="grid g3"><div class="loader"><span class="spin">🌱</span><br><span data-i18n="loading_garden">Memuat kebun…</span></div></div>
       <div class="row" style="margin-top:12px">
         <button class="btn gold" id="btn-upgrade" style="flex:1" data-i18n="btn_upgrade">⬆️ Upgrade Grid</button>
@@ -568,6 +581,7 @@ rule4:'🎁 Klaim bonus login harian supaya streak tidak putus (7 hari = +2 💎
 btn_start:'🌾 Mulai Bertani',btn_skip:'Lewati ➜',
 garden_t:'🌱 Kebunku',
 garden_hint:'Ketuk petak kosong untuk menanam, tanaman tumbuh untuk menyiram / memupuk, tanaman siap untuk memanen. Hama muncul? Ketuk cepat untuk mengusir!',
+farm3d_hint:'Seret untuk memutar • Cubit/scroll untuk zoom • Ketuk petak untuk menanam/panen',farm3d_night:'🌙 Malam',farm3d_day:'☀️ Siang',
 btn_upgrade:'⬆️ Upgrade Grid',btn_ad_energy:'📺 Iklan: +20 ⚡',
 upgrade_info:'Grid saat ini {size}×{size} ({total} petak). Upgrade menambah petak tanam.',
 ad_t:'📺 Iklan Berhadiah (AdGram)',ad_desc:'Tonton iklan, dapat hadiah. Hadiah hanya masuk kalau iklan selesai ditonton.',
@@ -710,6 +724,7 @@ rule4:'🎁 Claim your daily login bonus so your streak never breaks (7 days = +
 btn_start:'🌾 Start Farming',btn_skip:'Skip ➜',
 garden_t:'🌱 My Farm',
 garden_hint:'Tap an empty plot to plant, a growing crop to water / fertilize, a ready crop to harvest. Pests? Tap fast to chase them away!',
+farm3d_hint:'Drag to rotate • Pinch/scroll to zoom • Tap a plot to plant/harvest',farm3d_night:'🌙 Night',farm3d_day:'☀️ Day',
 btn_upgrade:'⬆️ Upgrade Grid',btn_ad_energy:'📺 Ad: +20 ⚡',
 upgrade_info:'Current grid {size}×{size} ({total} plots). Upgrading adds more plots.',
 ad_t:'📺 Rewarded Ads (AdGram)',ad_desc:'Watch ads, earn rewards. Rewards only count if you finish the ad.',
@@ -852,6 +867,7 @@ rule4:'🎁 Забирай ежедневный бонус за вход, что
 btn_start:'🌾 Начать фермерство',btn_skip:'Пропустить ➜',
 garden_t:'🌱 Моя ферма',
 garden_hint:'Нажми на пустую грядку, чтобы посадить, на растущее растение — полить или удобрить, на созревшее — собрать. Вредители? Быстро прогоняй их!',
+farm3d_hint:'Тяни, чтобы вращать • Щипок/колесо — масштаб • Нажми на грядку, чтобы посадить или собрать урожай',farm3d_night:'🌙 Ночь',farm3d_day:'☀️ День',
 btn_upgrade:'⬆️ Улучшить поле',btn_ad_energy:'📺 Реклама: +20 ⚡',
 upgrade_info:'Сейчас поле {size}×{size} ({total} грядок). Улучшение добавляет грядки.',
 ad_t:'📺 Реклама с наградой (AdGram)',ad_desc:'Смотри рекламу и получай награды. Награда засчитывается, только если досмотреть рекламу до конца.',
@@ -992,6 +1008,7 @@ rule4:'🎁 Reclama tu bono diario para no romper la racha (7 días = +2 💎).'
 btn_start:'🌾 Empezar a cultivar',btn_skip:'Saltar ➜',
 garden_t:'🌱 Mi Granja',
 garden_hint:'Toca una parcela vacía para plantar, un cultivo en crecimiento para regar / abonar, uno listo para cosechar. ¿Plagas? ¡Tócalas rápido para ahuyentarlas!',
+farm3d_hint:'Arrastra para girar • Pellizca o usa la rueda para zoom • Toca una parcela para plantar/cosechar',farm3d_night:'🌙 Noche',farm3d_day:'☀️ Día',
 btn_upgrade:'⬆️ Ampliar Terreno',btn_ad_energy:'📺 Anuncio: +20 ⚡',
 upgrade_info:'Terreno actual {size}×{size} ({total} parcelas). Ampliar añade más parcelas.',
 ad_t:'📺 Anuncios con Recompensa (AdGram)',ad_desc:'Mira anuncios y gana recompensas. Solo cuentan si ves el anuncio completo.',
@@ -1132,6 +1149,7 @@ rule4:'🎁 Resgate seu bônus diário para não quebrar a sequência (7 dias = 
 btn_start:'🌾 Começar a cultivar',btn_skip:'Pular ➜',
 garden_t:'🌱 Minha Fazenda',
 garden_hint:'Toque em um canteiro vazio para plantar, numa planta em crescimento para regar / adubar, numa planta pronta para colher. Pragas? Toque rápido para afastá-las!',
+farm3d_hint:'Arraste para girar • Pinça ou role para zoom • Toque num canteiro para plantar/colher',farm3d_night:'🌙 Noite',farm3d_day:'☀️ Dia',
 btn_upgrade:'⬆️ Ampliar Terreno',btn_ad_energy:'📺 Anúncio: +20 ⚡',
 upgrade_info:'Terreno atual {size}×{size} ({total} canteiros). Ampliar adiciona mais canteiros.',
 ad_t:'📺 Anúncios com Recompensa (AdGram)',ad_desc:'Assista anúncios e ganhe recompensas. Só conta se assistir ao anúncio até o fim.',
@@ -1648,6 +1666,8 @@ function renderGrid(){
   });
   var total = size * size;
   $('upgrade-info').textContent = t('upgrade_info', {size: size, total: total});
+  // v3.4: sinkronkan tampilan 3D (bila aktif); gagalnya 3D tidak merusak 2D
+  if (typeof Farm3D !== 'undefined') { try { Farm3D.sync(S); } catch(e){ console.error('Farm3D.sync gagal:', e); } }
 }
 function onPlotClick(idx, el){
   var p = (S.plots || []).find(function(x){ return x.idx === idx; });
@@ -2217,11 +2237,16 @@ function showIntro(){
   var el = $('intro'); el.hidden = false;
   document.body.style.overflow = 'hidden';
   window.scrollTo({top:0});
+  // v3.4: intro menutupi kebun — hentikan loop render 3D sementara.
+  if (typeof Farm3D !== 'undefined') Farm3D.updateLoop();
 }
 function hideIntro(){
   var el = $('intro'); el.hidden = true;
   document.body.style.overflow = '';
   try { localStorage.setItem(INTRO_KEY, '1'); } catch(e){}
+  // v3.4: intro menutupi kebun 3D — loop render 3D hanya jalan saat intro
+  // sudah hilang, jadi mulai ulang pengecekannya di sini.
+  if (typeof Farm3D !== 'undefined') Farm3D.updateLoop();
 }
 $('btn-intro-start').addEventListener('click', function(){ hideIntro(); toast(t('toast_welcome')); });
 $('btn-intro-skip').addEventListener('click', function(){ hideIntro(); });
@@ -2242,9 +2267,690 @@ $('btn-join-check').addEventListener('click', async function(){
 // Tampil saat pertama kali dibuka di perangkat ini; pemain lama langsung masuk game
 try { if (localStorage.getItem(INTRO_KEY) !== '1') showIntro(); } catch(e){ showIntro(); }
 
+/* ================= v3.4: KEBUN 3D (Three.js) ================= */
+/* Tampilan kebun 3D (dari demo) di tab Farm, menggantikan grid 2D bila
+   WebGL + CDN Three.js tersedia. Prinsip:
+   - Backend TIDAK disentuh: semua aksi tetap lewat doAction() yang ada
+     (plant/harvest/water/fertilize/pest) — klik petak 3D memanggil
+     onPlotClick() yang sama dengan grid 2D.
+   - FALLBACK WAJIB: bila WebGL tidak ada atau CDN gagal dimuat, grid 2D
+     lama tetap tampil dan game jalan normal (tombol 3D disembunyikan).
+   - Ringan: low-poly, MeshLambertMaterial (tanpa environment map),
+     tanpa font eksternal, bayangan 1024, pixelRatio maks 2, loop render
+     berhenti saat tab Farm tidak aktif / halaman tersembunyi.
+   - Three.js di-pin (UMD klasik, bukan module — supaya WebView lama
+     tetap bisa parse file ini): three@0.149.0 via jsDelivr, dimuat
+     dari JS hanya saat dibutuhkan (tidak menghambat load awal game).
+     OrbitControls TIDAK dipakai — kontrol orbit ditulis sendiri
+     (seret putar, scroll/cubit zoom) supaya hanya butuh 1 file CDN. */
+var Farm3D = (function(){
+  'use strict';
+  var THREE_URL = 'https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js';
+  var LOAD_TIMEOUT_MS = 10000;
+  var LS_VIEW = 'hf_farm3d_view', LS_NIGHT = 'hf_farm3d_night';
+  var SPACING = 2.3;
+  var state = 'idle'; // idle | loading | ready | failed
+  var pref = '3d';    // '3d' | '2d' — localStorage
+  var night = false;
+  var THREE = null;
+  var renderer = null, scene = null, camera = null;
+  var sunLight = null, hemiLight = null;
+  var wrapEl = null, mountEl = null, barEl = null, toggleBtn = null, nightBtn = null;
+  var gridGroup = null, decorGroup = null;
+  var plotSlots = []; // {idx, group, soil, soilMat, cropGroup, ring, bug, ready}
+  var clouds = [], chickens = [], windowMats = [], starsPts = null;
+  var windmillBlades = null, cowHead = null;
+  var raycaster = null;
+  var orbit = {theta: 0.65, phi: 0.92, radius: 15, tx: 0, ty: 0.4, tz: 0};
+  var pointers = {};
+  var pinchDist = 0;
+  var downInfo = null;
+  var rafId = 0, loopOn = false;
+  var lastSyncAt = 0, lastSig = '', lastGridSize = 0, lastGrowthCheck = 0;
+  var lastPlots = null;
+  var clockT = 0, lastFrameAt = 0;
+  var matCache = {};
+
+  function lsGet(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function lsSet(k, v){ try { localStorage.setItem(k, v); } catch(e){} }
+  try { if (lsGet(LS_VIEW) === '2d') pref = '2d'; } catch(e){}
+  try { night = lsGet(LS_NIGHT) === '1'; } catch(e){}
+  function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+  function mat(color, opts){
+    var key = color + '|' + ((opts && opts.e) || '') + '|' + ((opts && opts.ei) || '');
+    if (matCache[key]) return matCache[key];
+    var m = new THREE.MeshLambertMaterial({color: color});
+    if (opts && opts.e != null) { m.emissive = new THREE.Color(opts.e); m.emissiveIntensity = (opts.ei != null ? opts.ei : 1); }
+    if (opts && opts.flat) m.flatShading = true;
+    matCache[key] = m;
+    return m;
+  }
+  function mesh(geo, material, x, y, z){
+    var m = new THREE.Mesh(geo, material);
+    m.position.set(x || 0, y || 0, z || 0);
+    m.castShadow = true; m.receiveShadow = false;
+    return m;
+  }
+  function box(w, h, d, color, x, y, z, opts){
+    return mesh(new THREE.BoxGeometry(w, h, d), mat(color, opts), x, y, z);
+  }
+  function cyl(rt, rb, h, color, x, y, z, opts, seg){
+    return mesh(new THREE.CylinderGeometry(rt, rb, h, seg || 10), mat(color, opts), x, y, z);
+  }
+  function sph(r, color, x, y, z, opts, wseg){
+    return mesh(new THREE.SphereGeometry(r, wseg || 10, 8), mat(color, opts), x, y, z);
+  }
+  function cone(r, h, color, x, y, z, opts, seg){
+    return mesh(new THREE.ConeGeometry(r, h, seg || 8), mat(color, opts), x, y, z);
+  }
+  function disposeGroup(g){
+    if (!g) return;
+    g.traverse(function(o){
+      if (o.geometry) { try { o.geometry.dispose(); } catch(e){} }
+    });
+  }
+  function webglOK(){
+    try {
+      var c = document.createElement('canvas');
+      return !!(c.getContext('webgl2') || c.getContext('webgl') || c.getContext('experimental-webgl'));
+    } catch(e){ return false; }
+  }
+  function loadThreeScript(){
+    return new Promise(function(resolve, reject){
+      if (window.THREE) { resolve(window.THREE); return; }
+      var done = false;
+      var timer = setTimeout(function(){ if (!done) { done = true; reject(new Error('timeout')); } }, LOAD_TIMEOUT_MS);
+      var s = document.createElement('script');
+      s.src = THREE_URL;
+      s.onload = function(){ if (!done) { done = true; clearTimeout(timer); resolve(window.THREE); } };
+      s.onerror = function(){ if (!done) { done = true; clearTimeout(timer); reject(new Error('cdn')); } };
+      document.head.appendChild(s);
+    });
+  }
+  function plotPos(idx, size){
+    var row = Math.floor(idx / size), col = idx % size;
+    return {x: (col - (size - 1) / 2) * SPACING, z: (row - (size - 1) / 2) * SPACING};
+  }
+  function localProgress(p){
+    if (!p || !p.crop) return 0;
+    var base = Number(p.progress) || 0;
+    var gs = Number(p.grow_secs) || 0;
+    if (gs > 0 && lastSyncAt) base += (Date.now() - lastSyncAt) / 1000 / gs;
+    return clamp(base, 0, 1);
+  }
+  function cropStageOf(p){
+    if (!p || !p.crop) return -1;
+    if (p.ready) return 3;
+    var pr = localProgress(p);
+    if (pr < 0.34) return 0;
+    if (pr < 0.67) return 1;
+    if (pr < 1) return 2;
+    return 3;
+  }
+  function plotSig(plots, size){
+    var s = 'n' + size + ';';
+    for (var i = 0; i < plots.length; i++){
+      var p = plots[i];
+      s += p.idx + ':' + (p.crop || '') + ':' + cropStageOf(p) + ':' + (p.ready ? 1 : 0) + ':' +
+        (p.watered ? 1 : 0) + ':' + (p.fertilized ? 1 : 0) + ':' + (p.pest ? 1 : 0) + ';';
+    }
+    return s;
+  }
+  function failInit(){
+    state = 'failed';
+    if (barEl) barEl.hidden = true;
+    applyView();
+  }
+  function tryInit(){
+    if (state !== 'idle') return;
+    state = 'loading';
+    if (!webglOK()) { failInit(); return; }
+    loadThreeScript().then(function(T){
+      THREE = T;
+      try { buildScene(); } catch(e){ console.error('Farm3D build gagal:', e); failInit(); return; }
+      state = 'ready';
+      if (lastPlots) { lastSig = ''; sync({plots: lastPlots, user: {grid_size: lastGridSize || 3}}); }
+      applyView();
+      updateLoop();
+    }).catch(function(e){
+      console.warn('Farm3D: Three.js gagal dimuat:', e);
+      failInit();
+    });
+  }
+  function buildScene(){
+    wrapEl = $('farm3d-wrap'); mountEl = $('farm3d');
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x87ceeb);
+    scene.fog = new THREE.Fog(0x87ceeb, 34, 64);
+    camera = new THREE.PerspectiveCamera(46, 1, 0.1, 200);
+    renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    if ('outputColorSpace' in renderer && THREE.SRGBColorSpace) renderer.outputColorSpace = THREE.SRGBColorSpace;
+    else if ('outputEncoding' in renderer && THREE.sRGBEncoding) renderer.outputEncoding = THREE.sRGBEncoding;
+    mountEl.appendChild(renderer.domElement);
+    hemiLight = new THREE.HemisphereLight(0xbfe3ff, 0x8a7a5a, 0.75);
+    scene.add(hemiLight);
+    sunLight = new THREE.DirectionalLight(0xfff2cc, 1.15);
+    sunLight.position.set(10, 16, 8);
+    sunLight.castShadow = true;
+    sunLight.shadow.mapSize.set(1024, 1024);
+    sunLight.shadow.camera.left = -14; sunLight.shadow.camera.right = 14;
+    sunLight.shadow.camera.top = 14; sunLight.shadow.camera.bottom = -14;
+    sunLight.shadow.camera.near = 1; sunLight.shadow.camera.far = 42;
+    sunLight.shadow.bias = -0.0005;
+    scene.add(sunLight);
+    var ground = mesh(new THREE.PlaneGeometry(90, 90), mat(0x7ec850), 0, -0.02, 0);
+    ground.rotation.x = -Math.PI / 2;
+    ground.castShadow = false; ground.receiveShadow = true;
+    scene.add(ground);
+    gridGroup = new THREE.Group(); scene.add(gridGroup);
+    decorGroup = new THREE.Group(); scene.add(decorGroup);
+    raycaster = new THREE.Raycaster();
+    attachControls(renderer.domElement);
+    if (window.ResizeObserver) {
+      var ro = new ResizeObserver(function(){ resize(); });
+      ro.observe(wrapEl);
+    }
+    window.addEventListener('resize', resize);
+    resize();
+    applyNight();
+  }
+  function resize(){
+    if (!renderer || !wrapEl) return;
+    var w = wrapEl.clientWidth, h = wrapEl.clientHeight;
+    if (!w || !h) return;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  function updateCamera(){
+    var sp = Math.sin(orbit.phi);
+    camera.position.set(
+      orbit.tx + orbit.radius * sp * Math.sin(orbit.theta),
+      orbit.ty + orbit.radius * Math.cos(orbit.phi),
+      orbit.tz + orbit.radius * sp * Math.cos(orbit.theta));
+    camera.lookAt(orbit.tx, orbit.ty, orbit.tz);
+  }
+  function shouldRender(){
+    if (state !== 'ready' || pref !== '3d') return false;
+    if (document.hidden) return false;
+    if (!wrapEl || wrapEl.hidden || wrapEl.offsetParent === null) return false;
+    var tab = $('tab-kebun');
+    if (!tab || !tab.classList.contains('active')) return false;
+    var intro = $('intro');
+    if (intro && !intro.hidden) return false;
+    return true;
+  }
+  function updateLoop(){
+    if (shouldRender()) {
+      if (!loopOn) { loopOn = true; lastFrameAt = performance.now(); rafId = requestAnimationFrame(frame); }
+    } else {
+      if (loopOn) { loopOn = false; cancelAnimationFrame(rafId); }
+    }
+  }
+  function frame(now){
+    if (!loopOn) return;
+    rafId = requestAnimationFrame(frame);
+    var dt = clamp((now - lastFrameAt) / 1000 || 0.016, 0, 0.05);
+    lastFrameAt = now;
+    clockT += dt;
+    if (!shouldRender()) return;
+    if (windmillBlades) windmillBlades.rotation.z -= dt * 0.9;
+    for (var i = 0; i < clouds.length; i++){
+      var c = clouds[i];
+      c.position.x += dt * c.userData.speed;
+      if (c.position.x > 20) c.position.x = -20;
+    }
+    for (var j = 0; j < chickens.length; j++){
+      var ch = chickens[j];
+      var a = ch.userData.anchor, ph = ch.userData.phase;
+      ch.position.x = a.x + Math.sin(clockT * 0.35 + ph) * 0.7;
+      ch.position.z = a.z + Math.cos(clockT * 0.27 + ph) * 0.5;
+      ch.rotation.y = Math.sin(clockT * 0.35 + ph) * 1.2;
+    }
+    if (cowHead) cowHead.rotation.x = Math.sin(clockT * 0.8) * 0.15;
+    for (var k = 0; k < plotSlots.length; k++){
+      var slot = plotSlots[k];
+      if (slot.ready && slot.cropGroup) {
+        var s = 1 + Math.sin(clockT * 3 + k) * 0.045;
+        slot.cropGroup.scale.set(s, s, s);
+      }
+      if (slot.bug) slot.bug.position.y = 0.55 + Math.abs(Math.sin(clockT * 5 + k)) * 0.25;
+    }
+    if (now - lastGrowthCheck > 600) { lastGrowthCheck = now; refreshGrowthStages(); }
+    updateCamera();
+    renderer.render(scene, camera);
+  }
+  function refreshGrowthStages(){
+    if (!lastPlots) return;
+    for (var i = 0; i < plotSlots.length; i++){
+      var slot = plotSlots[i];
+      var p = null;
+      for (var j = 0; j < lastPlots.length; j++){ if (lastPlots[j].idx === slot.idx) { p = lastPlots[j]; break; } }
+      if (!p || !p.crop) continue;
+      var st = cropStageOf(p);
+      if (st !== slot.stage || (p.ready && !slot.ready)) {
+        slot.stage = st; slot.ready = !!p.ready;
+        rebuildSlotCrop(slot, p);
+      }
+    }
+  }
+  function applyView(){
+    var grid = $('grid');
+    if (!wrapEl || !grid) return;
+    // Bar 3D tampil begitu 3D siap, atau bila pengguna memilih tampilan 2D
+    // (supaya ia bisa kembali ke 3D). Saat 3D gagal, bar disembunyikan.
+    if (barEl) barEl.hidden = !(state === 'ready' || pref === '2d');
+    if (state === 'ready' && pref === '3d') {
+      wrapEl.hidden = false;
+      grid.style.display = 'none';
+      if (toggleBtn) toggleBtn.textContent = '▦ 2D';
+      resize();
+    } else {
+      wrapEl.hidden = true;
+      grid.style.display = '';
+      if (toggleBtn) toggleBtn.textContent = '👁 3D';
+    }
+    updateLoop();
+  }
+  function applyNight(){
+    if (!scene) return;
+    if (night) {
+      scene.background.set(0x0b1026);
+      scene.fog.color.set(0x0b1026);
+      sunLight.intensity = 0.28; sunLight.color.set(0x9db8ff);
+      hemiLight.intensity = 0.16;
+      if (starsPts) starsPts.visible = true;
+    } else {
+      scene.background.set(0x87ceeb);
+      scene.fog.color.set(0x87ceeb);
+      sunLight.intensity = 1.15; sunLight.color.set(0xfff2cc);
+      hemiLight.intensity = 0.75;
+      if (starsPts) starsPts.visible = false;
+    }
+    for (var i = 0; i < windowMats.length; i++) windowMats[i].emissiveIntensity = night ? 1.4 : 0.15;
+    if (nightBtn) nightBtn.textContent = night ? t('farm3d_day') : t('farm3d_night');
+  }
+  function sync(stateObj){
+    if (!stateObj || !stateObj.plots || !stateObj.plots.length) return;
+    var size = (stateObj.user && stateObj.user.grid_size) || 3;
+    lastPlots = stateObj.plots;
+    lastGridSize = size;
+    lastSyncAt = Date.now();
+    if (state === 'idle' && pref === '3d') { tryInit(); return; }
+    if (state !== 'ready') return;
+    var sig = plotSig(stateObj.plots, size);
+    if (sig !== lastSig || size !== lastGridSize) {
+      lastSig = sig; lastGridSize = size;
+      rebuildPlots(stateObj.plots, size);
+    }
+    applyView();
+  }
+  function rebuildPlots(plots, size){
+    var i, p;
+    disposeGroup(gridGroup);
+    gridGroup.clear();
+    plotSlots = [];
+    var half = (size - 1) / 2 * SPACING;
+    var slab = box(size * SPACING + 2.6, 0.3, size * SPACING + 2.6, 0x9c8a6a, 0, -0.16, 0);
+    slab.castShadow = false; slab.receiveShadow = true;
+    gridGroup.add(slab);
+    for (i = 0; i < plots.length; i++){
+      p = plots[i];
+      var pos = plotPos(p.idx, size);
+      var group = new THREE.Group();
+      group.position.set(pos.x, 0, pos.z);
+      group.userData.plotIdx = p.idx;
+      var wet = !!p.watered;
+      var soilMat = mat(wet ? 0x6d4c41 : 0x8d6e63);
+      var soil = box(1.95, 0.35, 1.95, wet ? 0x6d4c41 : 0x8d6e63, 0, 0.17, 0);
+      soil.receiveShadow = true; soil.castShadow = false;
+      group.add(soil);
+      var slot = {idx: p.idx, group: group, soil: soil, soilMat: soilMat,
+                  cropGroup: null, ring: null, bug: null, stage: -1, ready: false};
+      gridGroup.add(group);
+      plotSlots.push(slot);
+      rebuildSlotCrop(slot, p);
+      if (p.pest) addPest(slot);
+      if (p.fertilized) {
+        group.add(sph(0.09, 0xd7ccc8, -0.6, 0.4, -0.6));
+        group.add(sph(0.09, 0xd7ccc8, 0.6, 0.4, 0.5));
+        group.add(sph(0.09, 0xd7ccc8, 0.2, 0.4, -0.7));
+      }
+    }
+    buildDecor(size, half);
+    orbit.radius = 12 + size * 1.2;
+  }
+  function rebuildSlotCrop(slot, p){
+    if (slot.cropGroup) { slot.group.remove(slot.cropGroup); disposeGroup(slot.cropGroup); slot.cropGroup = null; }
+    if (slot.ring) { slot.group.remove(slot.ring); disposeGroup(slot.ring); slot.ring = null; }
+    if (!p.crop) { slot.stage = -1; slot.ready = false; return; }
+    var st = cropStageOf(p);
+    slot.stage = st; slot.ready = !!p.ready;
+    var g = buildCropMesh(p.crop, st, slot.ready);
+    g.position.y = 0.35;
+    slot.group.add(g);
+    slot.cropGroup = g;
+    if (slot.ready) {
+      var ring = mesh(new THREE.TorusGeometry(0.85, 0.07, 8, 24), mat(0xffd54f, {e: 0xffb300, ei: 0.9}), 0, 0.4, 0);
+      ring.rotation.x = -Math.PI / 2;
+      ring.castShadow = false;
+      slot.group.add(ring);
+      slot.ring = ring;
+    }
+  }
+  function addPest(slot){
+    var ring = mesh(new THREE.TorusGeometry(0.95, 0.08, 8, 24), mat(0xe53935, {e: 0xe53935, ei: 0.8}), 0, 0.4, 0);
+    ring.rotation.x = -Math.PI / 2;
+    ring.castShadow = false;
+    slot.group.add(ring);
+    slot.ring = ring;
+    var bug = sph(0.16, 0x212121, 0.3, 0.55, 0.2);
+    slot.group.add(bug);
+    slot.bug = bug;
+  }
+  function buildCropMesh(crop, stage, ready){
+    var g = new THREE.Group();
+    if (stage === 0) {
+      g.add(cone(0.09, 0.28, 0x66bb6a, -0.12, 0.14, 0));
+      g.add(cone(0.09, 0.28, 0x81c784, 0.12, 0.14, 0.06));
+      g.add(cone(0.07, 0.22, 0x43a047, 0, 0.11, -0.12));
+      return g;
+    }
+    if (stage === 1) {
+      // tanaman muda: batang + daun saja, belum berbuah
+      g.add(cyl(0.03, 0.045, 0.42, 0x558b2f, -0.12, 0.21, 0));
+      g.add(cyl(0.03, 0.045, 0.42, 0x558b2f, 0.12, 0.21, 0.05));
+      g.add(cone(0.16, 0.3, 0x66bb6a, -0.12, 0.5, 0));
+      g.add(cone(0.16, 0.3, 0x7cb342, 0.12, 0.5, 0.05));
+      g.add(cone(0.13, 0.24, 0x43a047, 0, 0.44, -0.12));
+      return g;
+    }
+    var s, i;
+    if (crop === 'cabai') {
+      g.add(sph(0.42, 0x2e7d32, 0, 0.32, 0)); g.add(sph(0.3, 0x388e3c, 0.3, 0.26, 0.15));
+      for (i = 0; i < 4; i++) g.add(cone(0.08, 0.3, 0xe53935, -0.2 + i * 0.13, 0.62, (i % 2 ? 0.12 : -0.1)));
+    } else if (crop === 'jagung') {
+      g.add(cyl(0.05, 0.08, 1.0, 0x558b2f, 0, 0.5, 0));
+      g.add(cone(0.16, 0.55, 0x7cb342, -0.2, 0.55, 0));
+      g.add(cone(0.16, 0.55, 0x66bb6a, 0.2, 0.6, 0));
+      g.add(cyl(0.13, 0.13, 0.5, 0xffd54f, 0, 0.78, 0.12, {e: 0xffb300, ei: 0.25}));
+      g.add(cone(0.1, 0.25, 0xffee58, 0, 1.12, 0.12));
+    } else if (crop === 'tomat') {
+      g.add(sph(0.45, 0x2e7d32, 0, 0.34, 0)); g.add(sph(0.32, 0x43a047, 0.28, 0.28, 0.12));
+      for (i = 0; i < 5; i++) g.add(sph(0.13, 0xe53935, -0.3 + (i % 3) * 0.3, 0.42 + (i < 3 ? 0.12 : -0.05), (i % 2 ? 0.18 : -0.15)));
+    } else if (crop === 'wortel') {
+      for (i = 0; i < 4; i++) g.add(cone(0.1, 0.4, 0x66bb6a, -0.24 + (i % 2) * 0.48, 0.3, (i < 2 ? -0.15 : 0.15)));
+      for (i = 0; i < 3; i++) { var c = cone(0.13, 0.34, 0xed6c02, -0.25 + i * 0.25, 0.1, 0.1); c.rotation.x = Math.PI; g.add(c); }
+    } else if (crop === 'padi') {
+      for (i = 0; i < 5; i++) {
+        var px = -0.3 + (i % 3) * 0.3, pz = (i < 3 ? -0.15 : 0.15);
+        g.add(cyl(0.025, 0.035, 0.85, 0xd4a017, px, 0.42, pz));
+        g.add(cone(0.08, 0.3, 0xffd54f, px, 0.95, pz));
+      }
+    } else if (crop === 'labu') {
+      var p1 = sph(0.42, 0xed6c02, -0.15, 0.3, 0); p1.scale.y = 0.72; g.add(p1);
+      var p2 = sph(0.34, 0xef6c00, 0.3, 0.26, 0.12); p2.scale.y = 0.72; g.add(p2);
+      g.add(cone(0.2, 0.35, 0x43a047, 0.1, 0.6, -0.1));
+    } else if (crop === 'stroberi') {
+      g.add(sph(0.4, 0x2e7d32, 0, 0.26, 0)); g.add(sph(0.28, 0x43a047, 0.25, 0.22, 0.1));
+      for (i = 0; i < 6; i++) g.add(sph(0.08, 0xe53935, -0.3 + (i % 3) * 0.3, 0.4 + (i < 3 ? 0.06 : -0.04), (i % 2 ? 0.16 : -0.14)));
+    } else if (crop === 'kopi') {
+      g.add(sph(0.44, 0x1b5e20, 0, 0.34, 0)); g.add(sph(0.3, 0x2e7d32, 0.28, 0.28, 0.1));
+      for (i = 0; i < 6; i++) g.add(sph(0.09, 0x8d2f2f, -0.3 + (i % 3) * 0.3, 0.44 + (i < 3 ? 0.08 : -0.06), (i % 2 ? 0.15 : -0.13)));
+    } else if (crop === 'melon') {
+      var m = sph(0.55, 0x9ccc65, 0, 0.42, 0); m.scale.y = 0.85; g.add(m);
+      g.add(cyl(0.04, 0.05, 0.3, 0x558b2f, 0, 0.9, 0));
+    } else {
+      g.add(sph(0.4, 0x43a047, 0, 0.32, 0));
+      g.add(cone(0.14, 0.3, 0x7cb342, 0, 0.62, 0));
+    }
+    return g;
+  }
+  function winMat(){
+    var m = new THREE.MeshLambertMaterial({color: 0xffe082, emissive: 0xffb300, emissiveIntensity: 0.15});
+    windowMats.push(m);
+    return m;
+  }
+  function makeChicken(ax, az, phase){
+    var g = new THREE.Group();
+    var body = sph(0.3, 0xffffff, 0, 0.32, 0); body.scale.set(1, 0.9, 1.2); g.add(body);
+    g.add(sph(0.16, 0xffffff, 0, 0.6, 0.26));
+    var beak = cone(0.06, 0.16, 0xfb8c00, 0, 0.58, 0.44); beak.rotation.x = Math.PI / 2; g.add(beak);
+    var tail = cone(0.1, 0.22, 0xffffff, 0, 0.42, -0.34); tail.rotation.x = -0.7; g.add(tail);
+    g.add(cyl(0.025, 0.025, 0.18, 0xfb8c00, -0.08, 0.09, 0));
+    g.add(cyl(0.025, 0.025, 0.18, 0xfb8c00, 0.08, 0.09, 0));
+    g.position.set(ax, 0, az);
+    g.userData.anchor = {x: ax, z: az};
+    g.userData.phase = phase;
+    return g;
+  }
+  function makeTree(x, z, s){
+    var g = new THREE.Group();
+    g.add(cyl(0.14 * s, 0.2 * s, 0.9 * s, 0x6d4c41, 0, 0.45 * s, 0));
+    g.add(sph(0.75 * s, 0x43a047, 0, 1.3 * s, 0));
+    g.add(sph(0.55 * s, 0x66bb6a, 0.3 * s, 1.85 * s, 0.15 * s));
+    g.position.set(x, 0, z);
+    return g;
+  }
+  function buildDecor(size, half){
+    var i;
+    for (i = decorGroup.children.length - 1; i >= 0; i--) {
+      var ch = decorGroup.children[i];
+      decorGroup.remove(ch); disposeGroup(ch);
+    }
+    clouds = []; chickens = []; windowMats = [];
+    windmillBlades = null; cowHead = null;
+    // --- Lumbung merah + silo ---
+    var barn = new THREE.Group();
+    barn.position.set(-(half + 4.4), 0, -(half + 1.2)); barn.rotation.y = 0.45;
+    barn.add(box(3.4, 2.2, 2.6, 0xc62828, 0, 1.1, 0));
+    var rshape = new THREE.Shape();
+    rshape.moveTo(-1.95, 0); rshape.lineTo(1.95, 0); rshape.lineTo(0, 1.25); rshape.closePath();
+    var roof = new THREE.Mesh(new THREE.ExtrudeGeometry(rshape, {depth: 2.9, bevelEnabled: false}), mat(0x5d4037));
+    roof.castShadow = true; roof.position.set(0, 2.2, -1.45); barn.add(roof);
+    barn.add(box(1.0, 1.5, 0.12, 0xf5f5f5, 0, 0.75, 1.32));
+    var bw = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.6, 0.1), winMat());
+    bw.position.set(-0.95, 1.5, 1.32); bw.castShadow = true; barn.add(bw);
+    decorGroup.add(barn);
+    var silo = new THREE.Group();
+    silo.position.set(-(half + 4.4) + 2.6, 0, -(half + 2.8));
+    silo.add(cyl(0.7, 0.7, 2.6, 0xb0bec5, 0, 1.3, 0));
+    var cap = mesh(new THREE.SphereGeometry(0.7, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), mat(0x90a4ae), 0, 2.6, 0);
+    silo.add(cap);
+    decorGroup.add(silo);
+    // --- Kincir angin ---
+    var wm = new THREE.Group();
+    wm.position.set(half + 4.2, 0, -(half + 2.2));
+    wm.add(cyl(0.5, 0.95, 3.4, 0xfff8e1, 0, 1.7, 0));
+    wm.add(cone(0.68, 0.9, 0x8d6e63, 0, 3.85, 0));
+    var hub = cyl(0.16, 0.16, 0.3, 0x6d4c41, 0, 3.3, 0.62);
+    hub.rotation.x = Math.PI / 2; wm.add(hub);
+    windmillBlades = new THREE.Group();
+    windmillBlades.position.set(0, 3.3, 0.78);
+    for (i = 0; i < 4; i++) {
+      var pivot = new THREE.Group();
+      pivot.rotation.z = i * Math.PI / 2;
+      pivot.add(box(0.3, 1.7, 0.06, 0xffffff, 0, 1.0, 0));
+      windmillBlades.add(pivot);
+    }
+    wm.add(windmillBlades);
+    decorGroup.add(wm);
+    // --- Rumah petani ---
+    var house = new THREE.Group();
+    house.position.set(half + 4.4, 0, half + 2.8); house.rotation.y = -0.5;
+    house.add(box(2.2, 1.8, 2.0, 0xfff3e0, 0, 0.9, 0));
+    var hroof = cone(1.9, 1.1, 0xbf360c, 0, 2.35, 0, null, 4); hroof.rotation.y = Math.PI / 4; house.add(hroof);
+    house.add(box(0.7, 1.1, 0.1, 0x6d4c41, -0.4, 0.55, 1.02));
+    var hw = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.55, 0.1), winMat());
+    hw.position.set(0.55, 1.1, 1.02); hw.castShadow = true; house.add(hw);
+    decorGroup.add(house);
+    // --- Kolam ---
+    var pond = mesh(new THREE.CircleGeometry(1.7, 20), mat(0x4fc3f7), -(half + 3.6), 0.03, half + 3.4);
+    pond.rotation.x = -Math.PI / 2; pond.castShadow = false; pond.receiveShadow = true;
+    decorGroup.add(pond);
+    decorGroup.add(sph(0.3, 0x9e9e9e, -(half + 2.2), 0.15, half + 3.0));
+    decorGroup.add(sph(0.22, 0x9e9e9e, -(half + 4.8), 0.12, half + 4.4));
+    // --- Kandang ayam ---
+    var penX = half + 3.8, penZ = half - 0.8;
+    for (i = 0; i < 4; i++) {
+      var fx = penX - 1.2 + (i % 2) * 2.4, fz = penZ - 1.2 + Math.floor(i / 2) * 2.4;
+      decorGroup.add(box(0.1, 0.55, 0.1, 0x8d6e63, fx, 0.27, fz));
+    }
+    decorGroup.add(box(2.5, 0.08, 0.08, 0x8d6e63, penX, 0.45, penZ - 1.2));
+    decorGroup.add(box(2.5, 0.08, 0.08, 0x8d6e63, penX, 0.45, penZ + 1.2));
+    decorGroup.add(box(0.08, 0.08, 2.5, 0x8d6e63, penX - 1.2, 0.45, penZ));
+    decorGroup.add(box(0.08, 0.08, 2.5, 0x8d6e63, penX + 1.2, 0.45, penZ));
+    var ch1 = makeChicken(penX - 0.5, penZ - 0.4, 0); chickens.push(ch1); decorGroup.add(ch1);
+    var ch2 = makeChicken(penX + 0.5, penZ + 0.5, 2.1); chickens.push(ch2); decorGroup.add(ch2);
+    // --- Sapi dekat lumbung ---
+    var cow = new THREE.Group();
+    cow.position.set(-(half + 2.2), 0, -(half + 3.2)); cow.rotation.y = 0.9;
+    cow.add(box(1.2, 0.7, 0.65, 0xffffff, 0, 0.65, 0));
+    cow.add(box(0.5, 0.35, 0.66, 0x212121, -0.2, 0.85, 0));
+    cowHead = box(0.45, 0.45, 0.4, 0xffffff, 0, 0.85, 0.75); cow.add(cowHead);
+    cow.add(cone(0.05, 0.18, 0xfff8e1, -0.16, 1.12, 0.75));
+    cow.add(cone(0.05, 0.18, 0xfff8e1, 0.16, 1.12, 0.75));
+    for (i = 0; i < 4; i++) cow.add(cyl(0.07, 0.07, 0.35, 0x424242, -0.45 + (i % 2) * 0.9, 0.17, (i < 2 ? -0.2 : 0.2)));
+    decorGroup.add(cow);
+    // --- Pohon + pagar ---
+    decorGroup.add(makeTree(-(half + 4.8), half + 0.6, 1.1));
+    decorGroup.add(makeTree(half + 4.8, -(half + 4.4), 0.9));
+    decorGroup.add(makeTree(-(half + 1.6), half + 4.8, 1.0));
+    decorGroup.add(makeTree(half + 0.8, -(half + 5.0), 1.2));
+    var fp = half + 1.4;
+    for (i = -3; i <= 3; i++) {
+      decorGroup.add(box(0.12, 0.7, 0.12, 0x8d6e63, i * (fp * 2 / 6), 0.35, -fp));
+      decorGroup.add(box(0.12, 0.7, 0.12, 0x8d6e63, i * (fp * 2 / 6), 0.35, fp));
+      decorGroup.add(box(0.12, 0.7, 0.12, 0x8d6e63, -fp, 0.35, i * (fp * 2 / 6)));
+      decorGroup.add(box(0.12, 0.7, 0.12, 0x8d6e63, fp, 0.35, i * (fp * 2 / 6)));
+    }
+    decorGroup.add(box(fp * 2, 0.08, 0.08, 0x8d6e63, 0, 0.5, -fp));
+    decorGroup.add(box(fp * 2, 0.08, 0.08, 0x8d6e63, 0, 0.5, fp));
+    decorGroup.add(box(0.08, 0.08, fp * 2, 0x8d6e63, -fp, 0.5, 0));
+    decorGroup.add(box(0.08, 0.08, fp * 2, 0x8d6e63, fp, 0.5, 0));
+    // --- Awan bergerak ---
+    for (i = 0; i < 4; i++) {
+      var cl = new THREE.Group();
+      cl.add(sph(0.9, 0xffffff, 0, 0, 0));
+      cl.add(sph(0.65, 0xffffff, 0.85, -0.1, 0.2));
+      cl.add(sph(0.55, 0xffffff, -0.8, -0.12, -0.1));
+      cl.position.set(-16 + i * 9, 7.5 + (i % 2) * 1.6, -6 + (i % 3) * 5);
+      cl.userData.speed = 0.22 + i * 0.06;
+      clouds.push(cl); scene.add(cl);
+    }
+    // --- Bintang (hanya malam) ---
+    if (!starsPts) {
+      var starGeo = new THREE.BufferGeometry();
+      var pos = [];
+      for (i = 0; i < 90; i++) {
+        var a = Math.random() * Math.PI * 2, e2 = Math.random() * 0.9 + 0.15;
+        pos.push(Math.cos(a) * Math.cos(e2) * 34, Math.sin(e2) * 34, Math.sin(a) * Math.cos(e2) * 34);
+      }
+      starGeo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+      starsPts = new THREE.Points(starGeo, new THREE.PointsMaterial({color: 0xffffff, size: 0.22}));
+      starsPts.visible = false;
+      scene.add(starsPts);
+    }
+  }
+  function attachControls(el){
+    el.addEventListener('pointerdown', function(e){
+      try { el.setPointerCapture(e.pointerId); } catch(err){}
+      pointers[e.pointerId] = {x: e.clientX, y: e.clientY};
+      if (Object.keys(pointers).length === 2) {
+        var ids = Object.keys(pointers);
+        pinchDist = Math.hypot(pointers[ids[0]].x - pointers[ids[1]].x, pointers[ids[0]].y - pointers[ids[1]].y);
+      } else if (Object.keys(pointers).length === 1) {
+        downInfo = {x: e.clientX, y: e.clientY, t: Date.now(), moved: 0};
+      }
+    });
+    el.addEventListener('pointermove', function(e){
+      if (!pointers[e.pointerId]) return;
+      var prev = pointers[e.pointerId];
+      var dx = e.clientX - prev.x, dy = e.clientY - prev.y;
+      pointers[e.pointerId] = {x: e.clientX, y: e.clientY};
+      var ids = Object.keys(pointers);
+      if (ids.length === 2) {
+        var d = Math.hypot(pointers[ids[0]].x - pointers[ids[1]].x, pointers[ids[0]].y - pointers[ids[1]].y);
+        if (pinchDist > 0 && d > 0) orbit.radius = clamp(orbit.radius * (pinchDist / d), 8, 26);
+        pinchDist = d;
+        if (downInfo) downInfo.moved += Math.abs(dx) + Math.abs(dy);
+        return;
+      }
+      if (downInfo) {
+        orbit.theta -= dx * 0.0052;
+        orbit.phi = clamp(orbit.phi - dy * 0.0052, 0.35, 1.32);
+        downInfo.moved += Math.abs(dx) + Math.abs(dy);
+      }
+    });
+    function endPointer(e){
+      var wasTap = false, tx = 0, ty = 0;
+      if (downInfo && Object.keys(pointers).length <= 1) {
+        if (downInfo.moved < 8 && Date.now() - downInfo.t < 600) { wasTap = true; tx = e.clientX; ty = e.clientY; }
+      }
+      delete pointers[e.pointerId];
+      if (!Object.keys(pointers).length) { pinchDist = 0; downInfo = null; }
+      if (wasTap) handleTap(tx, ty);
+    }
+    el.addEventListener('pointerup', endPointer);
+    el.addEventListener('pointercancel', endPointer);
+    el.addEventListener('wheel', function(e){
+      e.preventDefault();
+      orbit.radius = clamp(orbit.radius * Math.exp(e.deltaY * 0.0011), 8, 26);
+    }, {passive: false});
+    el.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  }
+  function handleTap(clientX, clientY){
+    if (!renderer || !raycaster) return;
+    var rect = renderer.domElement.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    var nx = ((clientX - rect.left) / rect.width) * 2 - 1;
+    var ny = -((clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera({x: nx, y: ny}, camera);
+    var hits = raycaster.intersectObjects(gridGroup.children, true);
+    for (var i = 0; i < hits.length; i++){
+      var o = hits[i].object;
+      while (o) {
+        if (o.userData && o.userData.plotIdx != null) {
+          if (typeof onPlotClick === 'function') onPlotClick(o.userData.plotIdx, null);
+          return;
+        }
+        o = o.parent;
+      }
+    }
+  }
+  function initUI(){
+    wrapEl = $('farm3d-wrap'); mountEl = $('farm3d');
+    barEl = $('farm3d-bar'); toggleBtn = $('btn-farm3d-toggle'); nightBtn = $('btn-farm3d-night');
+    if (!wrapEl || !barEl) return;
+    if (nightBtn) nightBtn.textContent = night ? t('farm3d_day') : t('farm3d_night');
+    if (toggleBtn) toggleBtn.addEventListener('click', function(){
+      if (state === 'failed') return;
+      if (state === 'idle') { pref = '3d'; lsSet(LS_VIEW, '3d'); tryInit(); return; }
+      pref = (pref === '3d') ? '2d' : '3d';
+      lsSet(LS_VIEW, pref);
+      applyView();
+    });
+    if (nightBtn) nightBtn.addEventListener('click', function(){
+      night = !night;
+      lsSet(LS_NIGHT, night ? '1' : '0');
+      applyNight();
+    });
+    if (pref === '2d') barEl.hidden = false;
+    document.querySelectorAll('nav button').forEach(function(b){
+      b.addEventListener('click', function(){ setTimeout(updateLoop, 60); });
+    });
+    document.addEventListener('visibilitychange', updateLoop);
+  }
+  return {sync: sync, initUI: initUI, updateLoop: updateLoop};
+})();
+
 /* ================= INIT ================= */
 LANG = detectLang();
 applyLang();
+if (typeof Farm3D !== 'undefined') Farm3D.initUI(); // v3.4: tombol 3D / siang-malam
 if (S) { renderAll(); /* jangan tampilkan banner di awal: banner merah hanya
   muncul kalau loadState gagal DAN belum ada state sama sekali */ }
 loadState(true).then(function(ok){
